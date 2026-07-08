@@ -12,7 +12,6 @@ export interface TableOnPlan {
   pos_x: number;
   pos_y: number;
   rot: number;
-  nbAssis: number;
 }
 
 export interface RoomState {

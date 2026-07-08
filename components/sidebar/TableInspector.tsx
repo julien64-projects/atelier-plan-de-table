@@ -1,6 +1,7 @@
 'use client';
 
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
+import { useGuestsForTable, useGuestDispatch } from '@/lib/store/guestStore';
 import { etatCapacite } from '@/lib/geometry/tableGeometry';
 
 const BADGE_LABELS: Record<string, string> = {
@@ -18,8 +19,10 @@ const BADGE_CSS: Record<string, string> = {
 export default function TableInspector() {
   const { tables, selectedTableId } = useRoomState();
   const dispatch = useRoomDispatch();
+  const guestDispatch = useGuestDispatch();
 
   const table = tables.find(t => t.id === selectedTableId);
+  const assignedGuests = useGuestsForTable(selectedTableId ?? '');
   if (!table) return null;
 
   const tableInput = {
@@ -30,7 +33,7 @@ export default function TableInspector() {
     confort: table.confort,
     bouts: table.bouts,
   };
-  const etat = etatCapacite(tableInput, table.nbAssis);
+  const etat = etatCapacite(tableInput, assignedGuests.length);
 
   const shapeLabel = table.shape === 'ronde' ? 'Ronde' : table.shape === 'rect' ? 'Rectangulaire' : 'Banquet';
   const dimLabel = table.shape === 'ronde'
@@ -60,20 +63,32 @@ export default function TableInspector() {
 
       {/* Capacité */}
       <div>
-        <label className="text-sm text-gray-500">Invités assis</label>
-        <input
-          type="number"
-          min={0}
-          value={table.nbAssis}
-          onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { nbAssis: Math.max(0, Number(e.target.value)) } })}
-          className="mt-1 w-20 px-2 py-1 text-sm border border-gray-300 rounded"
-        />
-        <div className="mt-2 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <span className={`inline-flex px-2 py-0.5 rounded text-xs font-semibold ${BADGE_CSS[etat.niveau]}`}>
             {etat.assis}/{etat.max} — {BADGE_LABELS[etat.niveau]}
           </span>
         </div>
       </div>
+
+      {/* Invités assignés */}
+      {assignedGuests.length > 0 && (
+        <div>
+          <h3 className="text-sm text-gray-500 mb-1">Invités ({assignedGuests.length})</h3>
+          <ul className="space-y-1">
+            {assignedGuests.map(g => (
+              <li key={g.id} className="flex items-center justify-between px-2 py-1 text-sm bg-gray-50 rounded">
+                <span>{g.nom}</span>
+                <button
+                  onClick={() => guestDispatch({ type: 'UNASSIGN_GUEST', guestId: g.id })}
+                  className="text-gray-400 hover:text-red-500 text-xs"
+                >
+                  ×
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Supprimer */}
       <button

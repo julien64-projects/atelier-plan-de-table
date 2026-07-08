@@ -10,7 +10,7 @@ export default function TableCatalog() {
   const { nextTableNumber, salleLargeurCm, salleHauteurCm } = useRoomState();
   const dispatch = useRoomDispatch();
 
-  const addTable = useCallback((table: Omit<TableOnPlan, 'id' | 'nom' | 'pos_x' | 'pos_y' | 'rot' | 'nbAssis' | 'confort' | 'bouts'> & { bouts?: boolean }) => {
+  const addTable = useCallback((table: Omit<TableOnPlan, 'id' | 'nom' | 'pos_x' | 'pos_y' | 'rot' | 'confort' | 'bouts'> & { bouts?: boolean }) => {
     const newTable: TableOnPlan = {
       ...table,
       id: crypto.randomUUID(),
@@ -20,7 +20,6 @@ export default function TableCatalog() {
       pos_x: salleLargeurCm / 2,
       pos_y: salleHauteurCm / 2,
       rot: 0,
-      nbAssis: 0,
     };
     dispatch({ type: 'ADD_TABLE', table: newTable });
   }, [dispatch, nextTableNumber, salleLargeurCm, salleHauteurCm]);

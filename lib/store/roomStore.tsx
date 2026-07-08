@@ -19,9 +19,9 @@ const initialState: RoomState = {
   salleLargeurCm: 2000,  // 20 m
   salleHauteurCm: 1500,  // 15 m
   tables: [
-    { id: 'seed-1', nom: 'Table 1', shape: 'ronde', diametreCm: 150, confort: 'standard', bouts: false, pos_x: 500, pos_y: 400, rot: 0, nbAssis: 0 },
-    { id: 'seed-2', nom: 'Table 2', shape: 'ronde', diametreCm: 180, confort: 'standard', bouts: false, pos_x: 900, pos_y: 400, rot: 0, nbAssis: 0 },
-    { id: 'seed-3', nom: 'Table 3', shape: 'rect', longueurCm: 240, largeurCm: 90, confort: 'standard', bouts: false, pos_x: 700, pos_y: 800, rot: 0, nbAssis: 0 },
+    { id: 'seed-1', nom: 'Table 1', shape: 'ronde', diametreCm: 150, confort: 'standard', bouts: false, pos_x: 500, pos_y: 400, rot: 0 },
+    { id: 'seed-2', nom: 'Table 2', shape: 'ronde', diametreCm: 180, confort: 'standard', bouts: false, pos_x: 900, pos_y: 400, rot: 0 },
+    { id: 'seed-3', nom: 'Table 3', shape: 'rect', longueurCm: 240, largeurCm: 90, confort: 'standard', bouts: false, pos_x: 700, pos_y: 800, rot: 0 },
   ],
   selectedTableId: null,
   nextTableNumber: 4,
