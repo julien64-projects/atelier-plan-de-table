@@ -87,20 +87,28 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     ? positionsSiegesRonde(table.diametreCm ?? 150, etat.max)
     : positionsSiegesDroite(table.longueurCm ?? 180, etat.max, { largeurCm: table.largeurCm, bouts: table.bouts });
 
+  const placing = placementMode.active && placementMode.guestId;
+
   const seatNodes = seats.map(seat => {
     const g = seatMap[seat.index];
     const occupied = !!g;
     const lx = seat.x + Math.cos(seat.angle) * 15;
     const ly = seat.y + Math.sin(seat.angle) * 15;
+    const onSeatClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+      if (placing && placementMode.guestId) {
+        e.cancelBubble = true;
+        guestDispatch({ type: 'ASSIGN_GUEST', guestId: placementMode.guestId, tableId: table.id, seatIndex: seat.index, warning: null });
+      }
+    };
     return (
-      <Group key={seat.index} listening={false}>
+      <Group key={seat.index} listening={!!placing} onClick={onSeatClick} onTap={onSeatClick}>
         <Circle
           x={seat.x}
           y={seat.y}
           radius={11}
           fill={occupied ? '#d9c7a8' : '#f3eee4'}
-          stroke={occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
-          strokeWidth={occupied && g.aConfirmer ? 2 : 1}
+          stroke={placing ? '#2563eb' : occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
+          strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
           <Text
