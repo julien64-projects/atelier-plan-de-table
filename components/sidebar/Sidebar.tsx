@@ -4,11 +4,13 @@ import { useRoomState } from '@/lib/store/roomStore';
 import RoomConfig from './RoomConfig';
 import TableCatalog from './TableCatalog';
 import TableInspector from './TableInspector';
+import DecorCatalog from './DecorCatalog';
+import DecorInspector from './DecorInspector';
 import GuestList from './GuestList';
 import AlleeAlert from './AlleeAlert';
 
 export default function Sidebar() {
-  const { selectedTableId } = useRoomState();
+  const { selectedTableId, selectedDecorId } = useRoomState();
 
   return (
     <aside className="w-72 border-r border-gray-200 bg-white flex flex-col overflow-y-auto">
@@ -22,10 +24,12 @@ export default function Sidebar() {
         <AlleeAlert />
       </div>
       <div className="px-4 py-4 border-b border-gray-200">
-        {selectedTableId ? <TableInspector /> : (
+        {selectedTableId ? <TableInspector /> : selectedDecorId ? <DecorInspector /> : (
           <>
             <h2 className="text-base font-semibold text-gray-700 mb-3">Ajouter une table</h2>
             <TableCatalog />
+            <h2 className="text-base font-semibold text-gray-700 mt-5 mb-3">Ajouter un décor</h2>
+            <DecorCatalog />
           </>
         )}
       </div>
