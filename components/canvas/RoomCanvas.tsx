@@ -7,6 +7,7 @@ import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import Grid from './Grid';
 import RoomBorder from './RoomBorder';
 import TablesLayer from './TablesLayer';
+import DistanceLinesLayer from './DistanceLinesLayer';
 
 const MIN_SCALE = 0.1;
 const MAX_SCALE = 3;
@@ -20,6 +21,7 @@ export default function RoomCanvas() {
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [hoveredTableId, setHoveredTableId] = useState<string | null>(null);
 
   // Adapter la taille du Stage au conteneur
   useEffect(() => {
@@ -100,7 +102,8 @@ export default function RoomCanvas() {
           <RoomBorder largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />
           <Grid largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />
         </Layer>
-        <TablesLayer />
+        <TablesLayer onHover={setHoveredTableId} />
+        <DistanceLinesLayer hoveredTableId={hoveredTableId} />
       </Stage>
     </div>
   );
