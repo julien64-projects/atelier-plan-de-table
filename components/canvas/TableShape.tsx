@@ -5,6 +5,7 @@ import { Group, Circle, Rect, Text } from 'react-konva';
 import type Konva from 'konva';
 import type { TableOnPlan } from '@/lib/store/types';
 import { etatCapacite, empreinte } from '@/lib/geometry/tableGeometry';
+import { positionsSiegesRonde, positionsSiegesDroite, type SeatPos } from '@/lib/geometry/seatGeometry';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch, useGuestsForTable } from '@/lib/store/guestStore';
 
@@ -79,6 +80,42 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
 
   const truncate = (s: string, max: number) => s.length > max ? s.slice(0, max - 1) + '…' : s;
 
+  // Positions des sièges (autant que la capacité max), remplis dans l'ordre d'assignation
+  const seats: SeatPos[] = table.shape === 'ronde'
+    ? positionsSiegesRonde(table.diametreCm ?? 150, etat.max)
+    : positionsSiegesDroite(table.longueurCm ?? 180, etat.max, { largeurCm: table.largeurCm, bouts: table.bouts });
+
+  const seatNodes = seats.map(seat => {
+    const g = assignedGuests[seat.index];
+    const occupied = !!g;
+    const lx = seat.x + Math.cos(seat.angle) * 15;
+    const ly = seat.y + Math.sin(seat.angle) * 15;
+    return (
+      <Group key={seat.index} listening={false}>
+        <Circle
+          x={seat.x}
+          y={seat.y}
+          radius={11}
+          fill={occupied ? '#d9c7a8' : '#f3eee4'}
+          stroke={occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
+          strokeWidth={occupied && g.aConfirmer ? 2 : 1}
+        />
+        {occupied && (
+          <Text
+            text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 10)}`}
+            x={lx - 34}
+            y={ly - 4}
+            width={68}
+            align="center"
+            fontSize={9}
+            fontStyle={g.aConfirmer ? 'italic' : 'normal'}
+            fill={g.aConfirmer ? '#b45309' : '#555'}
+          />
+        )}
+      </Group>
+    );
+  });
+
   const groupProps = {
     x: table.pos_x,
     y: table.pos_y,
@@ -92,7 +129,6 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
 
   if (table.shape === 'ronde') {
     const r = (table.diametreCm ?? 150) / 2;
-    const nameRadius = r + 20;
     return (
       <Group {...groupProps}>
         <Circle radius={r} fill="#e8dcc8" stroke={strokeColor} strokeWidth={strokeW} />
@@ -119,26 +155,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           fill="white"
           listening={false}
         />
-        {/* Noms des invités en cercle */}
-        {assignedGuests.map((g, i) => {
-          const angle = (2 * Math.PI * i) / assignedGuests.length - Math.PI / 2;
-          const gx = Math.cos(angle) * nameRadius;
-          const gy = Math.sin(angle) * nameRadius;
-          return (
-            <Text
-              key={g.id}
-              text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 10)}`}
-              x={gx - 30}
-              y={gy - 5}
-              width={60}
-              align="center"
-              fontSize={10}
-              fontStyle={g.aConfirmer ? 'italic' : 'normal'}
-              fill={g.aConfirmer ? '#b45309' : '#555'}
-              listening={false}
-            />
-          );
-        })}
+        {/* Sièges */}
+        {seatNodes}
       </Group>
     );
   }
@@ -181,29 +199,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         fill="white"
         listening={false}
       />
-      {/* Noms le long des grands côtés */}
-      {assignedGuests.map((g, i) => {
-        const side = i % 2 === 0 ? -1 : 1; // alterne haut/bas
-        const idx = Math.floor(i / 2);
-        const count = Math.ceil(assignedGuests.length / 2);
-        const spacing = w / (count + 1);
-        const gx = -w / 2 + spacing * (idx + 1);
-        const gy = side * (h / 2 + 14);
-        return (
-          <Text
-            key={g.id}
-            text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 10)}`}
-            x={gx - 30}
-            y={gy - 5}
-            width={60}
-            align="center"
-            fontSize={10}
-            fontStyle={g.aConfirmer ? 'italic' : 'normal'}
-            fill={g.aConfirmer ? '#b45309' : '#555'}
-            listening={false}
-          />
-        );
-      })}
+      {/* Sièges */}
+      {seatNodes}
     </Group>
   );
 }
