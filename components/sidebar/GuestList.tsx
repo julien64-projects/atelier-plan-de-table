@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useGuestState, useGuestDispatch, useUnassignedGuests } from '@/lib/store/guestStore';
+import { useGuestState, useGuestDispatch, useUnassignedGuests, type GuestOnPlan } from '@/lib/store/guestStore';
 import { useRoomState } from '@/lib/store/roomStore';
 
 export default function GuestList() {
@@ -10,12 +10,23 @@ export default function GuestList() {
   const { tables } = useRoomState();
   const unassigned = useUnassignedGuests();
   const [nom, setNom] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulk, setBulk] = useState('');
 
   const handleAdd = () => {
     const trimmed = nom.trim();
     if (!trimmed) return;
     dispatch({ type: 'ADD_GUEST', nom: trimmed });
     setNom('');
+  };
+
+  const handleBulk = () => {
+    const noms = bulk.split('\n').map(l => l.trim()).filter(Boolean);
+    if (noms.length === 0) return;
+    dispatch({ type: 'ADD_GUESTS', noms });
+    setBulk('');
+    setBulkOpen(false);
   };
 
   const tableNom = (guestId: string) => {
@@ -25,10 +36,102 @@ export default function GuestList() {
   };
 
   const assigned = guests.filter(g => assignments[g.id]);
+  const nbAConfirmer = guests.filter(g => g.aConfirmer).length;
+  const nbMaries = guests.filter(g => g.marie).length;
+
+  const renderGuest = (g: GuestOnPlan, place: boolean) => {
+    const isEditing = editingId === g.id;
+    return (
+      <li key={g.id} className="rounded hover:bg-gray-50">
+        <div className="flex items-center justify-between px-2 py-1 text-sm">
+          <div className="flex items-center gap-1.5 min-w-0">
+            {g.marie && <span title="Marié·e">💍</span>}
+            <span className={`truncate ${place ? 'text-gray-800' : 'text-gray-600 italic'}`}>{g.nom}</span>
+            {g.aConfirmer && (
+              <span className="px-1 py-0.5 text-[10px] rounded bg-amber-100 text-amber-700 whitespace-nowrap">à confirmer</span>
+            )}
+            {g.menu && (
+              <span className="px-1 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500 whitespace-nowrap">{g.menu}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            {place && <span className="text-xs text-gray-400">{tableNom(g.id)}</span>}
+            <button
+              onClick={() => setEditingId(isEditing ? null : g.id)}
+              className={`px-1.5 py-0.5 text-xs rounded ${isEditing ? 'bg-gray-300 text-gray-700' : 'text-gray-400 hover:bg-gray-200'}`}
+              title="Modifier"
+            >
+              ✎
+            </button>
+            {place ? (
+              <button
+                onClick={() => dispatch({ type: 'UNASSIGN_GUEST', guestId: g.id })}
+                className="px-2 py-0.5 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+              >
+                Retirer
+              </button>
+            ) : (
+              <button
+                onClick={() => dispatch({ type: 'START_PLACEMENT', guestId: g.id })}
+                className={`px-2 py-0.5 text-xs rounded ${
+                  placementMode.guestId === g.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                Placer
+              </button>
+            )}
+            <button
+              onClick={() => dispatch({ type: 'REMOVE_GUEST', id: g.id })}
+              className="text-gray-400 hover:text-red-500 text-xs"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        {isEditing && (
+          <div className="px-2 pb-2 space-y-2">
+            <input
+              type="text"
+              value={g.menu ?? ''}
+              onChange={e => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { menu: e.target.value || undefined } })}
+              placeholder="Menu (ex : Végétarien, Enfant…)"
+              className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+            />
+            <div className="flex gap-3 text-xs text-gray-600">
+              <label className="flex items-center gap-1">
+                <input
+                  type="checkbox"
+                  checked={!!g.marie}
+                  onChange={e => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { marie: e.target.checked } })}
+                />
+                Marié·e
+              </label>
+              <label className="flex items-center gap-1">
+                <input
+                  type="checkbox"
+                  checked={!!g.aConfirmer}
+                  onChange={e => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { aConfirmer: e.target.checked } })}
+                />
+                À confirmer
+              </label>
+            </div>
+          </div>
+        )}
+      </li>
+    );
+  };
 
   return (
     <div className="space-y-3">
-      <h2 className="text-base font-semibold text-gray-700">Invités ({guests.length})</h2>
+      <div className="flex items-baseline justify-between">
+        <h2 className="text-base font-semibold text-gray-700">Invités ({guests.length})</h2>
+        <span className="text-xs text-gray-400">
+          {nbMaries > 0 && `${nbMaries} marié·e${nbMaries > 1 ? 's' : ''}`}
+          {nbMaries > 0 && nbAConfirmer > 0 && ' · '}
+          {nbAConfirmer > 0 && `${nbAConfirmer} à confirmer`}
+        </span>
+      </div>
 
       {/* Ajout */}
       <div className="flex gap-2">
@@ -46,6 +149,33 @@ export default function GuestList() {
         >
           Ajouter
         </button>
+      </div>
+
+      {/* Import en masse */}
+      <div>
+        <button
+          onClick={() => setBulkOpen(o => !o)}
+          className="text-xs text-gray-500 hover:text-gray-700 underline"
+        >
+          {bulkOpen ? 'Fermer' : 'Coller une liste'}
+        </button>
+        {bulkOpen && (
+          <div className="mt-1 space-y-1">
+            <textarea
+              value={bulk}
+              onChange={e => setBulk(e.target.value)}
+              placeholder="Un nom par ligne"
+              rows={4}
+              className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+            />
+            <button
+              onClick={handleBulk}
+              className="w-full px-3 py-1 text-sm bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+            >
+              Ajouter tout
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Avertissement de dépassement */}
@@ -72,31 +202,7 @@ export default function GuestList() {
       {unassigned.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Non placés ({unassigned.length})</h3>
-          <ul className="space-y-1">
-            {unassigned.map(g => (
-              <li key={g.id} className="flex items-center justify-between px-2 py-1 text-sm rounded hover:bg-gray-50">
-                <span className="text-gray-600 italic">{g.nom}</span>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => dispatch({ type: 'START_PLACEMENT', guestId: g.id })}
-                    className={`px-2 py-0.5 text-xs rounded ${
-                      placementMode.guestId === g.id
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    Placer
-                  </button>
-                  <button
-                    onClick={() => dispatch({ type: 'REMOVE_GUEST', id: g.id })}
-                    className="text-gray-400 hover:text-red-500 text-xs"
-                  >
-                    ×
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <ul className="space-y-0.5">{unassigned.map(g => renderGuest(g, false))}</ul>
         </div>
       )}
 
@@ -104,22 +210,7 @@ export default function GuestList() {
       {assigned.length > 0 && (
         <div>
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Placés ({assigned.length})</h3>
-          <ul className="space-y-1">
-            {assigned.map(g => (
-              <li key={g.id} className="flex items-center justify-between px-2 py-1 text-sm rounded hover:bg-gray-50">
-                <span className="text-gray-800">{g.nom}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400">{tableNom(g.id)}</span>
-                  <button
-                    onClick={() => dispatch({ type: 'UNASSIGN_GUEST', guestId: g.id })}
-                    className="text-gray-400 hover:text-red-500 text-xs"
-                  >
-                    ×
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+          <ul className="space-y-0.5">{assigned.map(g => renderGuest(g, true))}</ul>
         </div>
       )}
     </div>
