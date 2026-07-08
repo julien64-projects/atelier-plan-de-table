@@ -127,13 +127,14 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           return (
             <Text
               key={g.id}
-              text={truncate(g.nom, 10)}
+              text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 10)}`}
               x={gx - 30}
               y={gy - 5}
               width={60}
               align="center"
               fontSize={10}
-              fill="#555"
+              fontStyle={g.aConfirmer ? 'italic' : 'normal'}
+              fill={g.aConfirmer ? '#b45309' : '#555'}
               listening={false}
             />
           );
@@ -191,13 +192,14 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         return (
           <Text
             key={g.id}
-            text={truncate(g.nom, 10)}
+            text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 10)}`}
             x={gx - 30}
             y={gy - 5}
             width={60}
             align="center"
             fontSize={10}
-            fill="#555"
+            fontStyle={g.aConfirmer ? 'italic' : 'normal'}
+            fill={g.aConfirmer ? '#b45309' : '#555'}
             listening={false}
           />
         );
