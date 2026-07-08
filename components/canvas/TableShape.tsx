@@ -89,11 +89,19 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
 
   const placing = placementMode.active && placementMode.guestId;
 
+  // Rotation appliquée aux positions de sièges (les libellés restent droits)
+  const rotRad = ((table.rot ?? 0) * Math.PI) / 180;
+  const cosR = Math.cos(rotRad);
+  const sinR = Math.sin(rotRad);
+
   const seatNodes = seats.map(seat => {
     const g = seatMap[seat.index];
     const occupied = !!g;
-    const lx = seat.x + Math.cos(seat.angle) * 15;
-    const ly = seat.y + Math.sin(seat.angle) * 15;
+    const sx = seat.x * cosR - seat.y * sinR;
+    const sy = seat.x * sinR + seat.y * cosR;
+    const dir = seat.angle + rotRad;
+    const lx = sx + Math.cos(dir) * 15;
+    const ly = sy + Math.sin(dir) * 15;
     const onSeatClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (placing && placementMode.guestId) {
         e.cancelBubble = true;
@@ -103,8 +111,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     return (
       <Group key={seat.index} listening={!!placing} onClick={onSeatClick} onTap={onSeatClick}>
         <Circle
-          x={seat.x}
-          y={seat.y}
+          x={sx}
+          y={sy}
           radius={11}
           fill={occupied ? '#d9c7a8' : '#f3eee4'}
           stroke={placing ? '#2563eb' : occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
@@ -176,16 +184,18 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
   const h = table.largeurCm ?? 90;
   return (
     <Group {...groupProps}>
-      <Rect
-        x={-w / 2}
-        y={-h / 2}
-        width={w}
-        height={h}
-        fill="#e8dcc8"
-        stroke={strokeColor}
-        strokeWidth={strokeW}
-        cornerRadius={4}
-      />
+      <Group rotation={table.rot}>
+        <Rect
+          x={-w / 2}
+          y={-h / 2}
+          width={w}
+          height={h}
+          fill="#e8dcc8"
+          stroke={strokeColor}
+          strokeWidth={strokeW}
+          cornerRadius={4}
+        />
+      </Group>
       <Text
         text={table.nom}
         x={-w / 2}

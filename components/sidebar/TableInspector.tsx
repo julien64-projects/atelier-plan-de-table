@@ -98,6 +98,30 @@ export default function TableInspector() {
         </label>
       )}
 
+      {/* Rotation (tables droites) */}
+      {!estRonde && (
+        <div>
+          <label className="text-sm text-gray-500">Rotation</label>
+          <div className="mt-1 flex items-center gap-2">
+            <button
+              onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: (table.rot + 90) % 360 } })}
+              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+            >
+              Pivoter 90°
+            </button>
+            {table.rot !== 0 && (
+              <button
+                onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: 0 } })}
+                className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700"
+              >
+                Réinitialiser
+              </button>
+            )}
+            <span className="text-sm text-gray-500 ml-auto">{table.rot}°</span>
+          </div>
+        </div>
+      )}
+
       {/* Confort */}
       <div>
         <label className="text-sm text-gray-500">Confort</label>
