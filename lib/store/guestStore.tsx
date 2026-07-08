@@ -12,9 +12,14 @@ export interface GuestOnPlan {
 
 export type GuestFields = Omit<GuestOnPlan, 'id'>;
 
+export interface Assignment {
+  tableId: string;
+  seatIndex: number;
+}
+
 interface GuestState {
   guests: GuestOnPlan[];
-  assignments: Record<string, string>; // guestId -> tableId
+  assignments: Record<string, Assignment>; // guestId -> siège
   placementMode: { active: boolean; guestId: string | null };
   warning: string | null;
 }
@@ -24,7 +29,7 @@ type GuestAction =
   | { type: 'ADD_GUESTS'; noms: string[] }
   | { type: 'UPDATE_GUEST'; id: string; changes: Partial<GuestFields> }
   | { type: 'REMOVE_GUEST'; id: string }
-  | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string; warning?: string | null }
+  | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string; seatIndex: number; warning?: string | null }
   | { type: 'UNASSIGN_GUEST'; guestId: string }
   | { type: 'START_PLACEMENT'; guestId: string }
   | { type: 'CANCEL_PLACEMENT' }
@@ -67,13 +72,22 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
           : state.placementMode,
       };
     }
-    case 'ASSIGN_GUEST':
+    case 'ASSIGN_GUEST': {
+      // Libère le siège visé s'il est déjà occupé par un autre invité
+      const assignments = { ...state.assignments };
+      for (const [gid, a] of Object.entries(assignments)) {
+        if (gid !== action.guestId && a.tableId === action.tableId && a.seatIndex === action.seatIndex) {
+          delete assignments[gid];
+        }
+      }
+      assignments[action.guestId] = { tableId: action.tableId, seatIndex: action.seatIndex };
       return {
         ...state,
-        assignments: { ...state.assignments, [action.guestId]: action.tableId },
+        assignments,
         placementMode: { active: false, guestId: null },
         warning: action.warning ?? null,
       };
+    }
     case 'UNASSIGN_GUEST': {
       const { [action.guestId]: _, ...rest } = state.assignments;
       return { ...state, assignments: rest };
@@ -114,9 +128,22 @@ export function useGuestDispatch() {
 export function useGuestsForTable(tableId: string): GuestOnPlan[] {
   const { guests, assignments } = useContext(GuestStateContext);
   return useMemo(
-    () => guests.filter(g => assignments[g.id] === tableId),
+    () => guests.filter(g => assignments[g.id]?.tableId === tableId),
     [guests, assignments, tableId],
   );
+}
+
+/** Association siège → invité pour une table donnée. */
+export function useSeatMap(tableId: string): Record<number, GuestOnPlan> {
+  const { guests, assignments } = useContext(GuestStateContext);
+  return useMemo(() => {
+    const map: Record<number, GuestOnPlan> = {};
+    for (const g of guests) {
+      const a = assignments[g.id];
+      if (a && a.tableId === tableId) map[a.seatIndex] = g;
+    }
+    return map;
+  }, [guests, assignments, tableId]);
 }
 
 export function useUnassignedGuests(): GuestOnPlan[] {

@@ -3,6 +3,7 @@ import {
   positionsSiegesRonde,
   positionsSiegesDroite,
   ordonnerDepuisCentre,
+  premierSiegeLibre,
   SIEGE_OFFSET,
 } from '@/lib/geometry/seatGeometry';
 
@@ -48,6 +49,19 @@ describe('positionsSiegesDroite', () => {
     const yOff = 90 / 2 + SIEGE_OFFSET;
     expect(sieges.filter(s => s.y < 0)).toHaveLength(4);
     expect(sieges.filter(s => s.y > 0)).toHaveLength(3);
+  });
+});
+
+describe('premierSiegeLibre', () => {
+  it('renvoie 0 quand rien n’est occupé', () => {
+    expect(premierSiegeLibre([])).toBe(0);
+  });
+  it('renvoie le plus petit trou', () => {
+    expect(premierSiegeLibre([0, 1, 3])).toBe(2);
+    expect(premierSiegeLibre([2, 0, 1])).toBe(3);
+  });
+  it('déborde au-delà du dernier occupé quand tout est plein', () => {
+    expect(premierSiegeLibre([0, 1, 2])).toBe(3);
   });
 });
 

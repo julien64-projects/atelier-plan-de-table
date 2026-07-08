@@ -5,9 +5,9 @@ import { Group, Circle, Rect, Text } from 'react-konva';
 import type Konva from 'konva';
 import type { TableOnPlan } from '@/lib/store/types';
 import { etatCapacite, empreinte } from '@/lib/geometry/tableGeometry';
-import { positionsSiegesRonde, positionsSiegesDroite, type SeatPos } from '@/lib/geometry/seatGeometry';
+import { positionsSiegesRonde, positionsSiegesDroite, premierSiegeLibre, type SeatPos } from '@/lib/geometry/seatGeometry';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
-import { useGuestState, useGuestDispatch, useGuestsForTable } from '@/lib/store/guestStore';
+import { useGuestState, useGuestDispatch, useGuestsForTable, useSeatMap } from '@/lib/store/guestStore';
 
 const BADGE_COLORS = {
   ok: '#22c55e',
@@ -26,6 +26,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
   const { placementMode } = useGuestState();
   const guestDispatch = useGuestDispatch();
   const assignedGuests = useGuestsForTable(table.id);
+  const seatMap = useSeatMap(table.id);
   const nbAssis = assignedGuests.length;
   const isSelected = selectedTableId === table.id;
 
@@ -54,14 +55,15 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
 
   const handleClick = useCallback(() => {
     if (placementMode.active && placementMode.guestId) {
-      const warning = nbAssis + 1 > etat.max
+      const seatIndex = premierSiegeLibre(Object.keys(seatMap).map(Number));
+      const warning = seatIndex >= etat.max
         ? `${table.nom} est pleine (max ${etat.max}) — invité placé en dépassement.`
         : null;
-      guestDispatch({ type: 'ASSIGN_GUEST', guestId: placementMode.guestId, tableId: table.id, warning });
+      guestDispatch({ type: 'ASSIGN_GUEST', guestId: placementMode.guestId, tableId: table.id, seatIndex, warning });
     } else {
       dispatch({ type: 'SELECT_TABLE', id: table.id });
     }
-  }, [dispatch, guestDispatch, table.id, table.nom, placementMode, nbAssis, etat.max]);
+  }, [dispatch, guestDispatch, table.id, table.nom, placementMode, seatMap, etat.max]);
 
   const handleMouseEnter = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {
     const container = e.target.getStage()?.container();
@@ -86,7 +88,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     : positionsSiegesDroite(table.longueurCm ?? 180, etat.max, { largeurCm: table.largeurCm, bouts: table.bouts });
 
   const seatNodes = seats.map(seat => {
-    const g = assignedGuests[seat.index];
+    const g = seatMap[seat.index];
     const occupied = !!g;
     const lx = seat.x + Math.cos(seat.angle) * 15;
     const ly = seat.y + Math.sin(seat.angle) * 15;

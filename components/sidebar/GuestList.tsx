@@ -30,9 +30,9 @@ export default function GuestList() {
   };
 
   const tableNom = (guestId: string) => {
-    const tableId = assignments[guestId];
-    if (!tableId) return null;
-    return tables.find(t => t.id === tableId)?.nom ?? '?';
+    const a = assignments[guestId];
+    if (!a) return null;
+    return tables.find(t => t.id === a.tableId)?.nom ?? '?';
   };
 
   const assigned = guests.filter(g => assignments[g.id]);

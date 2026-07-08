@@ -96,6 +96,17 @@ export function positionsSiegesDroite(
 }
 
 /**
+ * Plus petit indice de siège libre (≥ 0) sachant les sièges déjà occupés.
+ * Renvoie 0..max-1 tant qu'une place existe, puis des indices de débordement.
+ */
+export function premierSiegeLibre(occupes: Iterable<number>): number {
+  const set = new Set(occupes);
+  let i = 0;
+  while (set.has(i)) i++;
+  return i;
+}
+
+/**
  * Ordonne des sièges du plus central au plus extérieur (banquet des mariés).
  * Les mariés occupent le centre ; toute place ajoutée se décale vers
  * l'extérieur sans jamais traverser le centre.
