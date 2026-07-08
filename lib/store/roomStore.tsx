@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useReducer, type Dispatch, type ReactNode } from 'react';
-import type { RoomState, TableOnPlan } from './types';
+import type { RoomState, TableOnPlan, DecorOnPlan } from './types';
 
 // --- Actions ---
 
@@ -11,6 +11,11 @@ type Action =
   | { type: 'REMOVE_TABLE'; id: string }
   | { type: 'SELECT_TABLE'; id: string | null }
   | { type: 'UPDATE_TABLE'; id: string; changes: Partial<TableOnPlan> }
+  | { type: 'ADD_DECOR'; decor: DecorOnPlan }
+  | { type: 'MOVE_DECOR'; id: string; x: number; y: number }
+  | { type: 'REMOVE_DECOR'; id: string }
+  | { type: 'SELECT_DECOR'; id: string | null }
+  | { type: 'UPDATE_DECOR'; id: string; changes: Partial<DecorOnPlan> }
   | { type: 'SET_ROOM_SIZE'; largeurCm: number; hauteurCm: number };
 
 // --- Initial state ---
@@ -23,7 +28,9 @@ const initialState: RoomState = {
     { id: 'seed-2', nom: 'Table 2', shape: 'ronde', diametreCm: 180, confort: 'standard', bouts: false, pos_x: 900, pos_y: 400, rot: 0 },
     { id: 'seed-3', nom: 'Table 3', shape: 'rect', longueurCm: 240, largeurCm: 90, confort: 'standard', bouts: false, pos_x: 700, pos_y: 800, rot: 0 },
   ],
+  decors: [],
   selectedTableId: null,
+  selectedDecorId: null,
   nextTableNumber: 4,
 };
 
@@ -51,12 +58,41 @@ function roomReducer(state: RoomState, action: Action): RoomState {
         selectedTableId: state.selectedTableId === action.id ? null : state.selectedTableId,
       };
     case 'SELECT_TABLE':
-      return { ...state, selectedTableId: action.id };
+      return { ...state, selectedTableId: action.id, selectedDecorId: null };
     case 'UPDATE_TABLE':
       return {
         ...state,
         tables: state.tables.map(t =>
           t.id === action.id ? { ...t, ...action.changes } : t
+        ),
+      };
+    case 'ADD_DECOR':
+      return {
+        ...state,
+        decors: [...state.decors, action.decor],
+        selectedDecorId: action.decor.id,
+        selectedTableId: null,
+      };
+    case 'MOVE_DECOR':
+      return {
+        ...state,
+        decors: state.decors.map(d =>
+          d.id === action.id ? { ...d, pos_x: action.x, pos_y: action.y } : d
+        ),
+      };
+    case 'REMOVE_DECOR':
+      return {
+        ...state,
+        decors: state.decors.filter(d => d.id !== action.id),
+        selectedDecorId: state.selectedDecorId === action.id ? null : state.selectedDecorId,
+      };
+    case 'SELECT_DECOR':
+      return { ...state, selectedDecorId: action.id, selectedTableId: null };
+    case 'UPDATE_DECOR':
+      return {
+        ...state,
+        decors: state.decors.map(d =>
+          d.id === action.id ? { ...d, ...action.changes } : d
         ),
       };
     case 'SET_ROOM_SIZE':

@@ -14,10 +14,23 @@ export interface TableOnPlan {
   rot: number;
 }
 
+export interface DecorOnPlan {
+  id: string;
+  type: string;
+  label: string;
+  pos_x: number;
+  pos_y: number;
+  w_cm: number;
+  h_cm: number;
+  rot: number;
+}
+
 export interface RoomState {
   salleLargeurCm: number;
   salleHauteurCm: number;
   tables: TableOnPlan[];
+  decors: DecorOnPlan[];
   selectedTableId: string | null;
+  selectedDecorId: string | null;
   nextTableNumber: number;
 }
