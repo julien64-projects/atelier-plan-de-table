@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { Group, Circle, Rect, Text } from 'react-konva';
 import type Konva from 'konva';
 import type { TableOnPlan } from '@/lib/store/types';
-import { etatCapacite, empreinte } from '@/lib/geometry/tableGeometry';
+import { etatCapacite, empreinteTournee } from '@/lib/geometry/tableGeometry';
 import { positionsSiegesRonde, positionsSiegesDroite, premierSiegeLibre, type SeatPos } from '@/lib/geometry/seatGeometry';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch, useGuestsForTable, useSeatMap } from '@/lib/store/guestStore';
@@ -40,7 +40,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
   };
   const etat = etatCapacite(tableInput, nbAssis);
   const badgeColor = BADGE_COLORS[etat.niveau];
-  const emp = empreinte(tableInput);
+  const emp = empreinteTournee(tableInput, table.rot);
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
     // Clamp dans les limites de la salle

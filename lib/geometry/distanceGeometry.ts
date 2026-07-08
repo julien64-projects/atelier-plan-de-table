@@ -3,7 +3,7 @@
  * Utilise empreinte() et alleeSuffisante() du moteur existant.
  */
 
-import { empreinte, alleeSuffisante } from './tableGeometry';
+import { empreinteTournee, alleeSuffisante } from './tableGeometry';
 import type { TableOnPlan } from '@/lib/store/types';
 import type { ResultatAllee } from '@/lib/types';
 
@@ -20,8 +20,8 @@ export interface DistanceResult {
  * Pour les rect (sans rotation) : gap entre bounding boxes axis-aligned.
  */
 export function distanceBordABord(a: TableOnPlan, b: TableOnPlan): DistanceResult {
-  const empA = empreinte(a);
-  const empB = empreinte(b);
+  const empA = empreinteTournee(a, a.rot);
+  const empB = empreinteTournee(b, b.rot);
 
   // Demi-dimensions des empreintes
   const halfAx = empA.largeurCm / 2;
@@ -141,7 +141,7 @@ export function distanceAuxMurs(
   salleLargeurCm: number,
   salleHauteurCm: number,
 ): DistanceMur[] {
-  const emp = empreinte(table);
+  const emp = empreinteTournee(table, table.rot);
   const halfW = emp.largeurCm / 2;
   const halfH = emp.profondeurCm / 2;
 

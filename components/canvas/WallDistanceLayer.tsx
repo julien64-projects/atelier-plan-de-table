@@ -3,7 +3,7 @@
 import { Fragment } from 'react';
 import { Layer, Line, Text } from 'react-konva';
 import { useRoomState } from '@/lib/store/roomStore';
-import { empreinte } from '@/lib/geometry/tableGeometry';
+import { empreinteTournee } from '@/lib/geometry/tableGeometry';
 import { distanceAuxMurs, type Mur } from '@/lib/geometry/distanceGeometry';
 
 const enM = (cm: number) => (cm / 100).toFixed(2).replace('.', ',');
@@ -13,7 +13,7 @@ export default function WallDistanceLayer() {
   const table = tables.find(t => t.id === selectedTableId);
   if (!table) return <Layer listening={false} />;
 
-  const emp = empreinte(table);
+  const emp = empreinteTournee(table, table.rot);
   const halfW = emp.largeurCm / 2;
   const halfH = emp.profondeurCm / 2;
   const murs = distanceAuxMurs(table, salleLargeurCm, salleHauteurCm);

@@ -105,6 +105,19 @@ describe('distanceAuxMurs', () => {
     expect(murs.filter(m => !m.allee.ok).length).toBe(1);
   });
 
+  it('rotation 90° échange les distances (empreinte pivotée)', () => {
+    // rect 240×90 → empreinte 240×190 ; tournée 90° → 190×240
+    const t: TableOnPlan = {
+      id: 't', nom: 't', shape: 'rect', longueurCm: 240, largeurCm: 90,
+      confort: 'standard', bouts: false, pos_x: 1000, pos_y: 750, rot: 90,
+    };
+    const murs = distanceAuxMurs(t, 2000, 1500);
+    // halfW = 190/2 = 95 → gauche = 1000 - 95 = 905
+    expect(murs.find(m => m.mur === 'gauche')!.distanceCm).toBeCloseTo(905, 0);
+    // halfH = 240/2 = 120 → haut = 750 - 120 = 630
+    expect(murs.find(m => m.mur === 'haut')!.distanceCm).toBeCloseTo(630, 0);
+  });
+
   it('empreinte qui dépasse la salle → distance négative', () => {
     const t = makeRonde('a', 150, 100, 750); // gauche = 100 - 125 = -25
     const gauche = distanceAuxMurs(t, 2000, 1500).find(m => m.mur === 'gauche')!;
