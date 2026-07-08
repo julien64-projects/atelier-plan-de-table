@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { distanceBordABord, alleesInsuffisantes } from '@/lib/geometry/distanceGeometry';
+import {
+  distanceBordABord,
+  alleesInsuffisantes,
+  distanceAuxMurs,
+  tablesTropPresMur,
+} from '@/lib/geometry/distanceGeometry';
 import { CHAISE_PROFONDEUR } from '@/lib/geometry/tableGeometry';
 import type { TableOnPlan } from '@/lib/store/types';
 
@@ -79,5 +84,43 @@ describe('alleesInsuffisantes', () => {
     const a = makeRonde('a', 150, 0, 0);
     const b = makeRonde('b', 150, 500, 0); // gap 250 → OK
     expect(alleesInsuffisantes([a, b])).toEqual([]);
+  });
+});
+
+describe('distanceAuxMurs', () => {
+  // Salle 2000×1500 ; ronde Ø150 → empreinte 250, demi = 125
+  it('table centrée : les 4 murs sont OK', () => {
+    const t = makeRonde('a', 150, 1000, 750);
+    const murs = distanceAuxMurs(t, 2000, 1500);
+    expect(murs.every(m => m.allee.ok)).toBe(true);
+    expect(murs.find(m => m.mur === 'gauche')!.distanceCm).toBeCloseTo(875, 0);
+  });
+
+  it('table trop près du mur gauche', () => {
+    const t = makeRonde('a', 150, 200, 750); // gauche = 200 - 125 = 75
+    const murs = distanceAuxMurs(t, 2000, 1500);
+    const gauche = murs.find(m => m.mur === 'gauche')!;
+    expect(gauche.distanceCm).toBeCloseTo(75, 0);
+    expect(gauche.allee.ok).toBe(false);
+    expect(murs.filter(m => !m.allee.ok).length).toBe(1);
+  });
+
+  it('empreinte qui dépasse la salle → distance négative', () => {
+    const t = makeRonde('a', 150, 100, 750); // gauche = 100 - 125 = -25
+    const gauche = distanceAuxMurs(t, 2000, 1500).find(m => m.mur === 'gauche')!;
+    expect(gauche.distanceCm).toBeCloseTo(-25, 0);
+    expect(gauche.allee.ok).toBe(false);
+  });
+});
+
+describe('tablesTropPresMur', () => {
+  it('ne retourne que les tables trop proches, triées', () => {
+    const proche = makeRonde('proche', 150, 200, 750); // gauche 75
+    const centre = makeRonde('centre', 150, 1000, 750); // OK
+    const res = tablesTropPresMur([proche, centre], 2000, 1500);
+    expect(res.length).toBe(1);
+    expect(res[0].tableId).toBe('proche');
+    expect(res[0].mur).toBe('gauche');
+    expect(res[0].distanceCm).toBeCloseTo(75, 0);
   });
 });

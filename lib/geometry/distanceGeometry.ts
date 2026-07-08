@@ -112,3 +112,76 @@ export function alleesInsuffisantes(tables: TableOnPlan[]): PaireDistance[] {
     .filter(p => !p.result.allee.ok)
     .sort((x, y) => x.result.distanceCm - y.result.distanceCm);
 }
+
+export type Mur = 'gauche' | 'droite' | 'haut' | 'bas';
+
+export interface DistanceMur {
+  mur: Mur;
+  distanceCm: number;
+  allee: ResultatAllee;
+}
+
+const LIBELLE_MUR: Record<Mur, string> = {
+  gauche: 'mur gauche',
+  droite: 'mur droit',
+  haut: 'mur du haut',
+  bas: 'mur du bas',
+};
+
+export function libelleMur(mur: Mur): string {
+  return LIBELLE_MUR[mur];
+}
+
+/**
+ * Distance bord-à-bord (empreinte comprise) entre une table et les 4 murs.
+ * Une distance négative signifie que l'empreinte dépasse hors de la salle.
+ */
+export function distanceAuxMurs(
+  table: TableOnPlan,
+  salleLargeurCm: number,
+  salleHauteurCm: number,
+): DistanceMur[] {
+  const emp = empreinte(table);
+  const halfW = emp.largeurCm / 2;
+  const halfH = emp.profondeurCm / 2;
+
+  const bruts: { mur: Mur; distanceCm: number }[] = [
+    { mur: 'gauche', distanceCm: table.pos_x - halfW },
+    { mur: 'droite', distanceCm: salleLargeurCm - table.pos_x - halfW },
+    { mur: 'haut', distanceCm: table.pos_y - halfH },
+    { mur: 'bas', distanceCm: salleHauteurCm - table.pos_y - halfH },
+  ];
+
+  return bruts.map(({ mur, distanceCm }) => ({
+    mur,
+    distanceCm,
+    allee: alleeSuffisante(Math.max(0, distanceCm), 'service'),
+  }));
+}
+
+export interface MurInsuffisant {
+  tableId: string;
+  tableNom: string;
+  mur: Mur;
+  distanceCm: number;
+}
+
+/**
+ * Tables dont au moins un côté est trop près d'un mur (< 120 cm),
+ * triées de la plus proche à la moins proche.
+ */
+export function tablesTropPresMur(
+  tables: TableOnPlan[],
+  salleLargeurCm: number,
+  salleHauteurCm: number,
+): MurInsuffisant[] {
+  const out: MurInsuffisant[] = [];
+  for (const t of tables) {
+    for (const d of distanceAuxMurs(t, salleLargeurCm, salleHauteurCm)) {
+      if (!d.allee.ok) {
+        out.push({ tableId: t.id, tableNom: t.nom, mur: d.mur, distanceCm: d.distanceCm });
+      }
+    }
+  }
+  return out.sort((a, b) => a.distanceCm - b.distanceCm);
+}
