@@ -152,6 +152,26 @@ export function alleeSuffisante(distanceBordCm: number, type: 'service' | 'invit
   return { ok: distanceBordCm >= mini, mini, manque: Math.max(0, mini - distanceBordCm) };
 }
 
+/**
+ * Boîte englobante axis-aligned de l'empreinte une fois la table pivotée.
+ * Les rondes sont invariantes par rotation (leur empreinte est un disque).
+ * Pour les tables droites, l'AABB d'un rectangle w×h tourné de θ vaut
+ * (w·|cosθ| + h·|sinθ|) × (w·|sinθ| + h·|cosθ|). Aux angles non droits, cette
+ * AABB majore l'empreinte réelle : l'estimation de distance est donc prudente.
+ */
+export function empreinteTournee(table: TableInput, rotDeg: number = 0): Empreinte {
+  const base = empreinte(table);
+  const rot = rotDeg % 360;
+  if (table.shape === 'ronde' || rot === 0) return base;
+  const rad = (rot * Math.PI) / 180;
+  const c = Math.abs(Math.cos(rad));
+  const s = Math.abs(Math.sin(rad));
+  return {
+    largeurCm: base.largeurCm * c + base.profondeurCm * s,
+    profondeurCm: base.largeurCm * s + base.profondeurCm * c,
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /*  RÉFÉRENTIEL DE TAILLES STANDARD (pour l'UI / le catalogue)         */
 /* ------------------------------------------------------------------ */

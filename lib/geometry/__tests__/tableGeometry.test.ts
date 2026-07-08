@@ -5,6 +5,7 @@ import {
   dimensionnerPour,
   etatCapacite,
   empreinte,
+  empreinteTournee,
   alleeSuffisante,
   CHAISE_PROFONDEUR,
   RECT_LARGEUR_STD,
@@ -70,6 +71,37 @@ describe('empreinte', () => {
     const e = empreinte({ shape: 'rect', longueurCm: 240, largeurCm: 90 });
     expect(e.largeurCm).toBe(240);
     expect(e.profondeurCm).toBe(90 + 2 * CHAISE_PROFONDEUR);
+  });
+});
+
+describe('empreinteTournee', () => {
+  const rect = { shape: 'rect' as const, longueurCm: 240, largeurCm: 90 };
+  // empreinte de base : 240 × (90 + 2×50) = 240 × 190
+
+  it('rot 0 → identique à empreinte', () => {
+    const e = empreinteTournee(rect, 0);
+    expect(e.largeurCm).toBeCloseTo(240, 5);
+    expect(e.profondeurCm).toBeCloseTo(190, 5);
+  });
+
+  it('rot 90 → dimensions échangées', () => {
+    const e = empreinteTournee(rect, 90);
+    expect(e.largeurCm).toBeCloseTo(190, 5);
+    expect(e.profondeurCm).toBeCloseTo(240, 5);
+  });
+
+  it('rot 45 → AABC élargie et carrée', () => {
+    const e = empreinteTournee(rect, 45);
+    const attendu = (240 + 190) * Math.abs(Math.cos(Math.PI / 4));
+    expect(e.largeurCm).toBeCloseTo(attendu, 3);
+    expect(e.profondeurCm).toBeCloseTo(attendu, 3);
+  });
+
+  it('ronde : invariante par rotation', () => {
+    const base = empreinte({ shape: 'ronde', diametreCm: 150 });
+    const e = empreinteTournee({ shape: 'ronde', diametreCm: 150 }, 37);
+    expect(e.largeurCm).toBe(base.largeurCm);
+    expect(e.profondeurCm).toBe(base.profondeurCm);
   });
 });
 
