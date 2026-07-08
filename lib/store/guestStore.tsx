@@ -5,7 +5,12 @@ import { createContext, useContext, useReducer, useMemo, type Dispatch, type Rea
 export interface GuestOnPlan {
   id: string;
   nom: string;
+  menu?: string;
+  marie?: boolean;
+  aConfirmer?: boolean;
 }
+
+export type GuestFields = Omit<GuestOnPlan, 'id'>;
 
 interface GuestState {
   guests: GuestOnPlan[];
@@ -15,7 +20,9 @@ interface GuestState {
 }
 
 type GuestAction =
-  | { type: 'ADD_GUEST'; nom: string }
+  | { type: 'ADD_GUEST'; nom: string; fields?: Partial<GuestFields> }
+  | { type: 'ADD_GUESTS'; noms: string[] }
+  | { type: 'UPDATE_GUEST'; id: string; changes: Partial<GuestFields> }
   | { type: 'REMOVE_GUEST'; id: string }
   | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string; warning?: string | null }
   | { type: 'UNASSIGN_GUEST'; guestId: string }
@@ -35,7 +42,19 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
     case 'ADD_GUEST':
       return {
         ...state,
-        guests: [...state.guests, { id: crypto.randomUUID(), nom: action.nom }],
+        guests: [...state.guests, { id: crypto.randomUUID(), nom: action.nom, ...action.fields }],
+      };
+    case 'ADD_GUESTS': {
+      const nouveaux = action.noms
+        .map(n => n.trim())
+        .filter(Boolean)
+        .map(nom => ({ id: crypto.randomUUID(), nom }));
+      return { ...state, guests: [...state.guests, ...nouveaux] };
+    }
+    case 'UPDATE_GUEST':
+      return {
+        ...state,
+        guests: state.guests.map(g => (g.id === action.id ? { ...g, ...action.changes } : g)),
       };
     case 'REMOVE_GUEST': {
       const { [action.id]: _, ...rest } = state.assignments;
