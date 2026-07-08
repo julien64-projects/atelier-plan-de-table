@@ -8,6 +8,7 @@ import Grid from './Grid';
 import RoomBorder from './RoomBorder';
 import TablesLayer from './TablesLayer';
 import DistanceLinesLayer from './DistanceLinesLayer';
+import WallDistanceLayer from './WallDistanceLayer';
 
 const MIN_SCALE = 0.1;
 const MAX_SCALE = 3;
@@ -104,6 +105,7 @@ export default function RoomCanvas() {
         </Layer>
         <TablesLayer onHover={setHoveredTableId} />
         <DistanceLinesLayer hoveredTableId={hoveredTableId} />
+        <WallDistanceLayer />
       </Stage>
     </div>
   );
