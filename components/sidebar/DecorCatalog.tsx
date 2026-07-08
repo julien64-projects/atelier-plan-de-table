@@ -30,13 +30,13 @@ export default function DecorCatalog() {
         <button
           key={d.type}
           onClick={() => addDecor(d.type, d.label, d.wCm, d.hCm)}
-          className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+          className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-cream transition-colors"
         >
           <span className="flex items-center gap-2">
-            <span className="inline-block w-3 h-3 rounded-sm border border-gray-300" style={{ backgroundColor: d.couleur }} />
+            <span className="inline-block w-3 h-3 rounded-sm border border-line" style={{ backgroundColor: d.couleur }} />
             {d.label}
           </span>
-          <span className="text-gray-400">{d.wCm / 100} × {d.hCm / 100} m</span>
+          <span className="text-faint">{d.wCm / 100} × {d.hCm / 100} m</span>
         </button>
       ))}
     </div>

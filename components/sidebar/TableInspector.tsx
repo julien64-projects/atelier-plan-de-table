@@ -47,25 +47,25 @@ export default function TableInspector() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-base font-semibold text-gray-700">Table sélectionnée</h2>
+      <h2 className="text-base font-semibold text-ink">Table sélectionnée</h2>
 
       {/* Nom */}
       <div>
-        <label className="text-sm text-gray-500">Nom</label>
+        <label className="text-sm text-muted">Nom</label>
         <input
           type="text"
           value={table.nom}
           onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { nom: e.target.value } })}
-          className="mt-1 w-full px-2 py-1 text-sm border border-gray-300 rounded"
+          className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
         />
       </div>
 
       {/* Forme */}
-      <p className="text-sm text-gray-600"><span className="font-medium">Forme :</span> {shapeLabel}</p>
+      <p className="text-sm text-muted"><span className="font-medium">Forme :</span> {shapeLabel}</p>
 
       {/* Taille */}
       <div>
-        <label className="text-sm text-gray-500">
+        <label className="text-sm text-muted">
           {estRonde ? 'Diamètre (cm)' : 'Longueur (cm)'}
         </label>
         <input
@@ -82,13 +82,13 @@ export default function TableInspector() {
               changes: estRonde ? { diametreCm: v } : { longueurCm: v },
             });
           }}
-          className="mt-1 w-full px-2 py-1 text-sm border border-gray-300 rounded"
+          className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
         />
       </div>
 
       {/* Chaises en bout (tables droites) */}
       {!estRonde && (
-        <label className="flex items-center gap-2 text-sm text-gray-600">
+        <label className="flex items-center gap-2 text-sm text-muted">
           <input
             type="checkbox"
             checked={table.bouts}
@@ -101,30 +101,30 @@ export default function TableInspector() {
       {/* Rotation (tables droites) */}
       {!estRonde && (
         <div>
-          <label className="text-sm text-gray-500">Rotation</label>
+          <label className="text-sm text-muted">Rotation</label>
           <div className="mt-1 flex items-center gap-2">
             <button
               onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: (table.rot + 90) % 360 } })}
-              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100"
+              className="px-3 py-1 text-sm border border-line rounded hover:bg-cream"
             >
               Pivoter 90°
             </button>
             {table.rot !== 0 && (
               <button
                 onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: 0 } })}
-                className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700"
+                className="px-2 py-1 text-xs text-muted hover:text-ink"
               >
                 Réinitialiser
               </button>
             )}
-            <span className="text-sm text-gray-500 ml-auto">{table.rot}°</span>
+            <span className="text-sm text-muted ml-auto">{table.rot}°</span>
           </div>
         </div>
       )}
 
       {/* Confort */}
       <div>
-        <label className="text-sm text-gray-500">Confort</label>
+        <label className="text-sm text-muted">Confort</label>
         <div className="mt-1 flex gap-1">
           {CONFORTS.map(c => (
             <button
@@ -132,8 +132,8 @@ export default function TableInspector() {
               onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { confort: c.value } })}
               className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
                 table.confort === c.value
-                  ? 'bg-gray-800 text-white border-gray-800'
-                  : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+                  ? 'bg-terracotta text-white border-terracotta'
+                  : 'bg-white text-muted border-line hover:bg-cream'
               }`}
             >
               {c.label}
@@ -159,14 +159,14 @@ export default function TableInspector() {
       {/* Invités assignés */}
       {assignedGuests.length > 0 && (
         <div>
-          <h3 className="text-sm text-gray-500 mb-1">Invités ({assignedGuests.length})</h3>
+          <h3 className="text-sm text-muted mb-1">Invités ({assignedGuests.length})</h3>
           <ul className="space-y-1">
             {assignedGuests.map(g => (
-              <li key={g.id} className="flex items-center justify-between px-2 py-1 text-sm bg-gray-50 rounded">
+              <li key={g.id} className="flex items-center justify-between px-2 py-1 text-sm bg-cream rounded">
                 <span>{g.nom}</span>
                 <button
                   onClick={() => guestDispatch({ type: 'UNASSIGN_GUEST', guestId: g.id })}
-                  className="text-gray-400 hover:text-red-500 text-xs"
+                  className="text-faint hover:text-red-500 text-xs"
                 >
                   ×
                 </button>

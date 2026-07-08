@@ -41,8 +41,8 @@ export default function TableCatalog() {
   return (
     <div className="space-y-4">
       {/* Auto-dimensionnement */}
-      <div className="p-3 bg-gray-50 rounded-lg space-y-2">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Pour N convives</h3>
+      <div className="p-3 bg-cream rounded-lg space-y-2">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">Pour N convives</h3>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -50,7 +50,7 @@ export default function TableCatalog() {
             max={30}
             value={nbConvives}
             onChange={e => setNbConvives(Math.max(1, Number(e.target.value) || 1))}
-            className="w-16 px-2 py-1 text-sm border border-gray-300 rounded"
+            className="w-16 px-2 py-1 text-sm border border-line rounded"
           />
           <div className="flex gap-1">
             {(['ronde', 'rect'] as const).map(s => (
@@ -59,8 +59,8 @@ export default function TableCatalog() {
                 onClick={() => setFormeAuto(s)}
                 className={`px-2 py-1 text-xs rounded border transition-colors ${
                   formeAuto === s
-                    ? 'bg-gray-800 text-white border-gray-800'
-                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'
+                    ? 'bg-terracotta text-white border-terracotta'
+                    : 'bg-white text-muted border-line hover:bg-cream'
                 }`}
               >
                 {s === 'ronde' ? 'Ronde' : 'Droite'}
@@ -68,7 +68,7 @@ export default function TableCatalog() {
             ))}
           </div>
         </div>
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-faint">
           {apercu.shape === 'ronde'
             ? `Ø${apercu.diametreCm} cm`
             : `${apercu.longueurCm} × ${apercu.largeurCm} cm`}
@@ -76,38 +76,38 @@ export default function TableCatalog() {
         </p>
         <button
           onClick={() => addTablePour(nbConvives, formeAuto)}
-          className="w-full px-3 py-1.5 text-sm bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+          className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
           Créer la table
         </button>
       </div>
 
       <div>
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Rondes</h3>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-2">Rondes</h3>
         <div className="space-y-1">
           {TABLES_STANDARD.ronde.map(t => (
             <button
               key={t.diametreCm}
               onClick={() => addTable({ shape: 'ronde', diametreCm: t.diametreCm })}
-              className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-cream transition-colors"
             >
               <span>{t.label}</span>
-              <span className="text-gray-400">{capaciteRonde(t.diametreCm)} places</span>
+              <span className="text-faint">{capaciteRonde(t.diametreCm)} places</span>
             </button>
           ))}
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">Rectangulaires</h3>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-2">Rectangulaires</h3>
         <div className="space-y-1">
           {TABLES_STANDARD.droite.map(t => (
             <button
               key={t.longueurCm}
               onClick={() => addTable({ shape: 'rect', longueurCm: t.longueurCm, largeurCm: t.largeurCm })}
-              className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-cream transition-colors"
             >
               <span>{t.label}</span>
-              <span className="text-gray-400">{capaciteDroite(t.longueurCm)} places</span>
+              <span className="text-faint">{capaciteDroite(t.longueurCm)} places</span>
             </button>
           ))}
         </div>

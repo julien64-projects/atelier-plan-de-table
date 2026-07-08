@@ -42,23 +42,23 @@ export default function GuestList() {
   const renderGuest = (g: GuestOnPlan, place: boolean) => {
     const isEditing = editingId === g.id;
     return (
-      <li key={g.id} className="rounded hover:bg-gray-50">
+      <li key={g.id} className="rounded hover:bg-cream">
         <div className="flex items-center justify-between px-2 py-1 text-sm">
           <div className="flex items-center gap-1.5 min-w-0">
             {g.marie && <span title="Marié·e">💍</span>}
-            <span className={`truncate ${place ? 'text-gray-800' : 'text-gray-600 italic'}`}>{g.nom}</span>
+            <span className={`truncate ${place ? 'text-ink' : 'text-muted italic'}`}>{g.nom}</span>
             {g.aConfirmer && (
               <span className="px-1 py-0.5 text-[10px] rounded bg-amber-100 text-amber-700 whitespace-nowrap">à confirmer</span>
             )}
             {g.menu && (
-              <span className="px-1 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500 whitespace-nowrap">{g.menu}</span>
+              <span className="px-1 py-0.5 text-[10px] rounded bg-cream text-muted whitespace-nowrap">{g.menu}</span>
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
-            {place && <span className="text-xs text-gray-400">{tableNom(g.id)}</span>}
+            {place && <span className="text-xs text-faint">{tableNom(g.id)}</span>}
             <button
               onClick={() => setEditingId(isEditing ? null : g.id)}
-              className={`px-1.5 py-0.5 text-xs rounded ${isEditing ? 'bg-gray-300 text-gray-700' : 'text-gray-400 hover:bg-gray-200'}`}
+              className={`px-1.5 py-0.5 text-xs rounded ${isEditing ? 'bg-line text-ink' : 'text-faint hover:bg-line'}`}
               title="Modifier"
             >
               ✎
@@ -66,7 +66,7 @@ export default function GuestList() {
             {place ? (
               <button
                 onClick={() => dispatch({ type: 'UNASSIGN_GUEST', guestId: g.id })}
-                className="px-2 py-0.5 text-xs rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className="px-2 py-0.5 text-xs rounded bg-cream text-muted hover:bg-line"
               >
                 Retirer
               </button>
@@ -74,7 +74,7 @@ export default function GuestList() {
               <button
                 onClick={() => dispatch({ type: 'START_PLACEMENT', guestId: g.id })}
                 className={`px-2 py-0.5 text-xs rounded ${
-                  placementMode.guestId === g.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  placementMode.guestId === g.id ? 'bg-terracotta text-white' : 'bg-cream text-muted hover:bg-line'
                 }`}
               >
                 Placer
@@ -82,7 +82,7 @@ export default function GuestList() {
             )}
             <button
               onClick={() => dispatch({ type: 'REMOVE_GUEST', id: g.id })}
-              className="text-gray-400 hover:text-red-500 text-xs"
+              className="text-faint hover:text-red-500 text-xs"
             >
               ×
             </button>
@@ -96,9 +96,9 @@ export default function GuestList() {
               value={g.menu ?? ''}
               onChange={e => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { menu: e.target.value || undefined } })}
               placeholder="Menu (ex : Végétarien, Enfant…)"
-              className="w-full px-2 py-1 text-xs border border-gray-300 rounded"
+              className="w-full px-2 py-1 text-xs border border-line rounded"
             />
-            <div className="flex gap-3 text-xs text-gray-600">
+            <div className="flex gap-3 text-xs text-muted">
               <label className="flex items-center gap-1">
                 <input
                   type="checkbox"
@@ -125,8 +125,8 @@ export default function GuestList() {
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between">
-        <h2 className="text-base font-semibold text-gray-700">Invités ({guests.length})</h2>
-        <span className="text-xs text-gray-400">
+        <h2 className="text-base font-semibold text-ink">Invités ({guests.length})</h2>
+        <span className="text-xs text-faint">
           {nbMaries > 0 && `${nbMaries} marié·e${nbMaries > 1 ? 's' : ''}`}
           {nbMaries > 0 && nbAConfirmer > 0 && ' · '}
           {nbAConfirmer > 0 && `${nbAConfirmer} à confirmer`}
@@ -141,11 +141,11 @@ export default function GuestList() {
           onChange={e => setNom(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
           placeholder="Nom de l'invité"
-          className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded"
+          className="flex-1 px-2 py-1 text-sm border border-line rounded"
         />
         <button
           onClick={handleAdd}
-          className="px-3 py-1 text-sm bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+          className="px-3 py-1 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
           Ajouter
         </button>
@@ -155,7 +155,7 @@ export default function GuestList() {
       <div>
         <button
           onClick={() => setBulkOpen(o => !o)}
-          className="text-xs text-gray-500 hover:text-gray-700 underline"
+          className="text-xs text-muted hover:text-ink underline"
         >
           {bulkOpen ? 'Fermer' : 'Coller une liste'}
         </button>
@@ -166,11 +166,11 @@ export default function GuestList() {
               onChange={e => setBulk(e.target.value)}
               placeholder="Un nom par ligne"
               rows={4}
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+              className="w-full px-2 py-1 text-sm border border-line rounded"
             />
             <button
               onClick={handleBulk}
-              className="w-full px-3 py-1 text-sm bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors"
+              className="w-full px-3 py-1 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
             >
               Ajouter tout
             </button>
@@ -190,9 +190,9 @@ export default function GuestList() {
 
       {/* Mode placement actif */}
       {placementMode.active && (
-        <div className="flex items-center justify-between px-2 py-1.5 bg-blue-50 border border-blue-200 rounded text-sm text-blue-700">
+        <div className="flex items-center justify-between px-2 py-1.5 bg-terracotta/10 border border-terracotta/30 rounded text-sm text-terracotta">
           <span>Cliquez sur une table pour placer l'invité</span>
-          <button onClick={() => dispatch({ type: 'CANCEL_PLACEMENT' })} className="text-blue-500 hover:text-blue-800 font-medium">
+          <button onClick={() => dispatch({ type: 'CANCEL_PLACEMENT' })} className="text-terracotta hover:text-terracotta-dark font-medium">
             Annuler
           </button>
         </div>
@@ -201,7 +201,7 @@ export default function GuestList() {
       {/* Non placés */}
       {unassigned.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Non placés ({unassigned.length})</h3>
+          <h3 className="text-xs font-semibold text-faint uppercase tracking-wide mb-1">Non placés ({unassigned.length})</h3>
           <ul className="space-y-0.5">{unassigned.map(g => renderGuest(g, false))}</ul>
         </div>
       )}
@@ -209,7 +209,7 @@ export default function GuestList() {
       {/* Placés */}
       {assigned.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Placés ({assigned.length})</h3>
+          <h3 className="text-xs font-semibold text-faint uppercase tracking-wide mb-1">Placés ({assigned.length})</h3>
           <ul className="space-y-0.5">{assigned.map(g => renderGuest(g, true))}</ul>
         </div>
       )}
