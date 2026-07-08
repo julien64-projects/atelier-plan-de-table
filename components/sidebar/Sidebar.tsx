@@ -5,6 +5,7 @@ import RoomConfig from './RoomConfig';
 import TableCatalog from './TableCatalog';
 import TableInspector from './TableInspector';
 import GuestList from './GuestList';
+import AlleeAlert from './AlleeAlert';
 
 export default function Sidebar() {
   const { selectedTableId } = useRoomState();
@@ -16,6 +17,9 @@ export default function Sidebar() {
       </div>
       <div className="px-4 py-4 border-b border-gray-200">
         <RoomConfig />
+      </div>
+      <div className="px-4 py-3 border-b border-gray-200">
+        <AlleeAlert />
       </div>
       <div className="px-4 py-4 border-b border-gray-200">
         {selectedTableId ? <TableInspector /> : (

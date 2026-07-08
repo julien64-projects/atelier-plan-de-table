@@ -26,10 +26,13 @@ export default function DistanceLinesLayer({ hoveredTableId }: DistanceLinesLaye
 
         if (!isActive && !isClose) return null;
 
-        const color = result.allee.ok ? '#22c55e' : '#ef4444';
+        const insuffisant = !result.allee.ok;
+        const color = insuffisant ? '#ef4444' : '#22c55e';
         const midX = (result.fromPt.x + result.toPt.x) / 2;
         const midY = (result.fromPt.y + result.toPt.y) / 2;
-        const label = `${(result.distanceCm / 100).toFixed(1)} m`;
+        const label = insuffisant
+          ? `⚠ ${(result.distanceCm / 100).toFixed(2)} m`
+          : `${(result.distanceCm / 100).toFixed(1)} m`;
 
         return (
           <DistanceLine
@@ -40,7 +43,7 @@ export default function DistanceLinesLayer({ hoveredTableId }: DistanceLinesLaye
             label={label}
             midX={midX}
             midY={midY}
-            isActive={isActive}
+            isActive={isActive || insuffisant}
           />
         );
       })}
