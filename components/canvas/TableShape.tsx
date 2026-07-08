@@ -77,7 +77,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     onHover?.(null);
   }, [onHover]);
 
-  const strokeColor = isSelected ? '#2563eb' : '#8b7355';
+  const strokeColor = isSelected ? '#c06b4e' : '#a5906f';
   const strokeW = isSelected ? 4 : 2;
 
   const truncate = (s: string, max: number) => s.length > max ? s.slice(0, max - 1) + '…' : s;
@@ -115,7 +115,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           y={sy}
           radius={11}
           fill={occupied ? '#d9c7a8' : '#f3eee4'}
-          stroke={placing ? '#2563eb' : occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
+          stroke={placing ? '#c06b4e' : occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
           strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
@@ -158,7 +158,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           align="center"
           fontSize={14}
           fontStyle="bold"
-          fill="#333"
+          fill="#3d3229"
           listening={false}
         />
         <Circle x={r * 0.7} y={-r * 0.7} radius={16} fill={badgeColor} listening={false} />

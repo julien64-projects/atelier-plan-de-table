@@ -17,7 +17,7 @@ export default function Grid({ largeurCm, hauteurCm }: GridProps) {
       <Line
         key={`v-${x}`}
         points={[x, 0, x, hauteurCm]}
-        stroke={isBold ? '#bbb' : '#ddd'}
+        stroke={isBold ? '#d3c6b0' : '#e6ddcc'}
         strokeWidth={isBold ? 1.5 : 0.5}
       />
     );
@@ -30,7 +30,7 @@ export default function Grid({ largeurCm, hauteurCm }: GridProps) {
       <Line
         key={`h-${y}`}
         points={[0, y, largeurCm, y]}
-        stroke={isBold ? '#bbb' : '#ddd'}
+        stroke={isBold ? '#d3c6b0' : '#e6ddcc'}
         strokeWidth={isBold ? 1.5 : 0.5}
       />
     );

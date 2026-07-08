@@ -14,9 +14,9 @@ export default function RoomBorder({ largeurCm, hauteurCm }: RoomBorderProps) {
       y={0}
       width={largeurCm}
       height={hauteurCm}
-      stroke="#333"
-      strokeWidth={3}
-      fill="#fafafa"
+      stroke="#c9baa4"
+      strokeWidth={2}
+      fill="#fffdf9"
     />
   );
 }
