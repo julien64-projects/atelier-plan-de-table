@@ -4,6 +4,7 @@ import { useRoomState } from '@/lib/store/roomStore';
 import RoomConfig from './RoomConfig';
 import TableCatalog from './TableCatalog';
 import TableInspector from './TableInspector';
+import GuestList from './GuestList';
 
 export default function Sidebar() {
   const { selectedTableId } = useRoomState();
@@ -16,13 +17,16 @@ export default function Sidebar() {
       <div className="px-4 py-4 border-b border-gray-200">
         <RoomConfig />
       </div>
-      <div className="flex-1 px-4 py-4">
+      <div className="px-4 py-4 border-b border-gray-200">
         {selectedTableId ? <TableInspector /> : (
           <>
             <h2 className="text-base font-semibold text-gray-700 mb-3">Ajouter une table</h2>
             <TableCatalog />
           </>
         )}
+      </div>
+      <div className="flex-1 px-4 py-4 overflow-y-auto">
+        <GuestList />
       </div>
     </aside>
   );

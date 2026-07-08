@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { RoomProvider } from '@/lib/store/roomStore';
+import { GuestProvider } from '@/lib/store/guestStore';
 import Sidebar from '@/components/sidebar/Sidebar';
 
 const RoomCanvas = dynamic(() => import('@/components/canvas/RoomCanvas'), { ssr: false });
@@ -9,10 +10,12 @@ const RoomCanvas = dynamic(() => import('@/components/canvas/RoomCanvas'), { ssr
 export default function Home() {
   return (
     <RoomProvider>
-      <div className="flex h-screen w-screen overflow-hidden">
-        <Sidebar />
-        <RoomCanvas />
-      </div>
+      <GuestProvider>
+        <div className="flex h-screen w-screen overflow-hidden">
+          <Sidebar />
+          <RoomCanvas />
+        </div>
+      </GuestProvider>
     </RoomProvider>
   );
 }
