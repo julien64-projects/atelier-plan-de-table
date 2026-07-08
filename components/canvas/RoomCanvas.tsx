@@ -7,6 +7,7 @@ import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import Grid from './Grid';
 import RoomBorder from './RoomBorder';
 import TablesLayer from './TablesLayer';
+import DecorLayer from './DecorLayer';
 import DistanceLinesLayer from './DistanceLinesLayer';
 import WallDistanceLayer from './WallDistanceLayer';
 
@@ -103,6 +104,7 @@ export default function RoomCanvas() {
           <RoomBorder largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />
           <Grid largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />
         </Layer>
+        <DecorLayer />
         <TablesLayer onHover={setHoveredTableId} />
         <DistanceLinesLayer hoveredTableId={hoveredTableId} />
         <WallDistanceLayer />
