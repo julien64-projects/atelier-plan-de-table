@@ -53,11 +53,14 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
 
   const handleClick = useCallback(() => {
     if (placementMode.active && placementMode.guestId) {
-      guestDispatch({ type: 'ASSIGN_GUEST', guestId: placementMode.guestId, tableId: table.id });
+      const warning = nbAssis + 1 > etat.max
+        ? `${table.nom} est pleine (max ${etat.max}) — invité placé en dépassement.`
+        : null;
+      guestDispatch({ type: 'ASSIGN_GUEST', guestId: placementMode.guestId, tableId: table.id, warning });
     } else {
       dispatch({ type: 'SELECT_TABLE', id: table.id });
     }
-  }, [dispatch, guestDispatch, table.id, placementMode]);
+  }, [dispatch, guestDispatch, table.id, table.nom, placementMode, nbAssis, etat.max]);
 
   const handleMouseEnter = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {
     const container = e.target.getStage()?.container();

@@ -11,20 +11,23 @@ interface GuestState {
   guests: GuestOnPlan[];
   assignments: Record<string, string>; // guestId -> tableId
   placementMode: { active: boolean; guestId: string | null };
+  warning: string | null;
 }
 
 type GuestAction =
   | { type: 'ADD_GUEST'; nom: string }
   | { type: 'REMOVE_GUEST'; id: string }
-  | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string }
+  | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string; warning?: string | null }
   | { type: 'UNASSIGN_GUEST'; guestId: string }
   | { type: 'START_PLACEMENT'; guestId: string }
-  | { type: 'CANCEL_PLACEMENT' };
+  | { type: 'CANCEL_PLACEMENT' }
+  | { type: 'DISMISS_WARNING' };
 
 const initialState: GuestState = {
   guests: [],
   assignments: {},
   placementMode: { active: false, guestId: null },
+  warning: null,
 };
 
 function guestReducer(state: GuestState, action: GuestAction): GuestState {
@@ -50,15 +53,18 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
         ...state,
         assignments: { ...state.assignments, [action.guestId]: action.tableId },
         placementMode: { active: false, guestId: null },
+        warning: action.warning ?? null,
       };
     case 'UNASSIGN_GUEST': {
       const { [action.guestId]: _, ...rest } = state.assignments;
       return { ...state, assignments: rest };
     }
     case 'START_PLACEMENT':
-      return { ...state, placementMode: { active: true, guestId: action.guestId } };
+      return { ...state, placementMode: { active: true, guestId: action.guestId }, warning: null };
     case 'CANCEL_PLACEMENT':
-      return { ...state, placementMode: { active: false, guestId: null } };
+      return { ...state, placementMode: { active: false, guestId: null }, warning: null };
+    case 'DISMISS_WARNING':
+      return { ...state, warning: null };
     default:
       return state;
   }

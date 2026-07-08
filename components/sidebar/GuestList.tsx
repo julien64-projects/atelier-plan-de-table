@@ -5,7 +5,7 @@ import { useGuestState, useGuestDispatch, useUnassignedGuests } from '@/lib/stor
 import { useRoomState } from '@/lib/store/roomStore';
 
 export default function GuestList() {
-  const { guests, assignments, placementMode } = useGuestState();
+  const { guests, assignments, placementMode, warning } = useGuestState();
   const dispatch = useGuestDispatch();
   const { tables } = useRoomState();
   const unassigned = useUnassignedGuests();
@@ -47,6 +47,16 @@ export default function GuestList() {
           Ajouter
         </button>
       </div>
+
+      {/* Avertissement de dépassement */}
+      {warning && (
+        <div className="flex items-center justify-between px-2 py-1.5 bg-amber-50 border border-amber-300 rounded text-sm text-amber-800">
+          <span>{warning}</span>
+          <button onClick={() => dispatch({ type: 'DISMISS_WARNING' })} className="text-amber-500 hover:text-amber-800 font-medium ml-2">
+            ×
+          </button>
+        </div>
+      )}
 
       {/* Mode placement actif */}
       {placementMode.active && (
