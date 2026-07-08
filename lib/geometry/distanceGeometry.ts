@@ -80,11 +80,17 @@ function halfExtentInDirection(halfW: number, halfH: number, nx: number, ny: num
   return Math.min(tx, ty) * Math.sqrt(nx * nx + ny * ny);
 }
 
+export interface PaireDistance {
+  a: string;
+  b: string;
+  result: DistanceResult;
+}
+
 /**
  * Calcule toutes les distances entre paires de tables.
  */
-export function toutesLesDistances(tables: TableOnPlan[]): { a: string; b: string; result: DistanceResult }[] {
-  const pairs: { a: string; b: string; result: DistanceResult }[] = [];
+export function toutesLesDistances(tables: TableOnPlan[]): PaireDistance[] {
+  const pairs: PaireDistance[] = [];
   for (let i = 0; i < tables.length; i++) {
     for (let j = i + 1; j < tables.length; j++) {
       pairs.push({
@@ -95,4 +101,14 @@ export function toutesLesDistances(tables: TableOnPlan[]): { a: string; b: strin
     }
   }
   return pairs;
+}
+
+/**
+ * Paires de tables dont l'allée de service est insuffisante (< 120 cm),
+ * triées de la plus étroite à la moins étroite.
+ */
+export function alleesInsuffisantes(tables: TableOnPlan[]): PaireDistance[] {
+  return toutesLesDistances(tables)
+    .filter(p => !p.result.allee.ok)
+    .sort((x, y) => x.result.distanceCm - y.result.distanceCm);
 }

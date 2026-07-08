@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { distanceBordABord } from '@/lib/geometry/distanceGeometry';
+import { distanceBordABord, alleesInsuffisantes } from '@/lib/geometry/distanceGeometry';
 import { CHAISE_PROFONDEUR } from '@/lib/geometry/tableGeometry';
 import type { TableOnPlan } from '@/lib/store/types';
 
@@ -57,5 +57,27 @@ describe('distanceBordABord', () => {
     // Distance = sqrt(250² + 250²) ≈ 354
     expect(r.distanceCm).toBeCloseTo(354, 0);
     expect(r.allee.ok).toBe(true);
+  });
+});
+
+describe('alleesInsuffisantes', () => {
+  it('ne retourne que les paires < 120cm, triées par étroitesse', () => {
+    const a = makeRonde('a', 150, 0, 0);
+    const b = makeRonde('b', 150, 300, 0);   // gap 50 avec a → insuffisant
+    const c = makeRonde('c', 150, 280, 0);   // gap 30 avec a ; empreintes b/c se chevauchent → gap 0
+    const loin = makeRonde('loin', 150, 1000, 1000); // largement OK
+    const res = alleesInsuffisantes([a, b, c, loin]);
+    // paires insuffisantes : a-b (50), a-c (30), b-c (0, chevauchement)
+    expect(res.length).toBe(3);
+    // triées de la plus étroite à la moins étroite
+    const dists = res.map(p => Math.round(p.result.distanceCm));
+    expect(dists).toEqual([0, 30, 50]);
+    expect(res.every(p => !p.result.allee.ok)).toBe(true);
+  });
+
+  it('aucune paire insuffisante quand les tables sont espacées', () => {
+    const a = makeRonde('a', 150, 0, 0);
+    const b = makeRonde('b', 150, 500, 0); // gap 250 → OK
+    expect(alleesInsuffisantes([a, b])).toEqual([]);
   });
 });
