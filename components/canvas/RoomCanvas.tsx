@@ -85,7 +85,7 @@ export default function RoomCanvas() {
   }, []);
 
   return (
-    <div ref={containerRef} className="flex-1 bg-[#ece3d3] overflow-hidden">
+    <div ref={containerRef} className="flex-1 bg-[#ece1d6] overflow-hidden">
       <Stage
         ref={stageRef}
         width={dimensions.width}

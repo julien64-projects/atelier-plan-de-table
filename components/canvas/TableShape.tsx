@@ -10,10 +10,14 @@ import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch, useGuestsForTable, useSeatMap } from '@/lib/store/guestStore';
 
 const BADGE_COLORS = {
-  ok: '#22c55e',
-  plein: '#f59e0b',
-  depassement: '#ef4444',
+  ok: '#8b9a7c',
+  plein: '#b08d4c',
+  depassement: '#a8463c',
 } as const;
+
+const TABLE_FILL = '#f8f0ec';   // papier légèrement rosé
+const TABLE_STROKE = '#c98b8b'; // rose poudré
+const SELECT_STROKE = '#6e2a3c'; // bordeaux
 
 interface TableShapeProps {
   table: TableOnPlan;
@@ -77,8 +81,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     onHover?.(null);
   }, [onHover]);
 
-  const strokeColor = isSelected ? '#c06b4e' : '#a5906f';
-  const strokeW = isSelected ? 4 : 2;
+  const strokeColor = isSelected ? SELECT_STROKE : TABLE_STROKE;
+  const strokeW = isSelected ? 3.5 : 1.5;
 
   const truncate = (s: string, max: number) => s.length > max ? s.slice(0, max - 1) + '…' : s;
 
@@ -114,8 +118,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           x={sx}
           y={sy}
           radius={11}
-          fill={occupied ? '#d9c7a8' : '#f3eee4'}
-          stroke={placing ? '#c06b4e' : occupied && g.aConfirmer ? '#b45309' : '#b0a48f'}
+          fill={occupied ? '#c98b8b' : '#f6efe9'}
+          stroke={placing ? SELECT_STROKE : occupied && g.aConfirmer ? '#b08d4c' : '#d8c3bd'}
           strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
@@ -127,7 +131,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
             align="center"
             fontSize={9}
             fontStyle={g.aConfirmer ? 'italic' : 'normal'}
-            fill={g.aConfirmer ? '#b45309' : '#555'}
+            fill={g.aConfirmer ? '#b08d4c' : '#7a6a68'}
           />
         )}
       </Group>
@@ -149,7 +153,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     const r = (table.diametreCm ?? 150) / 2;
     return (
       <Group {...groupProps}>
-        <Circle radius={r} fill="#e8dcc8" stroke={strokeColor} strokeWidth={strokeW} />
+        <Circle radius={r} fill={TABLE_FILL} stroke={strokeColor} strokeWidth={strokeW} />
         <Text
           text={table.nom}
           x={-r}
@@ -158,7 +162,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           align="center"
           fontSize={14}
           fontStyle="bold"
-          fill="#3d3229"
+          fill="#33262a"
           listening={false}
         />
         <Circle x={r * 0.7} y={-r * 0.7} radius={16} fill={badgeColor} listening={false} />
@@ -190,7 +194,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           y={-h / 2}
           width={w}
           height={h}
-          fill="#e8dcc8"
+          fill={TABLE_FILL}
           stroke={strokeColor}
           strokeWidth={strokeW}
           cornerRadius={4}
@@ -204,7 +208,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         align="center"
         fontSize={14}
         fontStyle="bold"
-        fill="#333"
+        fill="#33262a"
         listening={false}
       />
       <Circle x={w / 2 - 5} y={-h / 2 - 5} radius={16} fill={badgeColor} listening={false} />
