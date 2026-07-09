@@ -23,9 +23,9 @@ function SetupLoader() {
 }
 
 export default function Workspace({ maries = false }: { maries?: boolean }) {
-  const planId = maries
-    ? 'maries:' + (typeof window !== 'undefined' ? window.location.hash.slice(1, 25) : '')
-    : 'planner';
+  // Clé de sauvegarde stable : régénérer/rouvrir un lien mis à jour met à jour
+  // la salle+mobilier (via le lien) sans faire perdre aux mariés leurs tables.
+  const planId = maries ? 'maries' : 'planner';
   return (
     <RoomProvider>
       <GuestProvider>
