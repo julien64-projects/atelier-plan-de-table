@@ -24,6 +24,7 @@ export default function RoomCanvas() {
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [hoveredTableId, setHoveredTableId] = useState<string | null>(null);
+  const [showTechnique, setShowTechnique] = useState(false);
 
   // Adapter la taille du Stage au conteneur
   useEffect(() => {
@@ -85,7 +86,19 @@ export default function RoomCanvas() {
   }, []);
 
   return (
-    <div ref={containerRef} className="flex-1 bg-[#ece1d6] overflow-hidden">
+    <div ref={containerRef} className="relative flex-1 bg-[#ece1d6] overflow-hidden">
+      <button
+        onClick={() => setShowTechnique(v => !v)}
+        className={`absolute top-4 right-4 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-[11px] uppercase tracking-[0.18em] transition-colors ${
+          showTechnique
+            ? 'bg-terracotta text-white border-terracotta shadow-sm'
+            : 'bg-surface/90 text-muted border-line hover:text-ink'
+        }`}
+        title="Afficher la grille et les distances"
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${showTechnique ? 'bg-white' : 'bg-faint'}`} />
+        Plan technique
+      </button>
       <Stage
         ref={stageRef}
         width={dimensions.width}
@@ -102,12 +115,12 @@ export default function RoomCanvas() {
       >
         <Layer>
           <RoomBorder largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />
-          <Grid largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />
+          {showTechnique && <Grid largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />}
         </Layer>
         <DecorLayer />
         <TablesLayer onHover={setHoveredTableId} />
-        <DistanceLinesLayer hoveredTableId={hoveredTableId} />
-        <WallDistanceLayer />
+        {showTechnique && <DistanceLinesLayer hoveredTableId={hoveredTableId} />}
+        {showTechnique && <WallDistanceLayer />}
       </Stage>
     </div>
   );
