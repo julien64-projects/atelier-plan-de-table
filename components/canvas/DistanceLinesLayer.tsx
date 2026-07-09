@@ -27,7 +27,7 @@ export default function DistanceLinesLayer({ hoveredTableId }: DistanceLinesLaye
         if (!isActive && !isClose) return null;
 
         const insuffisant = !result.allee.ok;
-        const color = insuffisant ? '#d64c3a' : '#8a9a7b';
+        const color = insuffisant ? '#e0776a' : '#a6b48c';
         const midX = (result.fromPt.x + result.toPt.x) / 2;
         const midY = (result.fromPt.y + result.toPt.y) / 2;
         const label = insuffisant

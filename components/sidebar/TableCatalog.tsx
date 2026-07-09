@@ -60,7 +60,7 @@ export default function TableCatalog() {
                 className={`px-2 py-1 text-xs rounded border transition-colors ${
                   formeAuto === s
                     ? 'bg-terracotta text-white border-terracotta'
-                    : 'bg-white text-muted border-line hover:bg-cream'
+                    : 'bg-cream text-muted border-line hover:bg-cream'
                 }`}
               >
                 {s === 'ronde' ? 'Ronde' : 'Droite'}

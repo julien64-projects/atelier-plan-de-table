@@ -48,7 +48,7 @@ export default function GuestList() {
             {g.marie && <span title="Marié·e">💍</span>}
             <span className={`truncate ${place ? 'text-ink' : 'text-muted italic'}`}>{g.nom}</span>
             {g.aConfirmer && (
-              <span className="px-1 py-0.5 text-[10px] rounded bg-amber-100 text-amber-700 whitespace-nowrap">à confirmer</span>
+              <span className="px-1 py-0.5 text-[10px] rounded bg-amber-500/15 text-amber-300 whitespace-nowrap">à confirmer</span>
             )}
             {g.menu && (
               <span className="px-1 py-0.5 text-[10px] rounded bg-cream text-muted whitespace-nowrap">{g.menu}</span>
@@ -82,7 +82,7 @@ export default function GuestList() {
             )}
             <button
               onClick={() => dispatch({ type: 'REMOVE_GUEST', id: g.id })}
-              className="text-faint hover:text-red-500 text-xs"
+              className="text-faint hover:text-red-400 text-xs"
             >
               ×
             </button>
@@ -180,9 +180,9 @@ export default function GuestList() {
 
       {/* Avertissement de dépassement */}
       {warning && (
-        <div className="flex items-center justify-between px-2 py-1.5 bg-amber-50 border border-amber-300 rounded text-sm text-amber-800">
+        <div className="flex items-center justify-between px-2 py-1.5 bg-amber-500/10 border border-amber-500/40 rounded text-sm text-amber-200">
           <span>{warning}</span>
-          <button onClick={() => dispatch({ type: 'DISMISS_WARNING' })} className="text-amber-500 hover:text-amber-800 font-medium ml-2">
+          <button onClick={() => dispatch({ type: 'DISMISS_WARNING' })} className="text-amber-300 hover:text-amber-100 font-medium ml-2">
             ×
           </button>
         </div>
@@ -190,9 +190,9 @@ export default function GuestList() {
 
       {/* Mode placement actif */}
       {placementMode.active && (
-        <div className="flex items-center justify-between px-2 py-1.5 bg-terracotta/10 border border-terracotta/30 rounded text-sm text-terracotta">
+        <div className="flex items-center justify-between px-2 py-1.5 bg-terracotta/15 border border-terracotta/40 rounded text-sm text-blush">
           <span>Cliquez sur une table pour placer l'invité</span>
-          <button onClick={() => dispatch({ type: 'CANCEL_PLACEMENT' })} className="text-terracotta hover:text-terracotta-dark font-medium">
+          <button onClick={() => dispatch({ type: 'CANCEL_PLACEMENT' })} className="text-blush hover:text-white font-medium">
             Annuler
           </button>
         </div>

@@ -49,7 +49,7 @@ export default function DecorShape({ decor }: { decor: DecorOnPlan }) {
         width={decor.w_cm}
         height={decor.h_cm}
         fill={couleurDecor(decor.type)}
-        stroke={isSelected ? '#6e2a3c' : '#8b9a7c'}
+        stroke={isSelected ? "#cca962" : "#a6b48c"}
         strokeWidth={isSelected ? 4 : 2}
         dash={isSelected ? undefined : [12, 8]}
         cornerRadius={6}
@@ -62,7 +62,7 @@ export default function DecorShape({ decor }: { decor: DecorOnPlan }) {
         align="center"
         fontSize={16}
         fontStyle="bold"
-        fill="#7a6a68"
+        fill="#b6a29d"
         listening={false}
       />
     </Group>

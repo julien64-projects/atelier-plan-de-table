@@ -68,7 +68,7 @@ export default function DecorInspector() {
       {/* Supprimer */}
       <button
         onClick={() => dispatch({ type: 'REMOVE_DECOR', id: decor.id })}
-        className="w-full mt-2 px-3 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+        className="w-full mt-2 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/100/10 transition-colors"
       >
         Supprimer ce décor
       </button>

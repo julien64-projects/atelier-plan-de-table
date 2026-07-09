@@ -30,7 +30,7 @@ export default function WallDistanceLayer() {
     <Layer listening={false}>
       {murs.map(({ mur, distanceCm, allee }) => {
         const seg = segments[mur];
-        const color = allee.ok ? '#8a9a7b' : '#d64c3a';
+        const color = allee.ok ? '#a6b48c' : '#e0776a';
         const midX = (seg.x1 + seg.x2) / 2;
         const midY = (seg.y1 + seg.y2) / 2;
         const label = distanceCm < 0 ? 'hors salle' : `${enM(distanceCm)} m`;

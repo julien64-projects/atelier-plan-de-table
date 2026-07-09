@@ -15,7 +15,7 @@ export default function Sidebar() {
   return (
     <aside className="w-80 border-r border-line bg-surface flex flex-col overflow-y-auto">
       <div className="px-5 py-6 border-b border-line text-center">
-        <p className="text-[10px] uppercase tracking-[0.3em] text-terracotta font-semibold">L&apos;Atelier</p>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">L&apos;Atelier</p>
         <h1 className="text-[27px] leading-tight text-ink mt-1">Plan de Table</h1>
         <div className="flex items-center justify-center gap-3 text-gold my-2.5">
           <span className="h-px w-8 bg-gold/50" />

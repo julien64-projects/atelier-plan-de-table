@@ -1,34 +1,30 @@
 @import "tailwindcss";
 
 /* ------------------------------------------------------------------ */
-/*  Système de design — « Papeterie de mariage »                       */
-/*  Encre prune, bordeaux de cachet, filets d'or, botanique sauge.     */
+/*  Système de design — « Papeterie de mariage », version soirée       */
+/*  Aubergine profond, rose-violet, filets d'or.                       */
 /* ------------------------------------------------------------------ */
 
 @theme {
-  /* Fonds & surfaces (papier) */
-  --color-ivory: #faf5f1;   /* fond général */
-  --color-cream: #f3ebe4;   /* surface douce / panneaux */
-  --color-surface: #fffdfb; /* cartes / champ blanc */
+  /* Fonds & surfaces (nuit) */
+  --color-ivory: #1e1719;   /* fond général (aubergine près du noir) */
+  --color-cream: #271f22;   /* panneaux / champs */
+  --color-surface: #2c2327; /* cartes / sidebar */
 
   /* Accents */
-  --color-terracotta: #6e2a3c;      /* accent principal = bordeaux */
-  --color-terracotta-dark: #57202f; /* hover */
-  --color-blush: #c98b8b;           /* rose poudré */
-  --color-sage: #8b9a7c;            /* botanique / états OK */
-  --color-gold: #b08d4c;            /* filets & ornements */
+  --color-terracotta: #a34459;      /* accent principal (wine, fond de bouton) */
+  --color-terracotta-dark: #8f3a4d; /* hover */
+  --color-blush: #e0a6b4;           /* rose-violet clair (texte accent) */
+  --color-sage: #a6b48c;            /* botanique / états OK */
+  --color-gold: #cca962;            /* filets & ornements */
 
   /* Texte */
-  --color-ink: #33262a;    /* encre prune */
-  --color-muted: #8a7a78;  /* mauve-gris */
-  --color-faint: #b7a6a0;
+  --color-ink: #f2e7e0;    /* crème */
+  --color-muted: #b6a29d;  /* mauve-gris clair */
+  --color-faint: #8c7a76;
 
   /* Lignes */
-  --color-line: #e6d9cf;
-
-  /* Typographies */
-  --font-serif: var(--font-playfair), "Didot", "Bodoni 72", Georgia, serif;
-  --font-sans: var(--font-jost), "Optima", "Gill Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-line: #3a2e33;
 }
 
 :root {
@@ -49,7 +45,15 @@ h1, h2, h3 {
   letter-spacing: 0.01em;
 }
 
-/* Barre de défilement discrète, teinte chaude */
+/* Champs adaptés au thème sombre */
+input, textarea, select {
+  background: var(--color-cream);
+  color: var(--color-ink);
+}
+input::placeholder, textarea::placeholder { color: var(--color-faint); }
+input[type="checkbox"] { accent-color: var(--color-terracotta); }
+
+/* Barre de défilement discrète */
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-line) transparent;

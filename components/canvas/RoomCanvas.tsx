@@ -86,7 +86,7 @@ export default function RoomCanvas() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative flex-1 bg-[#ece1d6] overflow-hidden">
+    <div ref={containerRef} className="relative flex-1 bg-[#171114] overflow-hidden">
       <button
         onClick={() => setShowTechnique(v => !v)}
         className={`absolute top-4 right-4 z-10 flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-[11px] uppercase tracking-[0.18em] transition-colors ${

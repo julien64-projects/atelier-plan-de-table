@@ -12,9 +12,9 @@ const BADGE_LABELS: Record<string, string> = {
 };
 
 const BADGE_CSS: Record<string, string> = {
-  ok: 'bg-green-100 text-green-700',
-  plein: 'bg-amber-100 text-amber-700',
-  depassement: 'bg-red-100 text-red-700',
+  ok: 'bg-sage/15 text-sage',
+  plein: 'bg-amber-500/15 text-amber-300',
+  depassement: 'bg-red-500/15 text-red-300',
 };
 
 const CONFORTS: { value: NiveauConfort; label: string }[] = [
@@ -133,7 +133,7 @@ export default function TableInspector() {
               className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
                 table.confort === c.value
                   ? 'bg-terracotta text-white border-terracotta'
-                  : 'bg-white text-muted border-line hover:bg-cream'
+                  : 'bg-cream text-muted border-line hover:bg-cream'
               }`}
             >
               {c.label}
@@ -150,7 +150,7 @@ export default function TableInspector() {
           </span>
         </div>
         {etat.niveau === 'depassement' && (
-          <p className="mt-1 text-xs text-red-600">
+          <p className="mt-1 text-xs text-red-400">
             {etat.depassement} invité{etat.depassement > 1 ? 's' : ''} au-delà de la capacité — agrandir la table ou en déplacer.
           </p>
         )}
@@ -166,7 +166,7 @@ export default function TableInspector() {
                 <span>{g.nom}</span>
                 <button
                   onClick={() => guestDispatch({ type: 'UNASSIGN_GUEST', guestId: g.id })}
-                  className="text-faint hover:text-red-500 text-xs"
+                  className="text-faint hover:text-red-400 text-xs"
                 >
                   ×
                 </button>
@@ -179,7 +179,7 @@ export default function TableInspector() {
       {/* Supprimer */}
       <button
         onClick={() => dispatch({ type: 'REMOVE_TABLE', id: table.id })}
-        className="w-full mt-2 px-3 py-2 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+        className="w-full mt-2 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/100/10 transition-colors"
       >
         Supprimer cette table
       </button>

@@ -10,14 +10,14 @@ import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch, useGuestsForTable, useSeatMap } from '@/lib/store/guestStore';
 
 const BADGE_COLORS = {
-  ok: '#8b9a7c',
-  plein: '#b08d4c',
-  depassement: '#a8463c',
+  ok: '#a6b48c',
+  plein: '#cca962',
+  depassement: '#d97b6f',
 } as const;
 
-const TABLE_FILL = '#f8f0ec';   // papier légèrement rosé
+const TABLE_FILL = '#34282c';   // médaillon aubergine
 const TABLE_STROKE = '#c98b8b'; // rose poudré
-const SELECT_STROKE = '#6e2a3c'; // bordeaux
+const SELECT_STROKE = '#cca962'; // or
 
 interface TableShapeProps {
   table: TableOnPlan;
@@ -118,8 +118,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           x={sx}
           y={sy}
           radius={11}
-          fill={occupied ? '#c98b8b' : '#f6efe9'}
-          stroke={placing ? SELECT_STROKE : occupied && g.aConfirmer ? '#b08d4c' : '#d8c3bd'}
+          fill={occupied ? '#c98b8b' : '#2b2226'}
+          stroke={placing ? SELECT_STROKE : occupied && g.aConfirmer ? '#cca962' : '#6a565c'}
           strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
@@ -131,7 +131,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
             align="center"
             fontSize={9}
             fontStyle={g.aConfirmer ? 'italic' : 'normal'}
-            fill={g.aConfirmer ? '#b08d4c' : '#7a6a68'}
+            fill={g.aConfirmer ? '#cca962' : '#b6a29d'}
           />
         )}
       </Group>
@@ -162,7 +162,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           align="center"
           fontSize={14}
           fontStyle="bold"
-          fill="#33262a"
+          fill="#f2e7e0"
           listening={false}
         />
         <Circle x={r * 0.7} y={-r * 0.7} radius={16} fill={badgeColor} listening={false} />
@@ -208,7 +208,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         align="center"
         fontSize={14}
         fontStyle="bold"
-        fill="#33262a"
+        fill="#f2e7e0"
         listening={false}
       />
       <Circle x={w / 2 - 5} y={-h / 2 - 5} radius={16} fill={badgeColor} listening={false} />
