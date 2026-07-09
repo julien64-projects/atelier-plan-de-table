@@ -33,7 +33,8 @@ type GuestAction =
   | { type: 'UNASSIGN_GUEST'; guestId: string }
   | { type: 'START_PLACEMENT'; guestId: string }
   | { type: 'CANCEL_PLACEMENT' }
-  | { type: 'DISMISS_WARNING' };
+  | { type: 'DISMISS_WARNING' }
+  | { type: 'LOAD_GUESTS'; guests: GuestOnPlan[]; assignments: Record<string, Assignment> };
 
 const initialState: GuestState = {
   guests: [],
@@ -98,6 +99,14 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
       return { ...state, placementMode: { active: false, guestId: null }, warning: null };
     case 'DISMISS_WARNING':
       return { ...state, warning: null };
+    case 'LOAD_GUESTS':
+      return {
+        ...state,
+        guests: action.guests,
+        assignments: action.assignments,
+        placementMode: { active: false, guestId: null },
+        warning: null,
+      };
     default:
       return state;
   }

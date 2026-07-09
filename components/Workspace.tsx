@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { RoomProvider, useRoomDispatch } from '@/lib/store/roomStore';
 import { GuestProvider } from '@/lib/store/guestStore';
 import Sidebar from '@/components/sidebar/Sidebar';
+import Persistence from '@/components/Persistence';
 import { decodeSetup } from '@/lib/share';
 
 const RoomCanvas = dynamic(() => import('@/components/canvas/RoomCanvas'), { ssr: false });
@@ -22,9 +23,13 @@ function SetupLoader() {
 }
 
 export default function Workspace({ maries = false }: { maries?: boolean }) {
+  const planId = maries
+    ? 'maries:' + (typeof window !== 'undefined' ? window.location.hash.slice(1, 25) : '')
+    : 'planner';
   return (
     <RoomProvider>
       <GuestProvider>
+        <Persistence planId={planId} />
         {maries && <SetupLoader />}
         <div className="flex h-screen w-screen overflow-hidden">
           <Sidebar />
