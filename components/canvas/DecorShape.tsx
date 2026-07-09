@@ -8,9 +8,10 @@ import { couleurDecor } from '@/lib/decor';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 
 export default function DecorShape({ decor }: { decor: DecorOnPlan }) {
-  const { salleLargeurCm, salleHauteurCm, selectedDecorId } = useRoomState();
+  const { mode, salleLargeurCm, salleHauteurCm, selectedDecorId } = useRoomState();
   const dispatch = useRoomDispatch();
   const isSelected = selectedDecorId === decor.id;
+  const editable = mode === 'planner';
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
     const halfW = decor.w_cm / 2;
@@ -36,7 +37,8 @@ export default function DecorShape({ decor }: { decor: DecorOnPlan }) {
       x={decor.pos_x}
       y={decor.pos_y}
       rotation={decor.rot}
-      draggable
+      draggable={editable}
+      listening={editable}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onTap={handleClick}
