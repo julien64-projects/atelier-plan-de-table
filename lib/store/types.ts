@@ -25,7 +25,10 @@ export interface DecorOnPlan {
   rot: number;
 }
 
+export type AppMode = 'planner' | 'maries';
+
 export interface RoomState {
+  mode: AppMode;
   salleLargeurCm: number;
   salleHauteurCm: number;
   tables: TableOnPlan[];
@@ -33,4 +36,11 @@ export interface RoomState {
   selectedTableId: string | null;
   selectedDecorId: string | null;
   nextTableNumber: number;
+}
+
+/** Configuration transmise du planner aux mariés (via le lien de partage). */
+export interface PlannerSetup {
+  salleLargeurCm: number;
+  salleHauteurCm: number;
+  decors: DecorOnPlan[];
 }
