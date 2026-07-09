@@ -14,10 +14,15 @@ export default function Sidebar() {
 
   return (
     <aside className="w-80 border-r border-line bg-surface flex flex-col overflow-y-auto">
-      <div className="px-5 py-5 border-b border-line bg-cream/60">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-terracotta font-medium">Atelier</p>
-        <h1 className="text-2xl leading-tight text-ink mt-0.5">Plan de Table</h1>
-        <p className="text-xs text-muted mt-1 italic">Composez votre salle de réception</p>
+      <div className="px-5 py-6 border-b border-line text-center">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-terracotta font-semibold">L&apos;Atelier</p>
+        <h1 className="text-[27px] leading-tight text-ink mt-1">Plan de Table</h1>
+        <div className="flex items-center justify-center gap-3 text-gold my-2.5">
+          <span className="h-px w-8 bg-gold/50" />
+          <span className="text-xs">&#10086;</span>
+          <span className="h-px w-8 bg-gold/50" />
+        </div>
+        <p className="text-xs text-muted italic">Composez votre salle de réception</p>
       </div>
       <div className="px-5 py-4 border-b border-line">
         <RoomConfig />
