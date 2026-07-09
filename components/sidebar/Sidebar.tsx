@@ -35,12 +35,15 @@ export default function Sidebar() {
         <div className="px-5 py-4 border-b border-line">
           <RoomConfig />
         </div>
-        <div className="flex-1 px-5 py-4 border-b border-line overflow-y-auto">
-          {selectedDecorId ? <DecorInspector /> : (
-            <>
-              <h2 className="text-lg text-ink mb-3">Mobilier de la salle</h2>
-              <DecorCatalog />
-            </>
+        <div className="flex-1 px-5 py-4 border-b border-line overflow-y-auto space-y-5">
+          <div>
+            <h2 className="text-lg text-ink mb-3">Mobilier de la salle</h2>
+            <DecorCatalog />
+          </div>
+          {selectedDecorId && (
+            <div className="pt-4 border-t border-line">
+              <DecorInspector />
+            </div>
           )}
         </div>
         <div className="px-5 py-4">
@@ -64,12 +67,15 @@ export default function Sidebar() {
       <div className="px-5 py-3 border-b border-line">
         <AlleeAlert />
       </div>
-      <div className="px-5 py-4 border-b border-line">
-        {selectedTableId ? <TableInspector /> : (
-          <>
-            <h2 className="text-lg text-ink mb-3">Ajouter une table</h2>
-            <TableCatalog />
-          </>
+      <div className="px-5 py-4 border-b border-line space-y-5">
+        <div>
+          <h2 className="text-lg text-ink mb-3">Ajouter une table</h2>
+          <TableCatalog />
+        </div>
+        {selectedTableId && (
+          <div className="pt-4 border-t border-line">
+            <TableInspector />
+          </div>
         )}
       </div>
       <div className="flex-1 px-5 py-4 overflow-y-auto">
