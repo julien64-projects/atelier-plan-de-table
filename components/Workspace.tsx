@@ -6,6 +6,7 @@ import { RoomProvider, useRoomDispatch } from '@/lib/store/roomStore';
 import { GuestProvider } from '@/lib/store/guestStore';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Persistence from '@/components/Persistence';
+import SetupSync from '@/components/SetupSync';
 import { decodeSetup } from '@/lib/share';
 
 const RoomCanvas = dynamic(() => import('@/components/canvas/RoomCanvas'), { ssr: false });
@@ -31,6 +32,7 @@ export default function Workspace({ maries = false }: { maries?: boolean }) {
       <GuestProvider>
         <Persistence planId={planId} />
         {maries && <SetupLoader />}
+        <SetupSync maries={maries} />
         <div className="flex h-screen w-screen overflow-hidden">
           <Sidebar />
           <RoomCanvas />
