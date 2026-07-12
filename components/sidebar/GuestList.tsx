@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useGuestState, useGuestDispatch, useUnassignedGuests, type GuestOnPlan } from '@/lib/store/guestStore';
 import { useRoomState } from '@/lib/store/roomStore';
 import { CATEGORIES, EVENEMENTS } from '@/lib/guests';
+import RecapModal from './RecapModal';
 
 export default function GuestList() {
   const { guests, assignments, placementMode, warning } = useGuestState();
@@ -14,6 +15,7 @@ export default function GuestList() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulk, setBulk] = useState('');
+  const [recapOpen, setRecapOpen] = useState(false);
 
   const handleAdd = () => {
     const trimmed = nom.trim();
@@ -174,6 +176,14 @@ export default function GuestList() {
           {nbAConfirmer > 0 && `${nbAConfirmer} à confirmer`}
         </span>
       </div>
+
+      <button
+        onClick={() => setRecapOpen(true)}
+        className="w-full px-3 py-1.5 text-xs uppercase tracking-[0.18em] border border-line rounded text-muted hover:text-ink hover:border-gold/60 transition-colors"
+      >
+        Récapitulatif des invités
+      </button>
+      {recapOpen && <RecapModal onClose={() => setRecapOpen(false)} />}
 
       {/* Ajout */}
       <div className="flex gap-2">

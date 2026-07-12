@@ -27,15 +27,30 @@ function Header({ sous }: { sous: string }) {
 
 export default function Sidebar() {
   const { mode, selectedTableId, selectedDecorId, salleLargeurCm, salleHauteurCm } = useRoomState();
+  const isPlanner = mode === 'planner';
 
-  if (mode === 'planner') {
-    return (
-      <aside className="w-80 border-r border-line bg-surface flex flex-col overflow-y-auto">
-        <Header sous="Espace wedding planner" />
+  return (
+    <aside className="w-80 shrink-0 border-r border-line bg-surface flex flex-col overflow-y-auto">
+      <Header sous={isPlanner ? 'Espace wedding planner' : 'Espace mariés'} />
+
+      {/* Salle : éditable (planner) ou en lecture seule (mariés) */}
+      {isPlanner ? (
         <div className="px-5 py-4 border-b border-line">
           <RoomConfig />
         </div>
-        <div className="flex-1 px-5 py-4 border-b border-line overflow-y-auto space-y-5">
+      ) : (
+        <div className="px-5 py-3 border-b border-line">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-1">Salle</p>
+          <p className="text-sm text-ink">
+            {Math.round(salleLargeurCm / 100)} × {Math.round(salleHauteurCm / 100)} m
+            <span className="text-faint"> · définie par votre planner</span>
+          </p>
+        </div>
+      )}
+
+      {/* Mobilier : éditable côté planner uniquement */}
+      {isPlanner && (
+        <div className="px-5 py-4 border-b border-line space-y-5">
           <div>
             <h2 className="text-lg text-ink mb-3">Mobilier de la salle</h2>
             <DecorCatalog />
@@ -46,27 +61,13 @@ export default function Sidebar() {
             </div>
           )}
         </div>
-        <div className="px-5 py-4">
-          <SharePanel />
-        </div>
-      </aside>
-    );
-  }
+      )}
 
-  // Mode mariés : salle & mobilier reçus (verrouillés), focus tables + invités
-  return (
-    <aside className="w-80 border-r border-line bg-surface flex flex-col overflow-y-auto">
-      <Header sous="Espace mariés" />
-      <div className="px-5 py-3 border-b border-line">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted mb-1">Salle</p>
-        <p className="text-sm text-ink">
-          {Math.round(salleLargeurCm / 100)} × {Math.round(salleHauteurCm / 100)} m
-          <span className="text-faint"> · définie par votre planner</span>
-        </p>
-      </div>
       <div className="px-5 py-3 border-b border-line">
         <AlleeAlert />
       </div>
+
+      {/* Tables : accessible aux deux */}
       <div className="px-5 py-4 border-b border-line space-y-5">
         <div>
           <h2 className="text-lg text-ink mb-3">Ajouter une table</h2>
@@ -78,9 +79,18 @@ export default function Sidebar() {
           </div>
         )}
       </div>
-      <div className="flex-1 px-5 py-4 overflow-y-auto">
+
+      {/* Invités : accessible aux deux */}
+      <div className="px-5 py-4 border-b border-line">
         <GuestList />
       </div>
+
+      {/* Partage : planner uniquement */}
+      {isPlanner && (
+        <div className="px-5 py-4">
+          <SharePanel />
+        </div>
+      )}
     </aside>
   );
 }
