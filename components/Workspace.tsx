@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { RoomProvider, useRoomDispatch } from '@/lib/store/roomStore';
 import { GuestProvider } from '@/lib/store/guestStore';
 import Sidebar from '@/components/sidebar/Sidebar';
@@ -45,6 +45,21 @@ function SetupLoader() {
   return null;
 }
 
+function WorkspaceInner() {
+  // Interface rendue uniquement après montage client : l'état (mode,
+  // localStorage, lien) n'est stable qu'à ce moment, ce qui évite tout
+  // décalage d'hydratation serveur/client.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return (
+    <div className="flex h-screen w-screen overflow-hidden">
+      <Sidebar />
+      <RoomCanvas />
+    </div>
+  );
+}
+
 export default function Workspace({ maries = false }: { maries?: boolean }) {
   // Clé de sauvegarde stable : régénérer/rouvrir un lien mis à jour met à jour
   // la salle+mobilier (via le lien) sans faire perdre aux mariés leurs tables.
@@ -55,10 +70,7 @@ export default function Workspace({ maries = false }: { maries?: boolean }) {
         <Persistence planId={planId} />
         {maries && <SetupLoader />}
         <SetupSync maries={maries} />
-        <div className="flex h-screen w-screen overflow-hidden">
-          <Sidebar />
-          <RoomCanvas />
-        </div>
+        <WorkspaceInner />
       </GuestProvider>
     </RoomProvider>
   );
