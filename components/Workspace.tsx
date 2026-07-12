@@ -50,12 +50,40 @@ function WorkspaceInner() {
   // localStorage, lien) n'est stable qu'à ce moment, ce qui évite tout
   // décalage d'hydratation serveur/client.
   const [mounted, setMounted] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return null;
   return (
     <div className="flex h-screen w-screen overflow-hidden">
-      <Sidebar />
-      <RoomCanvas />
+      {/* Fond sombre du drawer (mobile / tablette < lg uniquement) */}
+      <div
+        onClick={() => setDrawerOpen(false)}
+        aria-hidden
+        className={`lg:hidden fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 ${
+          drawerOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
+      />
+
+      {/* Sidebar unique : ancrée à gauche sur desktop, panneau coulissant sinon */}
+      <div
+        className={`fixed lg:static inset-y-0 left-0 z-40 h-full shrink-0 transition-transform duration-300 lg:translate-x-0 ${
+          drawerOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <Sidebar onClose={() => setDrawerOpen(false)} />
+      </div>
+
+      {/* Canevas : occupe l'espace restant */}
+      <div className="relative flex-1 min-w-0 h-full flex">
+        <button
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Ouvrir le menu"
+          className="lg:hidden absolute top-4 left-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-surface/90 border border-line text-ink shadow-sm"
+        >
+          <span className="text-lg leading-none">☰</span>
+        </button>
+        <RoomCanvas />
+      </div>
     </div>
   );
 }
