@@ -12,6 +12,10 @@ export default function TableCatalog() {
   const dispatch = useRoomDispatch();
   const [nbConvives, setNbConvives] = useState(8);
   const [formeAuto, setFormeAuto] = useState<'ronde' | 'rect'>('ronde');
+  const [persoShape, setPersoShape] = useState<'ronde' | 'rect'>('ronde');
+  const [persoDiam, setPersoDiam] = useState(160);
+  const [persoLong, setPersoLong] = useState(220);
+  const [persoLarg, setPersoLarg] = useState(90);
 
   const addTable = useCallback((table: Omit<TableOnPlan, 'id' | 'nom' | 'pos_x' | 'pos_y' | 'rot' | 'confort' | 'bouts'> & { bouts?: boolean }) => {
     const newTable: TableOnPlan = {
@@ -76,6 +80,68 @@ export default function TableCatalog() {
         </p>
         <button
           onClick={() => addTablePour(nbConvives, formeAuto)}
+          className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
+        >
+          Créer la table
+        </button>
+      </div>
+
+      {/* Taille personnalisée */}
+      <div className="p-3 bg-cream rounded-lg space-y-2">
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">Personnalisée</h3>
+        <div className="flex gap-1">
+          {(['ronde', 'rect'] as const).map(s => (
+            <button
+              key={s}
+              onClick={() => setPersoShape(s)}
+              className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                persoShape === s
+                  ? 'bg-terracotta text-white border-terracotta'
+                  : 'bg-surface text-muted border-line hover:text-ink'
+              }`}
+            >
+              {s === 'ronde' ? 'Ronde' : 'Droite'}
+            </button>
+          ))}
+        </div>
+        {persoShape === 'ronde' ? (
+          <label className="block text-xs text-muted">
+            Diamètre (cm)
+            <input
+              type="number" min={60} max={400} step={5} value={persoDiam}
+              onChange={e => setPersoDiam(Math.max(60, Number(e.target.value) || 0))}
+              className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
+            />
+          </label>
+        ) : (
+          <div className="flex gap-2">
+            <label className="flex-1 text-xs text-muted">
+              Longueur
+              <input
+                type="number" min={60} max={800} step={5} value={persoLong}
+                onChange={e => setPersoLong(Math.max(60, Number(e.target.value) || 0))}
+                className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
+              />
+            </label>
+            <label className="flex-1 text-xs text-muted">
+              Largeur
+              <input
+                type="number" min={60} max={300} step={5} value={persoLarg}
+                onChange={e => setPersoLarg(Math.max(60, Number(e.target.value) || 0))}
+                className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
+              />
+            </label>
+          </div>
+        )}
+        <p className="text-xs text-faint">
+          {persoShape === 'ronde'
+            ? `${capaciteRonde(persoDiam)} places`
+            : `${capaciteDroite(persoLong)} places`}
+        </p>
+        <button
+          onClick={() => persoShape === 'ronde'
+            ? addTable({ shape: 'ronde', diametreCm: persoDiam })
+            : addTable({ shape: 'rect', longueurCm: persoLong, largeurCm: persoLarg })}
           className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
           Créer la table

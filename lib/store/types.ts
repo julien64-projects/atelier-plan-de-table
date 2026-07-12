@@ -12,6 +12,7 @@ export interface TableOnPlan {
   pos_x: number;
   pos_y: number;
   rot: number;
+  verrou?: boolean; // position verrouillée (non déplaçable)
 }
 
 export interface DecorOnPlan {

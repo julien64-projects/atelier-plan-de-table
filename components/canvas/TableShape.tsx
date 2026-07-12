@@ -141,7 +141,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
   const groupProps = {
     x: table.pos_x,
     y: table.pos_y,
-    draggable: true,
+    draggable: !table.verrou,
     onDragEnd: handleDragEnd,
     onClick: handleClick,
     onTap: handleClick,
@@ -177,6 +177,9 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           fill="white"
           listening={false}
         />
+        {table.verrou && (
+          <Text text="🔒" x={-r * 0.7 - 14} y={-r * 0.7 - 8} fontSize={14} listening={false} />
+        )}
         {/* Sièges */}
         {seatNodes}
       </Group>
@@ -223,6 +226,9 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         fill="white"
         listening={false}
       />
+      {table.verrou && (
+        <Text text="🔒" x={-w / 2 - 6} y={-h / 2 - 8} fontSize={14} listening={false} />
+      )}
       {/* Sièges */}
       {seatNodes}
     </Group>

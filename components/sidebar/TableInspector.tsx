@@ -63,28 +63,48 @@ export default function TableInspector() {
       {/* Forme */}
       <p className="text-sm text-muted"><span className="font-medium">Forme :</span> {shapeLabel}</p>
 
-      {/* Taille */}
-      <div>
-        <label className="text-sm text-muted">
-          {estRonde ? 'Diamètre (cm)' : 'Longueur (cm)'}
-        </label>
-        <input
-          type="number"
-          min={80}
-          max={estRonde ? 300 : 600}
-          step={5}
-          value={estRonde ? (table.diametreCm ?? 150) : (table.longueurCm ?? 180)}
-          onChange={e => {
-            const v = Math.max(80, Number(e.target.value) || 0);
-            dispatch({
-              type: 'UPDATE_TABLE',
-              id: table.id,
-              changes: estRonde ? { diametreCm: v } : { longueurCm: v },
-            });
-          }}
-          className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
-        />
-      </div>
+      {/* Taille (personnalisable) */}
+      {estRonde ? (
+        <div>
+          <label className="text-sm text-muted">Diamètre (cm)</label>
+          <input
+            type="number"
+            min={60}
+            max={400}
+            step={5}
+            value={table.diametreCm ?? 150}
+            onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { diametreCm: Math.max(60, Number(e.target.value) || 0) } })}
+            className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
+          />
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <label className="text-sm text-muted">Longueur (cm)</label>
+            <input
+              type="number"
+              min={60}
+              max={800}
+              step={5}
+              value={table.longueurCm ?? 180}
+              onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { longueurCm: Math.max(60, Number(e.target.value) || 0) } })}
+              className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
+            />
+          </div>
+          <div className="flex-1">
+            <label className="text-sm text-muted">Largeur (cm)</label>
+            <input
+              type="number"
+              min={60}
+              max={300}
+              step={5}
+              value={table.largeurCm ?? 90}
+              onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { largeurCm: Math.max(60, Number(e.target.value) || 0) } })}
+              className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Chaises en bout (tables droites) */}
       {!estRonde && (
@@ -121,6 +141,18 @@ export default function TableInspector() {
           </div>
         </div>
       )}
+
+      {/* Verrou de position */}
+      <button
+        onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { verrou: !table.verrou } })}
+        className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 text-sm rounded border transition-colors ${
+          table.verrou
+            ? 'bg-gold/15 text-gold border-gold/50'
+            : 'bg-cream text-muted border-line hover:text-ink'
+        }`}
+      >
+        {table.verrou ? '🔒 Emplacement verrouillé' : '🔓 Verrouiller l’emplacement'}
+      </button>
 
       {/* Confort */}
       <div>
