@@ -19,6 +19,7 @@ type Action =
   | { type: 'SET_ROOM_SIZE'; largeurCm: number; hauteurCm: number }
   | { type: 'SET_MODE'; mode: AppMode }
   | { type: 'LOAD_SETUP'; setup: PlannerSetup; mode: AppMode }
+  | { type: 'SET_TABLES'; tables: TableOnPlan[]; nextTableNumber: number }
   | { type: 'LOAD_STATE'; state: RoomState };
 
 // --- Initial state ---
@@ -108,6 +109,13 @@ function roomReducer(state: RoomState, action: Action): RoomState {
         decors: action.setup.decors,
         selectedTableId: null,
         selectedDecorId: null,
+      };
+    case 'SET_TABLES':
+      return {
+        ...state,
+        tables: action.tables,
+        nextTableNumber: action.nextTableNumber,
+        selectedTableId: null,
       };
     case 'LOAD_STATE':
       return action.state;

@@ -1,12 +1,23 @@
 /**
- * share.ts — Encode/décode la configuration du planner (salle + mobilier)
- * pour la transmettre aux mariés via le fragment (#…) d'un lien.
+ * share.ts — Encode/décode le plan partagé (salle + mobilier + tables +
+ * invités) pour le transmettre aux mariés via le fragment (#…) d'un lien.
  *
- * Aucune dépendance réseau : la config voyage dans l'URL. Supabase
- * remplacera ce mécanisme pour la vraie persistance / les comptes.
+ * Aucune dépendance réseau : le plan voyage dans l'URL. Supabase remplacera
+ * ce mécanisme pour la vraie persistance / synchro multi-appareils.
  */
 
-import type { PlannerSetup } from './store/types';
+import type { TableOnPlan, DecorOnPlan } from './store/types';
+import type { GuestOnPlan, Assignment } from './store/guestStore';
+
+export interface SharedPlan {
+  salleLargeurCm: number;
+  salleHauteurCm: number;
+  decors: DecorOnPlan[];
+  tables: TableOnPlan[];
+  nextTableNumber: number;
+  guests: GuestOnPlan[];
+  assignments: Record<string, Assignment>;
+}
 
 function toBase64Url(s: string): string {
   const b64 = btoa(unescape(encodeURIComponent(s)));
@@ -19,27 +30,37 @@ function fromBase64Url(s: string): string {
   return decodeURIComponent(escape(atob(b64 + pad)));
 }
 
-export function encodeSetup(setup: PlannerSetup): string {
-  return toBase64Url(JSON.stringify(setup));
+export function encodePlan(plan: SharedPlan): string {
+  return toBase64Url(JSON.stringify(plan));
 }
 
-export function decodeSetup(encoded: string): PlannerSetup | null {
+export function decodePlan(encoded: string): SharedPlan | null {
   try {
     const obj = JSON.parse(fromBase64Url(encoded));
     if (
       typeof obj?.salleLargeurCm !== 'number' ||
       typeof obj?.salleHauteurCm !== 'number' ||
-      !Array.isArray(obj?.decors)
+      !Array.isArray(obj?.decors) ||
+      !Array.isArray(obj?.tables) ||
+      !Array.isArray(obj?.guests)
     ) {
       return null;
     }
-    return obj as PlannerSetup;
+    return {
+      salleLargeurCm: obj.salleLargeurCm,
+      salleHauteurCm: obj.salleHauteurCm,
+      decors: obj.decors,
+      tables: obj.tables,
+      nextTableNumber: typeof obj.nextTableNumber === 'number' ? obj.nextTableNumber : obj.tables.length + 1,
+      guests: obj.guests,
+      assignments: obj.assignments ?? {},
+    };
   } catch {
     return null;
   }
 }
 
 /** Construit l'URL de partage à destination des mariés. */
-export function lienMaries(origin: string, setup: PlannerSetup): string {
-  return `${origin}/maries#${encodeSetup(setup)}`;
+export function lienMaries(origin: string, plan: SharedPlan): string {
+  return `${origin}/maries#${encodePlan(plan)}`;
 }

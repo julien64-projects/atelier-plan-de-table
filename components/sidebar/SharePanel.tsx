@@ -2,15 +2,19 @@
 
 import { useState } from 'react';
 import { useRoomState } from '@/lib/store/roomStore';
+import { useGuestState } from '@/lib/store/guestStore';
 import { lienMaries } from '@/lib/share';
 
 export default function SharePanel() {
-  const { salleLargeurCm, salleHauteurCm, decors } = useRoomState();
+  const { salleLargeurCm, salleHauteurCm, decors, tables, nextTableNumber } = useRoomState();
+  const { guests, assignments } = useGuestState();
   const [lien, setLien] = useState<string | null>(null);
   const [copie, setCopie] = useState(false);
 
   const generer = () => {
-    const url = lienMaries(window.location.origin, { salleLargeurCm, salleHauteurCm, decors });
+    const url = lienMaries(window.location.origin, {
+      salleLargeurCm, salleHauteurCm, decors, tables, nextTableNumber, guests, assignments,
+    });
     setLien(url);
     navigator.clipboard?.writeText(url)
       .then(() => { setCopie(true); setTimeout(() => setCopie(false), 2500); })
@@ -21,8 +25,8 @@ export default function SharePanel() {
     <div className="space-y-2">
       <h2 className="text-lg text-ink">Partager aux mariés</h2>
       <p className="text-xs text-muted">
-        Transmettez la salle et le mobilier aux mariés. Ils pourront ajouter et placer
-        leurs tables et invités, sans modifier votre installation.
+        Transmettez la salle, le mobilier et votre pré-remplissage (tables, invités).
+        Les mariés pourront compléter et placer, sans modifier salle ni mobilier.
       </p>
       <button
         onClick={generer}
