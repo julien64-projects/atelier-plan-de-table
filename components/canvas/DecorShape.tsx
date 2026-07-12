@@ -8,10 +8,9 @@ import { couleurDecor } from '@/lib/decor';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 
 export default function DecorShape({ decor }: { decor: DecorOnPlan }) {
-  const { mode, salleLargeurCm, salleHauteurCm, selectedDecorId } = useRoomState();
+  const { salleLargeurCm, salleHauteurCm, selectedDecorId } = useRoomState();
   const dispatch = useRoomDispatch();
   const isSelected = selectedDecorId === decor.id;
-  const editable = mode === 'planner';
 
   const handleDragEnd = useCallback((e: Konva.KonvaEventObject<DragEvent>) => {
     const halfW = decor.w_cm / 2;
@@ -36,37 +35,40 @@ export default function DecorShape({ decor }: { decor: DecorOnPlan }) {
     <Group
       x={decor.pos_x}
       y={decor.pos_y}
-      rotation={decor.rot}
-      draggable={editable}
-      listening={editable}
+      draggable={!decor.verrou}
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       onTap={handleClick}
-      onMouseEnter={e => setCursor(e, 'move')}
+      onMouseEnter={e => setCursor(e, decor.verrou ? 'pointer' : 'move')}
       onMouseLeave={e => setCursor(e, 'default')}
     >
-      <Rect
-        x={-decor.w_cm / 2}
-        y={-decor.h_cm / 2}
-        width={decor.w_cm}
-        height={decor.h_cm}
-        fill={couleurDecor(decor.type)}
-        stroke={isSelected ? "#cca962" : "#a6b48c"}
-        strokeWidth={isSelected ? 4 : 2}
-        dash={isSelected ? undefined : [12, 8]}
-        cornerRadius={6}
-      />
-      <Text
-        text={decor.label}
-        x={-decor.w_cm / 2}
-        y={-8}
-        width={decor.w_cm}
-        align="center"
-        fontSize={16}
-        fontStyle="bold"
-        fill="#b6a29d"
-        listening={false}
-      />
+      <Group rotation={decor.rot}>
+        <Rect
+          x={-decor.w_cm / 2}
+          y={-decor.h_cm / 2}
+          width={decor.w_cm}
+          height={decor.h_cm}
+          fill={couleurDecor(decor.type)}
+          stroke={isSelected ? "#cca962" : "#a6b48c"}
+          strokeWidth={isSelected ? 4 : 2}
+          dash={isSelected ? undefined : [12, 8]}
+          cornerRadius={6}
+        />
+        <Text
+          text={decor.label}
+          x={-decor.w_cm / 2}
+          y={-8}
+          width={decor.w_cm}
+          align="center"
+          fontSize={16}
+          fontStyle="bold"
+          fill="#b6a29d"
+          listening={false}
+        />
+      </Group>
+      {decor.verrou && (
+        <Text text="🔒" x={-decor.w_cm / 2 - 6} y={-decor.h_cm / 2 - 8} fontSize={14} listening={false} />
+      )}
     </Group>
   );
 }

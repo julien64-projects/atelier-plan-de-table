@@ -65,6 +65,18 @@ export default function DecorInspector() {
         </div>
       </div>
 
+      {/* Verrou de position */}
+      <button
+        onClick={() => dispatch({ type: 'UPDATE_DECOR', id: decor.id, changes: { verrou: !decor.verrou } })}
+        className={`w-full flex items-center justify-center gap-2 px-3 py-1.5 text-sm rounded border transition-colors ${
+          decor.verrou
+            ? 'bg-gold/15 text-gold border-gold/50'
+            : 'bg-cream text-muted border-line hover:text-ink'
+        }`}
+      >
+        {decor.verrou ? '🔒 Emplacement verrouillé' : '🔓 Verrouiller l’emplacement'}
+      </button>
+
       {/* Supprimer */}
       <button
         onClick={() => dispatch({ type: 'REMOVE_DECOR', id: decor.id })}

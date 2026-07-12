@@ -24,6 +24,7 @@ export interface DecorOnPlan {
   w_cm: number;
   h_cm: number;
   rot: number;
+  verrou?: boolean; // position verrouillée (non déplaçable)
 }
 
 export type AppMode = 'planner' | 'maries';
