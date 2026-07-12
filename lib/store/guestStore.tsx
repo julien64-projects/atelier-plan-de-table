@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useReducer, useMemo, type Dispatch, type ReactNode } from 'react';
+import type { CategorieInvite, EvenementKey } from '@/lib/guests';
 
 export interface GuestOnPlan {
   id: string;
@@ -8,6 +9,8 @@ export interface GuestOnPlan {
   menu?: string;
   marie?: boolean;
   aConfirmer?: boolean;
+  categorie?: CategorieInvite;
+  evenements?: Partial<Record<EvenementKey, boolean>>;
 }
 
 export type GuestFields = Omit<GuestOnPlan, 'id'>;
@@ -48,13 +51,24 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
     case 'ADD_GUEST':
       return {
         ...state,
-        guests: [...state.guests, { id: crypto.randomUUID(), nom: action.nom, ...action.fields }],
+        guests: [...state.guests, {
+          id: crypto.randomUUID(),
+          nom: action.nom,
+          categorie: 'adulte',
+          evenements: { mariage: true },
+          ...action.fields,
+        }],
       };
     case 'ADD_GUESTS': {
       const nouveaux = action.noms
         .map(n => n.trim())
         .filter(Boolean)
-        .map(nom => ({ id: crypto.randomUUID(), nom }));
+        .map(nom => ({
+          id: crypto.randomUUID(),
+          nom,
+          categorie: 'adulte' as const,
+          evenements: { mariage: true },
+        }));
       return { ...state, guests: [...state.guests, ...nouveaux] };
     }
     case 'UPDATE_GUEST':
