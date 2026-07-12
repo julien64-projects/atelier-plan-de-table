@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState } from '@/lib/store/guestStore';
+import { useAuth } from '@/lib/supabase/AuthProvider';
 import Section from './Section';
 import RoomConfig from './RoomConfig';
 import TableCatalog from './TableCatalog';
@@ -17,6 +18,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { selectedTableId, selectedDecorId, salleLargeurCm, salleHauteurCm, tables, decors } = useRoomState();
   const dispatch = useRoomDispatch();
   const { guests } = useGuestState();
+  const { session, user, signOut } = useAuth();
 
   // Sections paramétrées par le planner : repliées par défaut.
   const [salleOpen, setSalleOpen] = useState(false);
@@ -111,6 +113,18 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       <Section title="Partager le projet" open={partageOpen} onToggle={() => setPartageOpen(o => !o)}>
         <SharePanel />
       </Section>
+
+      {session && (
+        <div className="mt-auto px-5 py-4 border-t border-line flex items-center justify-between gap-2">
+          <span className="text-xs text-faint truncate" title={user?.email ?? ''}>{user?.email}</span>
+          <button
+            onClick={() => signOut()}
+            className="shrink-0 text-xs text-muted hover:text-ink transition-colors"
+          >
+            Déconnexion
+          </button>
+        </div>
+      )}
     </aside>
   );
 }

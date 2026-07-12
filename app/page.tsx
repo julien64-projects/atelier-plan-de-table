@@ -1,5 +1,5 @@
-import Workspace from '@/components/Workspace';
+import PlannerApp from '@/components/PlannerApp';
 
 export default function Home() {
-  return <Workspace />;
+  return <PlannerApp />;
 }
