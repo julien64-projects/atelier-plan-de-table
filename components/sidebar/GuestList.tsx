@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useGuestState, useGuestDispatch, useUnassignedGuests, type GuestOnPlan } from '@/lib/store/guestStore';
 import { useRoomState } from '@/lib/store/roomStore';
+import { CATEGORIES, EVENEMENTS } from '@/lib/guests';
 
 export default function GuestList() {
   const { guests, assignments, placementMode, warning } = useGuestState();
@@ -115,6 +116,47 @@ export default function GuestList() {
                 />
                 À confirmer
               </label>
+            </div>
+
+            {/* Catégorie */}
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-faint mb-1">Catégorie</p>
+              <div className="flex gap-1">
+                {CATEGORIES.map(c => (
+                  <button
+                    key={c.key}
+                    onClick={() => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { categorie: c.key } })}
+                    className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                      (g.categorie ?? 'adulte') === c.key
+                        ? 'bg-terracotta text-white border-terracotta'
+                        : 'bg-cream text-muted border-line hover:bg-line'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Événements */}
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-faint mb-1">Événements</p>
+              <div className="grid grid-cols-2 gap-1">
+                {EVENEMENTS.map(ev => (
+                  <label key={ev.key} className="flex items-center gap-1.5 text-xs text-muted">
+                    <input
+                      type="checkbox"
+                      checked={!!g.evenements?.[ev.key]}
+                      onChange={e => dispatch({
+                        type: 'UPDATE_GUEST',
+                        id: g.id,
+                        changes: { evenements: { ...g.evenements, [ev.key]: e.target.checked } },
+                      })}
+                    />
+                    {ev.label}
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
         )}
