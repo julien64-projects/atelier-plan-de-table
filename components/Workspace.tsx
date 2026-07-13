@@ -6,7 +6,9 @@ import { RoomProvider, useRoomDispatch } from '@/lib/store/roomStore';
 import { GuestProvider } from '@/lib/store/guestStore';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Persistence from '@/components/Persistence';
+import ProjectSync from '@/components/ProjectSync';
 import SetupSync from '@/components/SetupSync';
+import { useAuth } from '@/lib/supabase/AuthProvider';
 import { useGuestDispatch } from '@/lib/store/guestStore';
 import { decodePlan } from '@/lib/share';
 
@@ -92,12 +94,22 @@ export default function Workspace({ maries = false }: { maries?: boolean }) {
   // Clé de sauvegarde stable : régénérer/rouvrir un lien mis à jour met à jour
   // la salle+mobilier (via le lien) sans faire perdre aux mariés leurs tables.
   const planId = maries ? 'maries' : 'planner';
+  const { configured, session } = useAuth();
+  // Côté planner connecté à Supabase : la base fait foi (ProjectSync).
+  // Sinon (mariés, ou Supabase non configuré) : persistance locale + lien.
+  const useSupabase = !maries && configured && !!session;
   return (
     <RoomProvider>
       <GuestProvider>
-        <Persistence planId={planId} />
+        {useSupabase ? (
+          <ProjectSync />
+        ) : (
+          <>
+            <Persistence planId={planId} />
+            <SetupSync maries={maries} />
+          </>
+        )}
         {maries && <SetupLoader />}
-        <SetupSync maries={maries} />
         <WorkspaceInner />
       </GuestProvider>
     </RoomProvider>
