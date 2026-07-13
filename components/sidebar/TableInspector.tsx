@@ -3,6 +3,7 @@
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestsForTable, useGuestDispatch } from '@/lib/store/guestStore';
 import { etatCapacite } from '@/lib/geometry/tableGeometry';
+import NumberInput from '@/components/ui/NumberInput';
 import type { NiveauConfort } from '@/lib/types';
 
 const BADGE_LABELS: Record<string, string> = {
@@ -67,13 +68,12 @@ export default function TableInspector() {
       {estRonde ? (
         <div>
           <label className="text-sm text-muted">Diamètre (cm)</label>
-          <input
-            type="number"
+          <NumberInput
             min={60}
             max={400}
             step={5}
             value={table.diametreCm ?? 150}
-            onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { diametreCm: Math.max(60, Number(e.target.value) || 0) } })}
+            onChange={n => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { diametreCm: n } })}
             className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
           />
         </div>
@@ -81,25 +81,23 @@ export default function TableInspector() {
         <div className="flex gap-2">
           <div className="flex-1">
             <label className="text-sm text-muted">Longueur (cm)</label>
-            <input
-              type="number"
+            <NumberInput
               min={60}
               max={800}
               step={5}
               value={table.longueurCm ?? 180}
-              onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { longueurCm: Math.max(60, Number(e.target.value) || 0) } })}
+              onChange={n => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { longueurCm: n } })}
               className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
             />
           </div>
           <div className="flex-1">
             <label className="text-sm text-muted">Largeur (cm)</label>
-            <input
-              type="number"
+            <NumberInput
               min={60}
               max={300}
               step={5}
               value={table.largeurCm ?? 90}
-              onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { largeurCm: Math.max(60, Number(e.target.value) || 0) } })}
+              onChange={n => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { largeurCm: n } })}
               className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
             />
           </div>

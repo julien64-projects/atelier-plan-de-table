@@ -1,14 +1,13 @@
 'use client';
 
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
+import NumberInput from '@/components/ui/NumberInput';
 
 export default function DecorInspector() {
   const { decors, selectedDecorId } = useRoomState();
   const dispatch = useRoomDispatch();
   const decor = decors.find(d => d.id === selectedDecorId);
   if (!decor) return null;
-
-  const num = (v: string, min: number) => Math.max(min, Number(v) || 0);
 
   return (
     <div className="space-y-4">
@@ -29,23 +28,21 @@ export default function DecorInspector() {
       <div className="flex gap-2">
         <div className="flex-1">
           <label className="text-sm text-muted">Largeur (cm)</label>
-          <input
-            type="number"
+          <NumberInput
             min={20}
             step={10}
             value={decor.w_cm}
-            onChange={e => dispatch({ type: 'UPDATE_DECOR', id: decor.id, changes: { w_cm: num(e.target.value, 20) } })}
+            onChange={n => dispatch({ type: 'UPDATE_DECOR', id: decor.id, changes: { w_cm: n } })}
             className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
           />
         </div>
         <div className="flex-1">
           <label className="text-sm text-muted">Hauteur (cm)</label>
-          <input
-            type="number"
+          <NumberInput
             min={20}
             step={10}
             value={decor.h_cm}
-            onChange={e => dispatch({ type: 'UPDATE_DECOR', id: decor.id, changes: { h_cm: num(e.target.value, 20) } })}
+            onChange={n => dispatch({ type: 'UPDATE_DECOR', id: decor.id, changes: { h_cm: n } })}
             className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
           />
         </div>

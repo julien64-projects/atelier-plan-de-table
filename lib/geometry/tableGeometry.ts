@@ -118,12 +118,18 @@ export function etatCapacite(table: TableInput, nbAssis: number): EtatCapacite {
 
 const arrondi5 = (v: number): number => Math.ceil(v / 5) * 5;
 
-export function dimensionnerPour(n: number, shape: TableInput['shape'] = 'ronde', confort: NiveauConfort = 'standard'): Dimension {
+export function dimensionnerPour(
+  n: number,
+  shape: TableInput['shape'] = 'ronde',
+  confort: NiveauConfort = 'standard',
+  boutsOverride?: boolean,
+): Dimension {
   if (shape === 'ronde') {
     const diametreCm = arrondi5(diametreRondePour(n, confort));
     return { shape, diametreCm, capacite: capaciteRonde(diametreCm, confort) } satisfies DimensionRonde;
   }
-  const bouts = shape === 'rect';
+  // Par défaut : bouts sur « rect », pas sur « banquet ». Peut être forcé.
+  const bouts = boutsOverride ?? (shape === 'rect');
   const longueurCm = arrondi5(longueurDroitePour(n, { confort, bouts }));
   const largeurCm = RECT_LARGEUR_STD;
   return {

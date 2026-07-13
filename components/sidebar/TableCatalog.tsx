@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { TABLES_STANDARD, dimensionnerPour } from '@/lib/geometry/tableGeometry';
 import { capaciteRonde, capaciteDroite } from '@/lib/geometry/tableGeometry';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
+import NumberInput from '@/components/ui/NumberInput';
 import type { TableOnPlan } from '@/lib/store/types';
 import type { TableShape } from '@/lib/types';
 
@@ -16,6 +17,8 @@ export default function TableCatalog() {
   const [persoDiam, setPersoDiam] = useState(160);
   const [persoLong, setPersoLong] = useState(220);
   const [persoLarg, setPersoLarg] = useState(90);
+  const [boutsAuto, setBoutsAuto] = useState(true);   // chaises en bout (droite auto)
+  const [boutsPerso, setBoutsPerso] = useState(true); // chaises en bout (droite perso)
 
   const addTable = useCallback((table: Omit<TableOnPlan, 'id' | 'nom' | 'pos_x' | 'pos_y' | 'rot' | 'confort' | 'bouts'> & { bouts?: boolean }) => {
     const newTable: TableOnPlan = {
@@ -31,8 +34,8 @@ export default function TableCatalog() {
     dispatch({ type: 'ADD_TABLE', table: newTable });
   }, [dispatch, nextTableNumber, salleLargeurCm, salleHauteurCm]);
 
-  const addTablePour = useCallback((n: number, shape: TableShape) => {
-    const dim = dimensionnerPour(n, shape);
+  const addTablePour = useCallback((n: number, shape: TableShape, bouts?: boolean) => {
+    const dim = dimensionnerPour(n, shape, 'standard', bouts);
     if (dim.shape === 'ronde') {
       addTable({ shape: 'ronde', diametreCm: dim.diametreCm });
     } else {
@@ -40,7 +43,12 @@ export default function TableCatalog() {
     }
   }, [addTable]);
 
-  const apercu = dimensionnerPour(Math.max(1, nbConvives), formeAuto);
+  const apercu = dimensionnerPour(
+    Math.max(1, nbConvives),
+    formeAuto,
+    'standard',
+    formeAuto === 'rect' ? boutsAuto : undefined,
+  );
 
   return (
     <div className="space-y-4">
@@ -48,12 +56,11 @@ export default function TableCatalog() {
       <div className="p-3 bg-cream rounded-lg space-y-2">
         <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">Pour N convives</h3>
         <div className="flex items-center gap-2">
-          <input
-            type="number"
+          <NumberInput
             min={1}
-            max={30}
             value={nbConvives}
-            onChange={e => setNbConvives(Math.max(1, Number(e.target.value) || 1))}
+            onChange={setNbConvives}
+            aria-label="Nombre de convives"
             className="w-16 px-2 py-1 text-sm border border-line rounded"
           />
           <div className="flex gap-1">
@@ -72,6 +79,12 @@ export default function TableCatalog() {
             ))}
           </div>
         </div>
+        {formeAuto === 'rect' && (
+          <label className="flex items-center gap-2 text-xs text-muted">
+            <input type="checkbox" checked={boutsAuto} onChange={e => setBoutsAuto(e.target.checked)} />
+            Chaises en bout de table
+          </label>
+        )}
         <p className="text-xs text-faint">
           {apercu.shape === 'ronde'
             ? `Ø${apercu.diametreCm} cm`
@@ -79,7 +92,7 @@ export default function TableCatalog() {
           {' — '}{apercu.capacite} places
         </p>
         <button
-          onClick={() => addTablePour(nbConvives, formeAuto)}
+          onClick={() => addTablePour(nbConvives, formeAuto, formeAuto === 'rect' ? boutsAuto : undefined)}
           className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
           Créer la table
@@ -107,9 +120,9 @@ export default function TableCatalog() {
         {persoShape === 'ronde' ? (
           <label className="block text-xs text-muted">
             Diamètre (cm)
-            <input
-              type="number" min={60} max={400} step={5} value={persoDiam}
-              onChange={e => setPersoDiam(Math.max(60, Number(e.target.value) || 0))}
+            <NumberInput
+              min={60} max={400} step={5} value={persoDiam}
+              onChange={setPersoDiam}
               className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
             />
           </label>
@@ -117,31 +130,37 @@ export default function TableCatalog() {
           <div className="flex gap-2">
             <label className="flex-1 text-xs text-muted">
               Longueur
-              <input
-                type="number" min={60} max={800} step={5} value={persoLong}
-                onChange={e => setPersoLong(Math.max(60, Number(e.target.value) || 0))}
+              <NumberInput
+                min={60} max={800} step={5} value={persoLong}
+                onChange={setPersoLong}
                 className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
               />
             </label>
             <label className="flex-1 text-xs text-muted">
               Largeur
-              <input
-                type="number" min={60} max={300} step={5} value={persoLarg}
-                onChange={e => setPersoLarg(Math.max(60, Number(e.target.value) || 0))}
+              <NumberInput
+                min={60} max={300} step={5} value={persoLarg}
+                onChange={setPersoLarg}
                 className="mt-1 w-full px-2 py-1 text-sm border border-line rounded"
               />
             </label>
           </div>
         )}
+        {persoShape === 'rect' && (
+          <label className="flex items-center gap-2 text-xs text-muted">
+            <input type="checkbox" checked={boutsPerso} onChange={e => setBoutsPerso(e.target.checked)} />
+            Chaises en bout de table
+          </label>
+        )}
         <p className="text-xs text-faint">
           {persoShape === 'ronde'
             ? `${capaciteRonde(persoDiam)} places`
-            : `${capaciteDroite(persoLong)} places`}
+            : `${capaciteDroite(persoLong, { bouts: boutsPerso, largeurCm: persoLarg })} places`}
         </p>
         <button
           onClick={() => persoShape === 'ronde'
             ? addTable({ shape: 'ronde', diametreCm: persoDiam })
-            : addTable({ shape: 'rect', longueurCm: persoLong, largeurCm: persoLarg })}
+            : addTable({ shape: 'rect', longueurCm: persoLong, largeurCm: persoLarg, bouts: boutsPerso })}
           className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
           Créer la table

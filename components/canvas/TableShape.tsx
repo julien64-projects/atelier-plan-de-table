@@ -104,8 +104,13 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     const sx = seat.x * cosR - seat.y * sinR;
     const sy = seat.x * sinR + seat.y * cosR;
     const dir = seat.angle + rotRad;
-    const lx = sx + Math.cos(dir) * 15;
-    const ly = sy + Math.sin(dir) * 15;
+    // Étiquette orientée le long du rayon sortant (évite le chevauchement des
+    // noms sur les tables denses), retournée pour ne jamais être tête en bas.
+    const dirDeg = (dir * 180) / Math.PI;
+    const norm = ((dirDeg % 360) + 360) % 360;
+    const flip = norm > 90 && norm < 270;
+    const labelRot = flip ? dirDeg + 180 : dirDeg;
+    const LABEL_W = 90;
     const onSeatClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (placing && placementMode.guestId) {
         e.cancelBubble = true;
@@ -123,16 +128,18 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
-          <Text
-            text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 10)}`}
-            x={lx - 34}
-            y={ly - 4}
-            width={68}
-            align="center"
-            fontSize={9}
-            fontStyle={g.aConfirmer ? 'italic' : 'normal'}
-            fill={g.aConfirmer ? '#cca962' : '#b6a29d'}
-          />
+          <Group x={sx} y={sy} rotation={labelRot} listening={false}>
+            <Text
+              text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 14)}`}
+              x={flip ? -(15 + LABEL_W) : 15}
+              y={-7}
+              width={LABEL_W}
+              align={flip ? 'right' : 'left'}
+              fontSize={13}
+              fontStyle={g.aConfirmer ? 'italic' : 'bold'}
+              fill={g.aConfirmer ? '#cca962' : '#e8dcd5'}
+            />
+          </Group>
         )}
       </Group>
     );
