@@ -1,7 +1,7 @@
 'use client';
 
 import { useGuestState } from '@/lib/store/guestStore';
-import { recapInvites, CATEGORIES, EVENEMENTS } from '@/lib/guests';
+import { recapInvites, CATEGORIES, RANGS, EVENEMENTS } from '@/lib/guests';
 
 function Stat({ label, value, big = false }: { label: string; value: number; big?: boolean }) {
   return (
@@ -42,6 +42,42 @@ export default function RecapModal({ onClose }: { onClose: () => void }) {
             ))}
           </div>
 
+          {/* Vue d'ensemble VIP / Classique */}
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-muted mb-2">Vue d&apos;ensemble</p>
+            <div className="overflow-x-auto rounded-lg border border-line">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-muted border-b border-line">
+                    <th className="px-3 py-2 font-medium">Rang</th>
+                    <th className="px-3 py-2 font-medium text-right">Adultes</th>
+                    <th className="px-3 py-2 font-medium text-right">Enfants</th>
+                    <th className="px-3 py-2 font-medium text-right">Personnes</th>
+                  </tr>
+                </thead>
+                <tbody className="tabular-nums">
+                  {RANGS.map((rg, i) => {
+                    const e = r.parRang[rg.key];
+                    return (
+                      <tr key={rg.key} className={i > 0 ? 'border-t border-line' : ''}>
+                        <td className="px-3 py-2 text-ink">{rg.label}</td>
+                        <td className="px-3 py-2 text-right text-muted">{e.adulte}</td>
+                        <td className="px-3 py-2 text-right text-muted">{e.enfant}</td>
+                        <td className="px-3 py-2 text-right text-ink font-semibold">{e.total}</td>
+                      </tr>
+                    );
+                  })}
+                  <tr className="border-t border-line bg-cream/40">
+                    <td className="px-3 py-2 text-ink font-semibold">Total général</td>
+                    <td className="px-3 py-2 text-right text-muted">{r.parCategorie.adulte}</td>
+                    <td className="px-3 py-2 text-right text-muted">{r.parCategorie.enfant}</td>
+                    <td className="px-3 py-2 text-right text-blush font-semibold">{r.total}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           {/* Par événement */}
           <div>
             <p className="text-[10px] uppercase tracking-[0.22em] text-muted mb-2">Par événement</p>
@@ -63,7 +99,7 @@ export default function RecapModal({ onClose }: { onClose: () => void }) {
                       <tr key={ev.key} className={i > 0 ? 'border-t border-line' : ''}>
                         <td className="px-3 py-2 text-ink">
                           {ev.label}
-                          <span className="text-faint"> · {ev.court}</span>
+                          <span className="text-faint"> · {ev.date}</span>
                         </td>
                         <td className="px-3 py-2 text-right text-muted">{e.adulte}</td>
                         <td className="px-3 py-2 text-right text-muted">{e.enfant}</td>

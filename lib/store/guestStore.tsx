@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useReducer, useMemo, type Dispatch, type ReactNode } from 'react';
-import type { CategorieInvite, EvenementKey } from '@/lib/guests';
+import type { CategorieInvite, EvenementKey, RangInvite } from '@/lib/guests';
 
 export interface GuestOnPlan {
   id: string;
@@ -10,6 +10,7 @@ export interface GuestOnPlan {
   marie?: boolean;
   aConfirmer?: boolean;
   categorie?: CategorieInvite;
+  rang?: RangInvite;
   evenements?: Partial<Record<EvenementKey, boolean>>;
 }
 

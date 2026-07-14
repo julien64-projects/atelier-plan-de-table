@@ -76,6 +76,7 @@ function rowToGuest(r: Record<string, unknown>): GuestOnPlan {
     marie: (r.marie as boolean | null) ?? undefined,
     aConfirmer: (r.a_confirmer as boolean | null) ?? undefined,
     categorie: (r.categorie as GuestOnPlan['categorie']) ?? undefined,
+    rang: (r.rang as GuestOnPlan['rang']) ?? undefined,
     evenements: (r.evenements as GuestOnPlan['evenements']) ?? undefined,
   };
 }
@@ -126,6 +127,7 @@ function guestToRow(g: GuestOnPlan, projectId: string) {
     marie: g.marie ?? false,
     a_confirmer: g.aConfirmer ?? false,
     categorie: g.categorie ?? null,
+    rang: g.rang ?? null,
     evenements: g.evenements ?? {},
   };
 }

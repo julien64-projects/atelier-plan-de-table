@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useGuestState, useGuestDispatch, useUnassignedGuests, type GuestOnPlan } from '@/lib/store/guestStore';
 import { useRoomState } from '@/lib/store/roomStore';
-import { CATEGORIES, EVENEMENTS } from '@/lib/guests';
+import { CATEGORIES, RANGS, EVENEMENTS } from '@/lib/guests';
 import RecapModal from './RecapModal';
 
 export default function GuestList() {
@@ -55,6 +55,9 @@ export default function GuestList() {
             )}
             {g.menu && (
               <span className="px-1 py-0.5 text-[10px] rounded bg-cream text-muted whitespace-nowrap">{g.menu}</span>
+            )}
+            {g.rang === 'vip' && (
+              <span className="px-1 py-0.5 text-[10px] rounded bg-gold/15 text-gold whitespace-nowrap">VIP</span>
             )}
           </div>
           <div className="flex items-center gap-1 shrink-0">
@@ -135,6 +138,26 @@ export default function GuestList() {
                     }`}
                   >
                     {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Rang */}
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-faint mb-1">Rang</p>
+              <div className="flex gap-1">
+                {RANGS.map(rg => (
+                  <button
+                    key={rg.key}
+                    onClick={() => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { rang: rg.key } })}
+                    className={`flex-1 px-2 py-1 text-xs rounded border transition-colors ${
+                      g.rang === rg.key
+                        ? 'bg-gold/20 text-gold border-gold/50'
+                        : 'bg-cream text-muted border-line hover:bg-line'
+                    }`}
+                  >
+                    {rg.label}
                   </button>
                 ))}
               </div>
@@ -243,7 +266,7 @@ export default function GuestList() {
       {/* Mode placement actif */}
       {placementMode.active && (
         <div className="flex items-center justify-between px-2 py-1.5 bg-terracotta/15 border border-terracotta/40 rounded text-sm text-blush">
-          <span>Cliquez sur une table pour placer l'invité</span>
+          <span>Cliquez sur une table pour placer l&apos;invité</span>
           <button onClick={() => dispatch({ type: 'CANCEL_PLACEMENT' })} className="text-blush hover:text-white font-medium">
             Annuler
           </button>
