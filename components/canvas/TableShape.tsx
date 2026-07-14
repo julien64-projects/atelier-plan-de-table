@@ -103,14 +103,22 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     const occupied = !!g;
     const sx = seat.x * cosR - seat.y * sinR;
     const sy = seat.x * sinR + seat.y * cosR;
-    const dir = seat.angle + rotRad;
-    // Étiquette orientée le long du rayon sortant (évite le chevauchement des
-    // noms sur les tables denses), retournée pour ne jamais être tête en bas.
-    const dirDeg = (dir * 180) / Math.PI;
-    const norm = ((dirDeg % 360) + 360) % 360;
-    const flip = norm > 90 && norm < 270;
-    const labelRot = flip ? dirDeg + 180 : dirDeg;
-    const LABEL_W = 90;
+    // Étiquette : oblique à angle UNIFORME (-45°) pour toutes, décalée hors du
+    // point (au-dessus pour la rangée du haut, en-dessous pour celle du bas ;
+    // radialement pour les rondes).
+    const LABEL_OFFSET = 28;
+    const LABEL_W = 96;
+    const LABEL_ANGLE = -45; // degrés, identique pour tous les noms
+    let ox: number, oy: number;
+    if (table.shape === 'ronde') {
+      ox = Math.cos(seat.angle) * LABEL_OFFSET;
+      oy = Math.sin(seat.angle) * LABEL_OFFSET;
+    } else {
+      oy = seat.y < 0 ? -LABEL_OFFSET : seat.y > 0 ? LABEL_OFFSET : 0;
+      ox = seat.y === 0 ? Math.sign(seat.x) * LABEL_OFFSET : 0;
+    }
+    const lx = sx + (ox * cosR - oy * sinR);
+    const ly = sy + (ox * sinR + oy * cosR);
     const onSeatClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (placing && placementMode.guestId) {
         e.cancelBubble = true;
@@ -128,13 +136,13 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
-          <Group x={sx} y={sy} rotation={labelRot} listening={false}>
+          <Group x={lx} y={ly} rotation={LABEL_ANGLE} listening={false}>
             <Text
-              text={`${g.marie ? '💍 ' : ''}${truncate(g.nom, 14)}`}
-              x={flip ? -(15 + LABEL_W) : 15}
+              text={`${g.marie ? '💍 ' : ''}${g.menu && /vég|vege/i.test(g.menu) ? '🥗 ' : ''}${truncate(g.nom, 14)}`}
+              x={-LABEL_W / 2}
               y={-7}
               width={LABEL_W}
-              align={flip ? 'right' : 'left'}
+              align="center"
               fontSize={13}
               fontStyle={g.aConfirmer ? 'italic' : 'bold'}
               fill={g.aConfirmer ? '#cca962' : '#e8dcd5'}
