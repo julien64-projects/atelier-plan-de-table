@@ -13,6 +13,7 @@ export interface TableOnPlan {
   pos_y: number;
   rot: number;
   verrou?: boolean; // position verrouillée (non déplaçable)
+  ordre?: number;   // empilement (z-order) ; plus grand = au-dessus
 }
 
 export interface DecorOnPlan {
@@ -25,6 +26,7 @@ export interface DecorOnPlan {
   h_cm: number;
   rot: number;
   verrou?: boolean; // position verrouillée (non déplaçable)
+  ordre?: number;   // empilement (z-order) ; plus grand = au-dessus
 }
 
 export type AppMode = 'planner' | 'maries';

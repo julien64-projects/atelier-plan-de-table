@@ -49,6 +49,7 @@ function rowToTable(r: Record<string, unknown>): TableOnPlan {
     pos_y: r.pos_y as number,
     rot: r.rot as number,
     verrou: (r.verrou as boolean | null) ?? false,
+    ordre: (r.ordre as number | null) ?? 0,
   };
 }
 
@@ -63,6 +64,7 @@ function rowToDecor(r: Record<string, unknown>): DecorOnPlan {
     h_cm: r.h_cm as number,
     rot: r.rot as number,
     verrou: (r.verrou as boolean | null) ?? false,
+    ordre: (r.ordre as number | null) ?? 0,
   };
 }
 
@@ -95,6 +97,7 @@ function tableToRow(t: TableOnPlan, projectId: string) {
     pos_y: t.pos_y,
     rot: t.rot,
     verrou: t.verrou ?? false,
+    ordre: t.ordre ?? 0,
   };
 }
 
@@ -110,6 +113,7 @@ function decorToRow(d: DecorOnPlan, projectId: string) {
     h_cm: d.h_cm,
     rot: d.rot,
     verrou: d.verrou ?? false,
+    ordre: d.ordre ?? 0,
   };
 }
 
@@ -146,8 +150,8 @@ export async function loadPlan(
   project: ProjectRow,
 ): Promise<PlanSnapshot> {
   const [tablesRes, decorsRes, guestsRes] = await Promise.all([
-    supabase.from('table_plan').select('*').eq('project_id', project.id),
-    supabase.from('decor').select('*').eq('project_id', project.id),
+    supabase.from('table_plan').select('*').eq('project_id', project.id).order('ordre', { ascending: true }),
+    supabase.from('decor').select('*').eq('project_id', project.id).order('ordre', { ascending: true }),
     supabase.from('guest').select('*').eq('project_id', project.id),
   ]);
   if (tablesRes.error) throw tablesRes.error;
@@ -185,6 +189,20 @@ export async function loadPlan(
     guests,
     assignments,
   };
+}
+
+/** Recharge le plan à partir du projet id (pour la synchro Realtime). */
+export async function fetchPlan(
+  supabase: SupabaseClient,
+  projectId: string,
+): Promise<PlanSnapshot> {
+  const { data: pr, error } = await supabase
+    .from('project')
+    .select('id, planner_id, couple_names, salle_w_cm, salle_h_cm, next_table_number')
+    .eq('id', projectId)
+    .single();
+  if (error) throw error;
+  return loadPlan(supabase, pr as ProjectRow);
 }
 
 // --- Écriture complète du plan ----------------------------------------

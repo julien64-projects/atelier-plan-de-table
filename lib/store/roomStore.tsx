@@ -37,6 +37,15 @@ const initialState: RoomState = {
 
 // --- Reducer ---
 
+/** Ordre d'empilement suivant : au-dessus de tous les éléments existants. */
+function prochainOrdre(state: RoomState): number {
+  const ordres = [
+    ...state.tables.map(t => t.ordre ?? 0),
+    ...state.decors.map(d => d.ordre ?? 0),
+  ];
+  return (ordres.length ? Math.max(...ordres) : 0) + 1;
+}
+
 function roomReducer(state: RoomState, action: Action): RoomState {
   switch (action.type) {
     case 'MOVE_TABLE':
@@ -49,7 +58,7 @@ function roomReducer(state: RoomState, action: Action): RoomState {
     case 'ADD_TABLE':
       return {
         ...state,
-        tables: [...state.tables, action.table],
+        tables: [...state.tables, { ...action.table, ordre: prochainOrdre(state) }],
         nextTableNumber: state.nextTableNumber + 1,
       };
     case 'REMOVE_TABLE':
@@ -70,7 +79,7 @@ function roomReducer(state: RoomState, action: Action): RoomState {
     case 'ADD_DECOR':
       return {
         ...state,
-        decors: [...state.decors, action.decor],
+        decors: [...state.decors, { ...action.decor, ordre: prochainOrdre(state) }],
         selectedDecorId: action.decor.id,
         selectedTableId: null,
       };
