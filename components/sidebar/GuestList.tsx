@@ -16,6 +16,7 @@ export default function GuestList() {
   const [bulkOpen, setBulkOpen] = useState(false);
   const [bulk, setBulk] = useState('');
   const [recapOpen, setRecapOpen] = useState(false);
+  const [search, setSearch] = useState('');
 
   const handleAdd = () => {
     const trimmed = nom.trim();
@@ -41,6 +42,12 @@ export default function GuestList() {
   const assigned = guests.filter(g => assignments[g.id]);
   const nbAConfirmer = guests.filter(g => g.aConfirmer).length;
   const nbMaries = guests.filter(g => g.marie).length;
+
+  const q = search.trim().toLowerCase();
+  const matchQ = (g: GuestOnPlan) => !q || g.nom.toLowerCase().includes(q);
+  const unassignedF = unassigned.filter(matchQ);
+  const assignedF = assigned.filter(matchQ);
+  const aucunResultat = q.length > 0 && unassignedF.length === 0 && assignedF.length === 0;
 
   const renderGuest = (g: GuestOnPlan, place: boolean) => {
     const isEditing = editingId === g.id;
@@ -312,19 +319,46 @@ export default function GuestList() {
         </div>
       )}
 
+      {/* Recherche */}
+      {guests.length > 0 && (
+        <div className="relative">
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-faint text-sm pointer-events-none">🔍</span>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Rechercher un invité…"
+            className="w-full pl-8 pr-7 py-1.5 text-sm border border-line rounded"
+          />
+          {search && (
+            <button
+              onClick={() => setSearch('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-faint hover:text-ink"
+              aria-label="Effacer la recherche"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      )}
+
+      {aucunResultat && (
+        <p className="text-sm text-faint italic px-1">Aucun invité ne correspond à « {search.trim()} ».</p>
+      )}
+
       {/* Non placés */}
-      {unassigned.length > 0 && (
+      {unassignedF.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-faint uppercase tracking-wide mb-1">Non placés ({unassigned.length})</h3>
-          <ul className="space-y-0.5">{unassigned.map(g => renderGuest(g, false))}</ul>
+          <h3 className="text-xs font-semibold text-faint uppercase tracking-wide mb-1">Non placés ({unassignedF.length})</h3>
+          <ul className="space-y-0.5">{unassignedF.map(g => renderGuest(g, false))}</ul>
         </div>
       )}
 
       {/* Placés */}
-      {assigned.length > 0 && (
+      {assignedF.length > 0 && (
         <div>
-          <h3 className="text-xs font-semibold text-faint uppercase tracking-wide mb-1">Placés ({assigned.length})</h3>
-          <ul className="space-y-0.5">{assigned.map(g => renderGuest(g, true))}</ul>
+          <h3 className="text-xs font-semibold text-faint uppercase tracking-wide mb-1">Placés ({assignedF.length})</h3>
+          <ul className="space-y-0.5">{assignedF.map(g => renderGuest(g, true))}</ul>
         </div>
       )}
     </div>
