@@ -13,6 +13,7 @@ import DecorInspector from './DecorInspector';
 import GuestList from './GuestList';
 import AlleeAlert from './AlleeAlert';
 import SharePanel from './SharePanel';
+import PasswordSetter from '../auth/PasswordSetter';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { selectedTableId, selectedDecorId, salleLargeurCm, salleHauteurCm, tables, decors } = useRoomState();
@@ -115,14 +116,17 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </Section>
 
       {session && (
-        <div className="mt-auto px-5 py-4 border-t border-line flex items-center justify-between gap-2">
-          <span className="text-xs text-faint truncate" title={user?.email ?? ''}>{user?.email}</span>
-          <button
-            onClick={() => signOut()}
-            className="shrink-0 text-xs text-muted hover:text-ink transition-colors"
-          >
-            Déconnexion
-          </button>
+        <div className="mt-auto px-5 py-4 border-t border-line space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs text-faint truncate" title={user?.email ?? ''}>{user?.email}</span>
+            <button
+              onClick={() => signOut()}
+              className="shrink-0 text-xs text-muted hover:text-ink transition-colors"
+            >
+              Déconnexion
+            </button>
+          </div>
+          <PasswordSetter />
         </div>
       )}
     </aside>

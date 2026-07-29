@@ -30,6 +30,7 @@ interface AuthContextValue {
   user: User | null;
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
+  setPassword: (password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
 }
 
@@ -40,6 +41,7 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   signIn: async () => ({ error: 'Auth non configurée' }),
   signUp: async () => ({ error: 'Auth non configurée' }),
+  setPassword: async () => ({ error: 'Auth non configurée' }),
   signOut: async () => {},
 });
 
@@ -85,6 +87,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return {};
   }, []);
 
+  const setPassword = useCallback(async (password: string): Promise<AuthResult> => {
+    if (!supabase) return { error: 'Auth non configurée' };
+    const { error } = await supabase.auth.updateUser({ password });
+    return error ? { error: messageErreur(error.message) } : {};
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -99,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user: session?.user ?? null,
         signIn,
         signUp,
+        setPassword,
         signOut,
       }}
     >
