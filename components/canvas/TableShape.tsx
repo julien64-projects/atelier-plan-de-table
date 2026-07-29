@@ -104,7 +104,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     // Étiquette : oblique à angle UNIFORME (-45°) pour toutes, décalée hors du
     // point (au-dessus pour la rangée du haut, en-dessous pour celle du bas ;
     // radialement pour les rondes). Décalage LOCAL au groupe-siège.
-    const LABEL_OFFSET = 36;
+    const LABEL_OFFSET = 26;
     const LABEL_W = 156;
     const LABEL_ANGLE = -45; // degrés, identique pour tous les noms
     let ox: number, oy: number;

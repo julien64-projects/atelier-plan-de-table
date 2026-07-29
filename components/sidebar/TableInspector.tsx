@@ -1,8 +1,8 @@
 'use client';
 
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
-import { useGuestsForTable, useGuestDispatch } from '@/lib/store/guestStore';
-import { etatCapacite } from '@/lib/geometry/tableGeometry';
+import { useGuestsForTable, useGuestDispatch, useGuestState } from '@/lib/store/guestStore';
+import { etatCapacite, longueurDroitePour, diametreRondePour } from '@/lib/geometry/tableGeometry';
 import NumberInput from '@/components/ui/NumberInput';
 import type { NiveauConfort } from '@/lib/types';
 
@@ -28,10 +28,28 @@ export default function TableInspector() {
   const { tables, selectedTableId } = useRoomState();
   const dispatch = useRoomDispatch();
   const guestDispatch = useGuestDispatch();
+  const { assignments } = useGuestState();
 
   const table = tables.find(t => t.id === selectedTableId);
   const assignedGuests = useGuestsForTable(selectedTableId ?? '');
   if (!table) return null;
+
+  /** Retire les places vides : ramène la table à N invités et comble les trous. */
+  const retirerPlacesVides = () => {
+    const ordered = [...assignedGuests].sort(
+      (a, b) => (assignments[a.id]?.seatIndex ?? 0) - (assignments[b.id]?.seatIndex ?? 0),
+    );
+    const n = ordered.length;
+    if (n === 0) return;
+    if (table.shape === 'ronde') {
+      const d = Math.ceil(diametreRondePour(n, table.confort) / 5) * 5;
+      dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { diametreCm: d } });
+    } else {
+      const l = longueurDroitePour(n, { confort: table.confort, bouts: table.bouts });
+      dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { longueurCm: l } });
+    }
+    guestDispatch({ type: 'REMPLIR_TABLE', tableId: table.id, guestIdsInOrder: ordered.map(g => g.id) });
+  };
 
   const tableInput = {
     shape: table.shape,
@@ -186,6 +204,17 @@ export default function TableInspector() {
         )}
       </div>
 
+      {/* Retirer les places vides */}
+      {etat.assis > 0 && etat.assis < etat.max && (
+        <button
+          onClick={retirerPlacesVides}
+          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-sm rounded border border-line bg-cream text-muted hover:text-ink hover:border-gold/50 transition-colors"
+          title="Réduit la table au nombre d'invités et comble les trous"
+        >
+          Retirer {etat.max - etat.assis} place{etat.max - etat.assis > 1 ? 's' : ''} vide{etat.max - etat.assis > 1 ? 's' : ''}
+        </button>
+      )}
+
       {/* Invités assignés */}
       {assignedGuests.length > 0 && (
         <div>
@@ -209,7 +238,7 @@ export default function TableInspector() {
       {/* Supprimer */}
       <button
         onClick={() => dispatch({ type: 'REMOVE_TABLE', id: table.id })}
-        className="w-full mt-2 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/100/10 transition-colors"
+        className="w-full mt-2 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors"
       >
         Supprimer cette table
       </button>

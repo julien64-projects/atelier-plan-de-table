@@ -36,6 +36,7 @@ type GuestAction =
   | { type: 'REMOVE_GUEST'; id: string }
   | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string; seatIndex: number; warning?: string | null }
   | { type: 'MOVE_GUEST_TO_SEAT'; guestId: string; tableId: string; seatIndex: number }
+  | { type: 'REMPLIR_TABLE'; tableId: string; guestIdsInOrder: string[] }
   | { type: 'UNASSIGN_GUEST'; guestId: string }
   | { type: 'START_PLACEMENT'; guestId: string }
   | { type: 'CANCEL_PLACEMENT' }
@@ -129,6 +130,15 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
       }
       assignments[action.guestId] = { tableId: action.tableId, seatIndex: action.seatIndex };
       return { ...state, assignments, placementMode: { active: false, guestId: null }, warning: null };
+    }
+    case 'REMPLIR_TABLE': {
+      // Réassigne les invités de la table aux sièges 0..n-1 dans l'ordre fourni
+      // (comble les trous). Les autres tables ne sont pas touchées.
+      const assignments = { ...state.assignments };
+      action.guestIdsInOrder.forEach((gid, i) => {
+        assignments[gid] = { tableId: action.tableId, seatIndex: i };
+      });
+      return { ...state, assignments };
     }
     case 'UNASSIGN_GUEST': {
       const { [action.guestId]: _, ...rest } = state.assignments;
