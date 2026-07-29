@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useGuestState, useGuestDispatch, useUnassignedGuests, type GuestOnPlan } from '@/lib/store/guestStore';
 import { useRoomState } from '@/lib/store/roomStore';
-import { CATEGORIES, RANGS, EVENEMENTS } from '@/lib/guests';
+import { CATEGORIES, RANGS, EVENEMENTS, type EvenementKey } from '@/lib/guests';
 import RecapModal from './RecapModal';
 
 export default function GuestList() {
@@ -17,6 +17,10 @@ export default function GuestList() {
   const [bulk, setBulk] = useState('');
   const [recapOpen, setRecapOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [eventFilters, setEventFilters] = useState<EvenementKey[]>([]);
+
+  const toggleEvent = (k: EvenementKey) =>
+    setEventFilters(f => (f.includes(k) ? f.filter(x => x !== k) : [...f, k]));
 
   const handleAdd = () => {
     const trimmed = nom.trim();
@@ -44,10 +48,13 @@ export default function GuestList() {
   const nbMaries = guests.filter(g => g.marie).length;
 
   const q = search.trim().toLowerCase();
-  const matchQ = (g: GuestOnPlan) => !q || g.nom.toLowerCase().includes(q);
-  const unassignedF = unassigned.filter(matchQ);
-  const assignedF = assigned.filter(matchQ);
-  const aucunResultat = q.length > 0 && unassignedF.length === 0 && assignedF.length === 0;
+  const keep = (g: GuestOnPlan) =>
+    (!q || g.nom.toLowerCase().includes(q)) &&
+    eventFilters.every(ev => !!g.evenements?.[ev]);
+  const unassignedF = unassigned.filter(keep);
+  const assignedF = assigned.filter(keep);
+  const filtreActif = q.length > 0 || eventFilters.length > 0;
+  const aucunResultat = filtreActif && unassignedF.length === 0 && assignedF.length === 0;
 
   const renderGuest = (g: GuestOnPlan, place: boolean) => {
     const isEditing = editingId === g.id;
@@ -342,8 +349,39 @@ export default function GuestList() {
         </div>
       )}
 
+      {/* Filtres par événement */}
+      {guests.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {EVENEMENTS.map(ev => {
+            const on = eventFilters.includes(ev.key);
+            return (
+              <button
+                key={ev.key}
+                onClick={() => toggleEvent(ev.key)}
+                className={`px-2 py-0.5 text-[11px] rounded-full border transition-colors ${
+                  on
+                    ? 'bg-terracotta text-white border-terracotta'
+                    : 'bg-cream text-muted border-line hover:text-ink hover:border-gold/50'
+                }`}
+                title={`Afficher les invités présents : ${ev.label}`}
+              >
+                {ev.label}
+              </button>
+            );
+          })}
+          {eventFilters.length > 0 && (
+            <button
+              onClick={() => setEventFilters([])}
+              className="px-2 py-0.5 text-[11px] text-faint hover:text-ink underline"
+            >
+              Tout
+            </button>
+          )}
+        </div>
+      )}
+
       {aucunResultat && (
-        <p className="text-sm text-faint italic px-1">Aucun invité ne correspond à « {search.trim()} ».</p>
+        <p className="text-sm text-faint italic px-1">Aucun invité ne correspond aux filtres.</p>
       )}
 
       {/* Non placés */}
