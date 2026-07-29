@@ -1,6 +1,7 @@
 'use client';
 
 import { Rect } from 'react-konva';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 interface RoomBorderProps {
   largeurCm: number;
@@ -8,15 +9,16 @@ interface RoomBorderProps {
 }
 
 export default function RoomBorder({ largeurCm, hauteurCm }: RoomBorderProps) {
+  const { canvas } = useTheme();
   return (
     <Rect
       x={0}
       y={0}
       width={largeurCm}
       height={hauteurCm}
-      stroke="#c2a15a"
+      stroke={canvas.roomStroke}
       strokeWidth={2}
-      fill="#241c20"
+      fill={canvas.floor}
     />
   );
 }

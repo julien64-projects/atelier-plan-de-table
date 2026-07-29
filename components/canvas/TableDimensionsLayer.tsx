@@ -2,6 +2,7 @@
 
 import { Layer, Text } from 'react-konva';
 import { useRoomState } from '@/lib/store/roomStore';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 /**
  * Étiquettes de dimensions des tables, affichées en mode « Plan technique ».
@@ -10,6 +11,7 @@ import { useRoomState } from '@/lib/store/roomStore';
  */
 export default function TableDimensionsLayer() {
   const { tables } = useRoomState();
+  const { canvas } = useTheme();
 
   return (
     <Layer listening={false}>
@@ -27,7 +29,7 @@ export default function TableDimensionsLayer() {
             text={label}
             fontSize={13}
             fontStyle="bold"
-            fill="#cca962"
+            fill={canvas.dim}
           />
         );
       })}

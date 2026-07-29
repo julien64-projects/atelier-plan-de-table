@@ -9,16 +9,7 @@ import { positionsSiegesRonde, positionsSiegesDroite, premierSiegeLibre, type Se
 import { siegeLePlusProche } from '@/lib/geometry/seatPicking';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch, useGuestsForTable, useSeatMap } from '@/lib/store/guestStore';
-
-const BADGE_COLORS = {
-  ok: '#a6b48c',
-  plein: '#cca962',
-  depassement: '#d97b6f',
-} as const;
-
-const TABLE_FILL = '#34282c';   // médaillon aubergine
-const TABLE_STROKE = '#c98b8b'; // rose poudré
-const SELECT_STROKE = '#cca962'; // or
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 interface TableShapeProps {
   table: TableOnPlan;
@@ -29,6 +20,12 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
   const { salleLargeurCm, salleHauteurCm, selectedTableId, tables } = useRoomState();
   const dispatch = useRoomDispatch();
   const { placementMode, dragMode } = useGuestState();
+  const { canvas } = useTheme();
+
+  const TABLE_FILL = canvas.tableFill;
+  const TABLE_STROKE = canvas.tableStroke;
+  const SELECT_STROKE = canvas.selectStroke;
+  const BADGE_COLORS = { ok: canvas.badgeOk, plein: canvas.badgePlein, depassement: canvas.badgeDepass };
   const guestDispatch = useGuestDispatch();
   const assignedGuests = useGuestsForTable(table.id);
   const seatMap = useSeatMap(table.id);
@@ -173,8 +170,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           x={0}
           y={0}
           radius={draggable ? 12 : 11}
-          fill={occupied ? '#c98b8b' : '#2b2226'}
-          stroke={placing || draggable ? SELECT_STROKE : occupied && g.aConfirmer ? '#cca962' : '#6a565c'}
+          fill={occupied ? canvas.seatOccupied : canvas.seatEmpty}
+          stroke={placing || draggable ? SELECT_STROKE : occupied && g.aConfirmer ? canvas.seatLabelAccent : canvas.seatStroke}
           strokeWidth={placing || draggable ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
@@ -187,7 +184,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
               align="center"
               fontSize={13}
               fontStyle={g.aConfirmer ? 'italic' : 'bold'}
-              fill={g.aConfirmer ? '#cca962' : '#e8dcd5'}
+              fill={g.aConfirmer ? canvas.seatLabelAccent : canvas.seatLabel}
             />
           </Group>
         )}
@@ -268,7 +265,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         align="center"
         fontSize={14}
         fontStyle="bold"
-        fill="#f2e7e0"
+        fill={canvas.tableText}
         listening={false}
       />
       <Circle x={w / 2 - 5} y={-h / 2 - 5} radius={16} fill={badgeColor} listening={false} />

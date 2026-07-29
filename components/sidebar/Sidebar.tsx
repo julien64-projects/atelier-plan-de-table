@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState } from '@/lib/store/guestStore';
 import { useAuth } from '@/lib/supabase/AuthProvider';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import Section from './Section';
 import RoomConfig from './RoomConfig';
 import TableCatalog from './TableCatalog';
@@ -13,6 +14,7 @@ import DecorInspector from './DecorInspector';
 import GuestList from './GuestList';
 import AlleeAlert from './AlleeAlert';
 import SharePanel from './SharePanel';
+import AppearancePanel from './AppearancePanel';
 import PasswordSetter from '../auth/PasswordSetter';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
@@ -20,6 +22,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const dispatch = useRoomDispatch();
   const { guests } = useGuestState();
   const { session, user, signOut } = useAuth();
+  const { mode } = useTheme();
 
   // Sections paramétrées par le planner : repliées par défaut.
   const [salleOpen, setSalleOpen] = useState(false);
@@ -29,6 +32,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [tablesOpen, setTablesOpen] = useState(true);
   const [invitesOpen, setInvitesOpen] = useState(true);
   const [partageOpen, setPartageOpen] = useState(false);
+  const [apparenceOpen, setApparenceOpen] = useState(false);
 
   // Une sélection ouvre sa section ; replier depuis l'en-tête désélectionne
   // pour ne pas rester bloqué ouvert.
@@ -113,6 +117,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
       <Section title="Partager le projet" open={partageOpen} onToggle={() => setPartageOpen(o => !o)}>
         <SharePanel />
+      </Section>
+
+      <Section title="Apparence" open={apparenceOpen} onToggle={() => setApparenceOpen(o => !o)}
+        hint={mode === 'clair' ? 'Clair' : 'Sombre'}>
+        <AppearancePanel />
       </Section>
 
       {session && (

@@ -5,6 +5,7 @@ import { Stage, Layer } from 'react-konva';
 import type Konva from 'konva';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestDispatch } from '@/lib/store/guestStore';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 import { siegeLePlusProche } from '@/lib/geometry/seatPicking';
 import Grid from './Grid';
 import RoomBorder from './RoomBorder';
@@ -22,6 +23,7 @@ export default function RoomCanvas() {
   const { salleLargeurCm, salleHauteurCm, tables } = useRoomState();
   const dispatch = useRoomDispatch();
   const guestDispatch = useGuestDispatch();
+  const { canvas } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -142,7 +144,8 @@ export default function RoomCanvas() {
   return (
     <div
       ref={containerRef}
-      className="relative flex-1 bg-[#171114] overflow-hidden"
+      className="relative flex-1 overflow-hidden"
+      style={{ backgroundColor: canvas.bg }}
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >

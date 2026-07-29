@@ -1,6 +1,7 @@
 'use client';
 
 import { Line } from 'react-konva';
+import { useTheme } from '@/lib/theme/ThemeProvider';
 
 interface GridProps {
   largeurCm: number;
@@ -8,6 +9,7 @@ interface GridProps {
 }
 
 export default function Grid({ largeurCm, hauteurCm }: GridProps) {
+  const { canvas } = useTheme();
   const lines: React.JSX.Element[] = [];
 
   // Lignes verticales
@@ -17,7 +19,7 @@ export default function Grid({ largeurCm, hauteurCm }: GridProps) {
       <Line
         key={`v-${x}`}
         points={[x, 0, x, hauteurCm]}
-        stroke={isBold ? '#4a3a40' : '#332a2e'}
+        stroke={isBold ? canvas.gridBold : canvas.gridThin}
         strokeWidth={isBold ? 1.5 : 0.5}
       />
     );
@@ -30,7 +32,7 @@ export default function Grid({ largeurCm, hauteurCm }: GridProps) {
       <Line
         key={`h-${y}`}
         points={[0, y, largeurCm, y]}
-        stroke={isBold ? '#4a3a40' : '#332a2e'}
+        stroke={isBold ? canvas.gridBold : canvas.gridThin}
         strokeWidth={isBold ? 1.5 : 0.5}
       />
     );
