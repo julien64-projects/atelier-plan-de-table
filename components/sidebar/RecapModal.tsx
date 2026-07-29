@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from 'react-dom';
 import { useGuestState } from '@/lib/store/guestStore';
 import { recapInvites, CATEGORIES, RANGS, EVENEMENTS } from '@/lib/guests';
 
@@ -16,7 +17,9 @@ export default function RecapModal({ onClose }: { onClose: () => void }) {
   const { guests } = useGuestState();
   const r = recapInvites(guests);
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 bg-black/60"
       onClick={onClose}
@@ -117,6 +120,7 @@ export default function RecapModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
