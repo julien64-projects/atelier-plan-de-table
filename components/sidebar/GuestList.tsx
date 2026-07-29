@@ -7,7 +7,7 @@ import { CATEGORIES, RANGS, EVENEMENTS } from '@/lib/guests';
 import RecapModal from './RecapModal';
 
 export default function GuestList() {
-  const { guests, assignments, placementMode, warning } = useGuestState();
+  const { guests, assignments, placementMode, warning, dragMode } = useGuestState();
   const dispatch = useGuestDispatch();
   const { tables } = useRoomState();
   const unassigned = useUnassignedGuests();
@@ -45,7 +45,15 @@ export default function GuestList() {
   const renderGuest = (g: GuestOnPlan, place: boolean) => {
     const isEditing = editingId === g.id;
     return (
-      <li key={g.id} className="rounded hover:bg-cream">
+      <li
+        key={g.id}
+        draggable={dragMode}
+        onDragStart={dragMode ? (e) => {
+          e.dataTransfer.setData('application/x-guest-id', g.id);
+          e.dataTransfer.effectAllowed = 'move';
+        } : undefined}
+        className={`rounded hover:bg-cream ${dragMode ? 'cursor-grab active:cursor-grabbing ring-1 ring-gold/25' : ''}`}
+      >
         <div className="flex items-center justify-between px-2 py-1 text-sm">
           <div className="flex items-center gap-1.5 min-w-0">
             {g.marie && <span title="Marié·e">💍</span>}
@@ -207,6 +215,27 @@ export default function GuestList() {
         Récapitulatif des invités
       </button>
       {recapOpen && <RecapModal onClose={() => setRecapOpen(false)} />}
+
+      {/* Mode glisser-déposer (cadenas) */}
+      <div>
+        <button
+          onClick={() => dispatch({ type: 'SET_DRAG_MODE', on: !dragMode })}
+          className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-xs rounded border transition-colors ${
+            dragMode
+              ? 'bg-gold/15 text-gold border-gold/50'
+              : 'bg-cream text-muted border-line hover:text-ink hover:border-gold/50'
+          }`}
+          title="Activer le glisser-déposer des invités sur le plan"
+        >
+          <span className="text-sm">{dragMode ? '🔓' : '🔒'}</span>
+          {dragMode ? 'Glisser-déposer activé' : 'Positions verrouillées'}
+        </button>
+        {dragMode && (
+          <p className="mt-1 text-[11px] text-faint italic leading-snug">
+            Glissez un invité sur une chaise du plan pour le placer, ou déplacez-le d&apos;une chaise à l&apos;autre (échange si occupée). Les tables sont figées.
+          </p>
+        )}
+      </div>
 
       {/* Ajout */}
       <div className="flex gap-2">

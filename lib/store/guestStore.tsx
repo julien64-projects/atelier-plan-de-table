@@ -25,6 +25,7 @@ interface GuestState {
   guests: GuestOnPlan[];
   assignments: Record<string, Assignment>; // guestId -> siège
   placementMode: { active: boolean; guestId: string | null };
+  dragMode: boolean; // édition par glisser-déposer (cadenas ouvert)
   warning: string | null;
 }
 
@@ -34,9 +35,11 @@ type GuestAction =
   | { type: 'UPDATE_GUEST'; id: string; changes: Partial<GuestFields> }
   | { type: 'REMOVE_GUEST'; id: string }
   | { type: 'ASSIGN_GUEST'; guestId: string; tableId: string; seatIndex: number; warning?: string | null }
+  | { type: 'MOVE_GUEST_TO_SEAT'; guestId: string; tableId: string; seatIndex: number }
   | { type: 'UNASSIGN_GUEST'; guestId: string }
   | { type: 'START_PLACEMENT'; guestId: string }
   | { type: 'CANCEL_PLACEMENT' }
+  | { type: 'SET_DRAG_MODE'; on: boolean }
   | { type: 'DISMISS_WARNING' }
   | { type: 'LOAD_GUESTS'; guests: GuestOnPlan[]; assignments: Record<string, Assignment> };
 
@@ -44,6 +47,7 @@ const initialState: GuestState = {
   guests: [],
   assignments: {},
   placementMode: { active: false, guestId: null },
+  dragMode: false,
   warning: null,
 };
 
@@ -104,6 +108,28 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
         warning: action.warning ?? null,
       };
     }
+    case 'MOVE_GUEST_TO_SEAT': {
+      const prev = state.assignments[action.guestId];
+      // Déjà à cette place : rien à faire
+      if (prev && prev.tableId === action.tableId && prev.seatIndex === action.seatIndex) {
+        return state;
+      }
+      const assignments = { ...state.assignments };
+      // Occupant du siège cible (autre que l'invité déplacé)
+      let occupant: string | null = null;
+      for (const [gid, a] of Object.entries(assignments)) {
+        if (gid !== action.guestId && a.tableId === action.tableId && a.seatIndex === action.seatIndex) {
+          occupant = gid;
+          break;
+        }
+      }
+      if (occupant) {
+        if (prev) assignments[occupant] = prev;   // échange : l'occupant prend l'ancienne place
+        else delete assignments[occupant];         // venu de la liste → l'occupant redevient non placé
+      }
+      assignments[action.guestId] = { tableId: action.tableId, seatIndex: action.seatIndex };
+      return { ...state, assignments, placementMode: { active: false, guestId: null }, warning: null };
+    }
     case 'UNASSIGN_GUEST': {
       const { [action.guestId]: _, ...rest } = state.assignments;
       return { ...state, assignments: rest };
@@ -112,6 +138,8 @@ function guestReducer(state: GuestState, action: GuestAction): GuestState {
       return { ...state, placementMode: { active: true, guestId: action.guestId }, warning: null };
     case 'CANCEL_PLACEMENT':
       return { ...state, placementMode: { active: false, guestId: null }, warning: null };
+    case 'SET_DRAG_MODE':
+      return { ...state, dragMode: action.on, placementMode: { active: false, guestId: null }, warning: null };
     case 'DISMISS_WARNING':
       return { ...state, warning: null };
     case 'LOAD_GUESTS':

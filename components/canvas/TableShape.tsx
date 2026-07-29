@@ -6,6 +6,7 @@ import type Konva from 'konva';
 import type { TableOnPlan } from '@/lib/store/types';
 import { etatCapacite, empreinteTournee } from '@/lib/geometry/tableGeometry';
 import { positionsSiegesRonde, positionsSiegesDroite, premierSiegeLibre, type SeatPos } from '@/lib/geometry/seatGeometry';
+import { siegeLePlusProche } from '@/lib/geometry/seatPicking';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch, useGuestsForTable, useSeatMap } from '@/lib/store/guestStore';
 
@@ -25,9 +26,9 @@ interface TableShapeProps {
 }
 
 export default function TableShape({ table, onHover }: TableShapeProps) {
-  const { salleLargeurCm, salleHauteurCm, selectedTableId } = useRoomState();
+  const { salleLargeurCm, salleHauteurCm, selectedTableId, tables } = useRoomState();
   const dispatch = useRoomDispatch();
-  const { placementMode } = useGuestState();
+  const { placementMode, dragMode } = useGuestState();
   const guestDispatch = useGuestDispatch();
   const assignedGuests = useGuestsForTable(table.id);
   const seatMap = useSeatMap(table.id);
@@ -105,7 +106,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     const sy = seat.x * sinR + seat.y * cosR;
     // Étiquette : oblique à angle UNIFORME (-45°) pour toutes, décalée hors du
     // point (au-dessus pour la rangée du haut, en-dessous pour celle du bas ;
-    // radialement pour les rondes).
+    // radialement pour les rondes). Décalage LOCAL au groupe-siège.
     const LABEL_OFFSET = 28;
     const LABEL_W = 96;
     const LABEL_ANGLE = -45; // degrés, identique pour tous les noms
@@ -117,26 +118,67 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
       oy = seat.y < 0 ? -LABEL_OFFSET : seat.y > 0 ? LABEL_OFFSET : 0;
       ox = seat.y === 0 ? Math.sign(seat.x) * LABEL_OFFSET : 0;
     }
-    const lx = sx + (ox * cosR - oy * sinR);
-    const ly = sy + (ox * sinR + oy * cosR);
+    const llx = ox * cosR - oy * sinR;
+    const lly = ox * sinR + oy * cosR;
+
+    const draggable = !!dragMode && occupied;
+
     const onSeatClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
       if (placing && placementMode.guestId) {
         e.cancelBubble = true;
         guestDispatch({ type: 'ASSIGN_GUEST', guestId: placementMode.guestId, tableId: table.id, seatIndex: seat.index, warning: null });
       }
     };
+
+    const onSeatDragStart = (e: Konva.KonvaEventObject<DragEvent>) => {
+      e.cancelBubble = true; // ne pas déclencher le drag de la table
+    };
+    const onSeatDragEnd = (e: Konva.KonvaEventObject<DragEvent>) => {
+      e.cancelBubble = true;
+      const stage = e.target.getStage();
+      const abs = e.target.absolutePosition();
+      let roomX = abs.x;
+      let roomY = abs.y;
+      if (stage) {
+        roomX = (abs.x - stage.x()) / stage.scaleX();
+        roomY = (abs.y - stage.y()) / stage.scaleY();
+      }
+      const cible = siegeLePlusProche(tables, roomX, roomY);
+      if (cible && g) {
+        guestDispatch({ type: 'MOVE_GUEST_TO_SEAT', guestId: g.id, tableId: cible.tableId, seatIndex: cible.seatIndex });
+      }
+      // Revenir à la place d'origine ; le re-render finalisera selon l'état.
+      e.target.position({ x: sx, y: sy });
+    };
+    const onSeatEnter = (e: Konva.KonvaEventObject<MouseEvent>) => {
+      if (!draggable) return;
+      const c = e.target.getStage()?.container();
+      if (c) c.style.cursor = 'grab';
+    };
+
     return (
-      <Group key={seat.index} listening={!!placing} onClick={onSeatClick} onTap={onSeatClick}>
+      <Group
+        key={seat.index}
+        x={sx}
+        y={sy}
+        draggable={draggable}
+        listening={!!placing || draggable}
+        onClick={onSeatClick}
+        onTap={onSeatClick}
+        onDragStart={onSeatDragStart}
+        onDragEnd={onSeatDragEnd}
+        onMouseEnter={onSeatEnter}
+      >
         <Circle
-          x={sx}
-          y={sy}
-          radius={11}
+          x={0}
+          y={0}
+          radius={draggable ? 12 : 11}
           fill={occupied ? '#c98b8b' : '#2b2226'}
-          stroke={placing ? SELECT_STROKE : occupied && g.aConfirmer ? '#cca962' : '#6a565c'}
-          strokeWidth={placing ? 2 : occupied && g.aConfirmer ? 2 : 1}
+          stroke={placing || draggable ? SELECT_STROKE : occupied && g.aConfirmer ? '#cca962' : '#6a565c'}
+          strokeWidth={placing || draggable ? 2 : occupied && g.aConfirmer ? 2 : 1}
         />
         {occupied && (
-          <Group x={lx} y={ly} rotation={LABEL_ANGLE} listening={false}>
+          <Group x={llx} y={lly} rotation={LABEL_ANGLE} listening={false}>
             <Text
               text={`${g.marie ? '💍 ' : ''}${g.menu && /vég|vege/i.test(g.menu) ? '🥗 ' : ''}${truncate(g.nom, 14)}`}
               x={-LABEL_W / 2}
@@ -156,7 +198,7 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
   const groupProps = {
     x: table.pos_x,
     y: table.pos_y,
-    draggable: !table.verrou,
+    draggable: !table.verrou && !dragMode,
     onDragEnd: handleDragEnd,
     onClick: handleClick,
     onTap: handleClick,
