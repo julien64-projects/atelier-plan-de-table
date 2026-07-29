@@ -118,6 +118,15 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     const llx = ox * cosR - oy * sinR;
     const lly = ox * sinR + oy * cosR;
 
+    // Ancrage de l'étiquette : en HAUT, la 1ʳᵉ lettre au point d'ancrage
+    // (aligné à gauche) ; en BAS, la DERNIÈRE lettre au point (aligné à droite) ;
+    // sur les côtés, centré. Tous les sièges d'une rangée partageant le même
+    // point d'ancrage, les débuts (haut) et fins (bas) s'alignent au même niveau.
+    const posEtiq: 'haut' | 'bas' | 'cote' = oy < -1 ? 'haut' : oy > 1 ? 'bas' : 'cote';
+    const alignEtiq: 'left' | 'right' | 'center' =
+      posEtiq === 'haut' ? 'left' : posEtiq === 'bas' ? 'right' : 'center';
+    const textX = posEtiq === 'haut' ? 0 : posEtiq === 'bas' ? -LABEL_W : -LABEL_W / 2;
+
     const draggable = !!dragMode && occupied;
 
     const onSeatClick = (e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
@@ -178,10 +187,10 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
           <Group x={llx} y={lly} rotation={LABEL_ANGLE} listening={false}>
             <Text
               text={`${g.marie ? '💍 ' : ''}${g.menu && /vég|vege/i.test(g.menu) ? '🥗 ' : ''}${truncate(g.nom, 16)}`}
-              x={-LABEL_W / 2}
+              x={textX}
               y={-11}
               width={LABEL_W}
-              align="center"
+              align={alignEtiq}
               fontSize={21}
               fontStyle={g.aConfirmer ? 'italic' : 'bold'}
               fill={g.aConfirmer ? canvas.seatLabelAccent : canvas.seatLabel}
