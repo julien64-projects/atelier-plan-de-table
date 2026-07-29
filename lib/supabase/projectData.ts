@@ -137,9 +137,22 @@ function guestToRow(g: GuestOnPlan, projectId: string) {
 export async function getOrCreateProject(
   supabase: SupabaseClient,
 ): Promise<ProjectRow> {
-  // Passe par une fonction SECURITY DEFINER : la création du projet via INSERT
-  // direct est bloquée par un WITH CHECK défaillant (auth.uid() nul en contexte
-  // RLS d'écriture). La fonction valide auth.uid() dans son corps.
+  // Sélection DÉTERMINISTE du projet du planner : le plus récemment modifié
+  // (celui qui contient le travail), l'id départageant les égalités. Deux
+  // projets peuvent partager le même created_at (race au tout premier
+  // démarrage) ; s'en remettre au `order by created_at limit 1` de la fonction
+  // SQL renvoyait alors l'un OU l'autre au hasard, dispersant les sauvegardes.
+  const { data: existants, error: selErr } = await supabase
+    .from('project')
+    .select('id, planner_id, couple_names, salle_w_cm, salle_h_cm, next_table_number')
+    .order('updated_at', { ascending: false })
+    .order('id', { ascending: true })
+    .limit(1);
+  if (selErr) throw selErr;
+  if (existants && existants.length > 0) return existants[0] as ProjectRow;
+
+  // Aucun projet encore : création via la fonction SECURITY DEFINER (l'INSERT
+  // direct est bloqué par un WITH CHECK défaillant en contexte RLS d'écriture).
   const { data, error } = await supabase.rpc('get_or_create_my_project');
   if (error) throw error;
   return data as ProjectRow;
