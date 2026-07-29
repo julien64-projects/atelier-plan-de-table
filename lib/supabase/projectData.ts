@@ -119,6 +119,12 @@ function decorToRow(d: DecorOnPlan, projectId: string) {
 }
 
 function guestToRow(g: GuestOnPlan, projectId: string) {
+  // NB : la colonne `rang` (VIP/Classique) n'existe pas encore sur cette base
+  // Supabase (migration 0004_rang non appliquée). L'inclure faisait échouer TOUT
+  // l'enregistrement (PGRST204 « Could not find the 'rang' column »), d'où des
+  // modifications non conservées. On l'omet donc de l'écriture ; la lecture
+  // (rowToGuest) la tolère (undefined si absente). Réactiver la ligne `rang`
+  // ci-dessous une fois la colonne ajoutée en base.
   return {
     id: g.id,
     project_id: projectId,
@@ -127,7 +133,7 @@ function guestToRow(g: GuestOnPlan, projectId: string) {
     marie: g.marie ?? false,
     a_confirmer: g.aConfirmer ?? false,
     categorie: g.categorie ?? null,
-    rang: g.rang ?? null,
+    // rang: g.rang ?? null,   // ← à réactiver quand la colonne `rang` existe
     evenements: g.evenements ?? {},
   };
 }
