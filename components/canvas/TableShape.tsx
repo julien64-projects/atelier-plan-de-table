@@ -104,8 +104,8 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
     // Étiquette : oblique à angle UNIFORME (-45°) pour toutes, décalée hors du
     // point (au-dessus pour la rangée du haut, en-dessous pour celle du bas ;
     // radialement pour les rondes). Décalage LOCAL au groupe-siège.
-    const LABEL_OFFSET = 28;
-    const LABEL_W = 96;
+    const LABEL_OFFSET = 32;
+    const LABEL_W = 128;
     const LABEL_ANGLE = -45; // degrés, identique pour tous les noms
     let ox: number, oy: number;
     if (table.shape === 'ronde') {
@@ -177,12 +177,12 @@ export default function TableShape({ table, onHover }: TableShapeProps) {
         {occupied && (
           <Group x={llx} y={lly} rotation={LABEL_ANGLE} listening={false}>
             <Text
-              text={`${g.marie ? '💍 ' : ''}${g.menu && /vég|vege/i.test(g.menu) ? '🥗 ' : ''}${truncate(g.nom, 14)}`}
+              text={`${g.marie ? '💍 ' : ''}${g.menu && /vég|vege/i.test(g.menu) ? '🥗 ' : ''}${truncate(g.nom, 16)}`}
               x={-LABEL_W / 2}
-              y={-7}
+              y={-9}
               width={LABEL_W}
               align="center"
-              fontSize={13}
+              fontSize={17}
               fontStyle={g.aConfirmer ? 'italic' : 'bold'}
               fill={g.aConfirmer ? canvas.seatLabelAccent : canvas.seatLabel}
             />
