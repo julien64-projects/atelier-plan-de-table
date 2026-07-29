@@ -11,6 +11,7 @@ import RoomBorder from './RoomBorder';
 import PlanObjectsLayer from './PlanObjectsLayer';
 import DistanceLinesLayer from './DistanceLinesLayer';
 import WallDistanceLayer from './WallDistanceLayer';
+import TableDimensionsLayer from './TableDimensionsLayer';
 import { planEnPNG, planEnPDF, telecharger } from '@/lib/export/exportPlan';
 
 const MIN_SCALE = 0.1;
@@ -206,6 +207,7 @@ export default function RoomCanvas() {
           {showTechnique && <Grid largeurCm={salleLargeurCm} hauteurCm={salleHauteurCm} />}
         </Layer>
         <PlanObjectsLayer onHover={setHoveredTableId} />
+        {showTechnique && <TableDimensionsLayer />}
         {showTechnique && <DistanceLinesLayer hoveredTableId={hoveredTableId} />}
         {showTechnique && <WallDistanceLayer />}
       </Stage>
