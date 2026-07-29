@@ -105,6 +105,16 @@ export default function GuestList() {
 
         {isEditing && (
           <div className="px-2 pb-2 space-y-2">
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-faint mb-1">Nom</p>
+              <input
+                type="text"
+                value={g.nom}
+                onChange={e => dispatch({ type: 'UPDATE_GUEST', id: g.id, changes: { nom: e.target.value } })}
+                placeholder="Nom de l'invité"
+                className="w-full px-2 py-1 text-sm border border-line rounded text-ink font-medium"
+              />
+            </div>
             <input
               type="text"
               value={g.menu ?? ''}
