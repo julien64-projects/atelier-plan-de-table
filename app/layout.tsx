@@ -16,8 +16,9 @@ const jost = Jost({
 });
 
 export const metadata: Metadata = {
-  title: "Atelier Plan de Table",
-  description: "Créez vos plans de table de mariage et réception",
+  title: "TablePlan — Plan de table de mariage en ligne",
+  description:
+    "TablePlan : créez, placez et partagez votre plan de table de mariage en ligne. Glisser-déposer des invités, collaboration en temps réel, export PDF.",
 };
 
 export default function RootLayout({

@@ -33,8 +33,8 @@ export default function LoginForm() {
     <div className="min-h-screen w-full flex items-center justify-center bg-[var(--background)] px-5">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">L&apos;Atelier</p>
-          <h1 className="text-[32px] leading-tight text-ink mt-1">Plan de Table</h1>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">Mariage</p>
+          <h1 className="text-[32px] leading-tight text-ink mt-1">TablePlan</h1>
           <div className="flex items-center justify-center gap-3 text-gold my-3">
             <span className="h-px w-8 bg-gold/50" />
             <span className="text-xs">&#10086;</span>
