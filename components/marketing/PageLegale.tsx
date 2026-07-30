@@ -23,10 +23,10 @@ export default function PageLegale({
   return (
     <div className="min-h-screen bg-[var(--background)] text-ink">
       <header className="max-w-3xl mx-auto px-6 py-6 flex items-center justify-between">
-        <Link href="/" className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">
+        <Link href="/" className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold py-2 pr-2">
           {SOCIETE.marque}
         </Link>
-        <Link href="/" className="text-sm text-muted hover:text-ink transition-colors">
+        <Link href="/" className="text-sm text-muted hover:text-ink transition-colors py-2 px-1 -mr-1">
           ← Retour au site
         </Link>
       </header>
@@ -48,11 +48,11 @@ export default function PageLegale({
 
       <footer className="border-t border-line">
         <nav className="max-w-3xl mx-auto px-6 py-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-faint">
-          <Link href="/mentions-legales" className="hover:text-ink transition-colors">Mentions légales</Link>
-          <Link href="/cgv" className="hover:text-ink transition-colors">Conditions générales</Link>
-          <Link href="/confidentialite" className="hover:text-ink transition-colors">Confidentialité</Link>
-          <Link href="/cookies" className="hover:text-ink transition-colors">Cookies</Link>
-          <Link href="/securite" className="hover:text-ink transition-colors">Sécurité des paiements</Link>
+          <Link href="/mentions-legales" className="inline-block py-2 hover:text-ink transition-colors">Mentions légales</Link>
+          <Link href="/cgv" className="inline-block py-2 hover:text-ink transition-colors">Conditions générales</Link>
+          <Link href="/confidentialite" className="inline-block py-2 hover:text-ink transition-colors">Confidentialité</Link>
+          <Link href="/cookies" className="inline-block py-2 hover:text-ink transition-colors">Cookies</Link>
+          <Link href="/securite" className="inline-block py-2 hover:text-ink transition-colors">Sécurité des paiements</Link>
         </nav>
       </footer>
     </div>

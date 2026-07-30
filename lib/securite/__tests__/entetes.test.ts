@@ -3,6 +3,19 @@ import { entetesSecurite, politiqueCSP } from '@/lib/securite/entetes';
 
 const valeur = (cle: string) => entetesSecurite().find(e => e.key === cle)?.value ?? '';
 
+/** Exécute une assertion comme si l'on était en production. */
+function enProduction(fn: () => void) {
+  const avant = process.env.NODE_ENV;
+  try {
+    // @ts-expect-error — réécriture volontaire pour le test
+    process.env.NODE_ENV = 'production';
+    fn();
+  } finally {
+    // @ts-expect-error — restauration
+    process.env.NODE_ENV = avant;
+  }
+}
+
 describe('en-têtes de sécurité', () => {
   it('impose HTTPS durablement (PCI DSS 4.2.1)', () => {
     const hsts = valeur('Strict-Transport-Security');
@@ -11,9 +24,18 @@ describe('en-têtes de sécurité', () => {
     expect(age).toBeGreaterThanOrEqual(31536000); // au moins un an
   });
 
-  it('interdit l’encadrement de la page de paiement', () => {
-    expect(valeur('X-Frame-Options')).toBe('DENY');
-    expect(politiqueCSP()).toContain("frame-ancestors 'none'");
+  it('interdit l’encadrement de la page de paiement EN PRODUCTION', () => {
+    // L'encadrement est toléré en local pour les contrôles de rendu mobile.
+    // C'est en production que la garantie compte, donc c'est là qu'on teste.
+    enProduction(() => {
+      expect(valeur('X-Frame-Options')).toBe('DENY');
+      expect(politiqueCSP()).toContain("frame-ancestors 'none'");
+    });
+  });
+
+  it('n’autorise l’encadrement local qu’à notre propre origine', () => {
+    expect(valeur('X-Frame-Options')).toBe('SAMEORIGIN');
+    expect(politiqueCSP()).toContain("frame-ancestors 'self'");
   });
 
   it('bloque le reniflage de type MIME', () => {

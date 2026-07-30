@@ -61,3 +61,30 @@ input[type="checkbox"] { accent-color: var(--color-terracotta); }
 *::-webkit-scrollbar { width: 8px; height: 8px; }
 *::-webkit-scrollbar-thumb { background: var(--color-line); border-radius: 4px; }
 *::-webkit-scrollbar-thumb:hover { background: var(--color-faint); }
+
+/* ---------------------------------------------------------------------
+   Zones tactiles.
+
+   L'éditeur est dense : sur écran tactile, les commandes répétées de la
+   liste d'invités (✎, Retirer, ×) tombent à 16-20 px de haut, sous le
+   seuil de ce qu'un doigt vise de façon fiable.
+
+   La règle ne s'applique qu'aux pointeurs GROSSIERS : à la souris,
+   l'interface garde sa densité d'origine. On évite ainsi de gonfler
+   l'affichage de bureau pour résoudre un problème mobile.
+   --------------------------------------------------------------------- */
+@media (pointer: coarse) {
+  button,
+  summary,
+  [role="button"] {
+    min-height: 32px;
+  }
+
+  /* Centre le contenu des petits boutons dont la hauteur vient d'augmenter,
+     sans toucher à ceux qui gèrent déjà leur propre disposition. */
+  button:not(.flex):not(.grid):not(.inline-flex) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

@@ -56,22 +56,102 @@ function TableRonde({
   );
 }
 
+/**
+ * Version compacte pour téléphone.
+ *
+ * Le rendu complet, réduit à la largeur d'un mobile, ramène son texte à
+ * environ 3 px : illisible. Plutôt que de faire défiler l'image
+ * horizontalement, on montre moins de choses, mais lisiblement — le panneau
+ * latéral disparaît, une seule table ronde est détaillée.
+ */
+function ApercuCompact() {
+  const NOMS = ['Camille', 'Théo', 'Inès', 'Marc', 'Léa', 'Hugo'];
+  return (
+    <svg
+      viewBox="0 0 340 300"
+      className="w-full h-auto block"
+      role="img"
+      aria-label="Plan de salle TablePlan à l’échelle : table d’honneur, table ronde de six convives nommés, piste de danse et contrôle de capacité. Invités fictifs."
+    >
+      <rect width="340" height="300" fill={C.fond} />
+      <rect x="10" y="10" width="320" height="280" rx="6" fill="none" stroke={C.or} strokeOpacity="0.35" />
+
+      <g stroke={C.trait} strokeOpacity="0.5">
+        {Array.from({ length: 8 }, (_, i) => (
+          <line key={`v${i}`} x1={10 + i * 40} y1="10" x2={10 + i * 40} y2="290" />
+        ))}
+        {Array.from({ length: 7 }, (_, i) => (
+          <line key={`h${i}`} x1="10" y1={10 + i * 40} x2="330" y2={10 + i * 40} />
+        ))}
+      </g>
+
+      {/* Table d'honneur */}
+      <rect x="60" y="44" width="220" height="26" rx="3" fill={C.champ} stroke={C.or} strokeOpacity="0.5" />
+      <text x="170" y="61" textAnchor="middle" fontSize="10" fill={C.attenue}>Table d’honneur</text>
+      {['Manon', 'Les mariés', 'Julie'].map((n, i) => {
+        const x = 100 + i * 70;
+        const marie = n === 'Les mariés';
+        return (
+          <g key={n}>
+            <circle cx={x} cy="34" r={marie ? 6 : 5} fill={marie ? C.or : C.accent} />
+            <text x={x} y="22" textAnchor="middle" fontSize="9.5" fill={marie ? C.or : C.attenue}>{n}</text>
+          </g>
+        );
+      })}
+
+      {/* Table ronde détaillée */}
+      <circle cx="170" cy="165" r="42" fill={C.champ} stroke={C.or} strokeOpacity="0.45" />
+      <text x="170" y="169" textAnchor="middle" fontSize="10" fill={C.attenue}>Table 1</text>
+      {NOMS.map((n, i) => {
+        const a = (i / NOMS.length) * Math.PI * 2 - Math.PI / 2;
+        const sx = 170 + Math.cos(a) * 52;
+        const sy = 165 + Math.sin(a) * 52;
+        const tx = 170 + Math.cos(a) * 72;
+        const ty = 165 + Math.sin(a) * 72;
+        return (
+          <g key={n}>
+            <circle cx={sx} cy={sy} r="5" fill={C.accent} />
+            <text x={tx} y={ty + 3} textAnchor="middle" fontSize="9.5" fill={C.attenue}>{n}</text>
+          </g>
+        );
+      })}
+
+      {/* Piste de danse */}
+      <rect x="112" y="246" width="116" height="34" rx="4" fill={C.champ} stroke={C.trait} strokeDasharray="3 2" />
+      <text x="170" y="267" textAnchor="middle" fontSize="9.5" fill={C.discret}>Piste de danse</text>
+
+      {/* Capacité */}
+      <rect x="18" y="246" width="84" height="34" rx="4" fill={C.champ} stroke={C.sauge} strokeOpacity="0.45" />
+      <circle cx="30" cy="263" r="4.5" fill={C.sauge} />
+      <text x="39" y="260" fontSize="8.5" fill={C.encre}>Capacité OK</text>
+      <text x="39" y="272" fontSize="8" fill={C.discret}>66 places</text>
+    </svg>
+  );
+}
+
 export default function ApercuInterface({ className = '' }: { className?: string }) {
   return (
     <div className={`rounded-2xl border border-line bg-surface overflow-hidden shadow-2xl ${className}`}>
       {/* Barre de fenêtre */}
       <div className="flex items-center gap-1.5 px-3 py-2 border-b border-line bg-cream">
-        <span className="w-2 h-2 rounded-full bg-terracotta/60" />
-        <span className="w-2 h-2 rounded-full bg-gold/50" />
-        <span className="w-2 h-2 rounded-full bg-sage/50" />
-        <span className="ml-3 text-[9px] text-faint tracking-wide">
-          TablePlan — Mariage Camille &amp; Théo · Salle 25 × 15 m
+        <span className="w-2 h-2 rounded-full bg-terracotta/60 shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-gold/50 shrink-0" />
+        <span className="w-2 h-2 rounded-full bg-sage/50 shrink-0" />
+        <span className="ml-3 text-[9px] text-faint tracking-wide truncate">
+          <span className="hidden sm:inline">TablePlan — Mariage Camille &amp; Théo · </span>
+          Salle 25 × 15 m
         </span>
       </div>
 
+      {/* Sur téléphone, la version compacte ; à partir du format tablette, le
+          rendu complet avec le panneau latéral. */}
+      <div className="sm:hidden">
+        <ApercuCompact />
+      </div>
+
       <svg
+        className="hidden sm:block w-full h-auto"
         viewBox="0 0 600 330"
-        className="w-full h-auto block"
         role="img"
         aria-label="Aperçu de l’interface TablePlan : liste d’invités à gauche, plan de salle à l’échelle à droite avec tables rondes et table d’honneur."
       >

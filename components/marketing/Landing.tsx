@@ -36,7 +36,8 @@ function LangToggle() {
           key={l.key}
           onClick={() => setLang(l.key)}
           aria-label={l.label}
-          className={`px-1.5 py-0.5 text-sm rounded transition-opacity ${lang === l.key ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
+          // Zone tactile d'au moins 40 px : un drapeau de 24 px se rate au doigt.
+          className={`px-2.5 py-2 text-sm leading-none rounded transition-opacity ${lang === l.key ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
         >
           {l.flag}
         </button>
@@ -61,17 +62,20 @@ function LandingInner() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-ink">
       <header className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-        <Link href="/" className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">
+        <Link href="/" className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold py-2 pr-2 -ml-0.5">
           {SOCIETE.marque}
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <LangToggle />
-          <Link href="/app" className="text-sm text-muted hover:text-ink transition-colors">
+          {/* « Se connecter » mène au même écran que « Ouvrir l'app » : sur
+              téléphone on n'en garde qu'un, sans quoi l'en-tête se replie sur
+              deux lignes et double de hauteur. */}
+          <Link href="/app" className="hidden sm:inline text-sm text-muted hover:text-ink transition-colors">
             {t('land.nav.login')}
           </Link>
           <Link
             href="/app"
-            className="px-4 py-1.5 text-sm rounded-full bg-terracotta text-white hover:bg-terracotta-dark transition-colors"
+            className="px-4 py-2 text-sm rounded-full bg-terracotta text-white hover:bg-terracotta-dark transition-colors whitespace-nowrap"
           >
             {t('land.nav.open')}
           </Link>
@@ -234,12 +238,15 @@ function LandingInner() {
         </h2>
         <div className="space-y-3">
           {FAQ.map(q => (
-            <details key={q} className="group rounded-2xl border border-line bg-surface px-5 py-4">
-              <summary className="cursor-pointer list-none flex items-start justify-between gap-4 text-ink">
+            // Le rembourrage vertical est porté par <summary>, pas par
+            // <details> : c'est lui la zone cliquable, et sur téléphone elle
+            // ne faisait que 24 px de haut.
+            <details key={q} className="group rounded-2xl border border-line bg-surface px-5">
+              <summary className="cursor-pointer list-none flex items-start justify-between gap-4 text-ink py-4">
                 <h3 className="text-base leading-snug">{t(`land.faq.${q}`)}</h3>
                 <span className="text-gold shrink-0 transition-transform group-open:rotate-45">+</span>
               </summary>
-              <p className="mt-3 text-sm text-muted leading-relaxed">
+              <p className="pb-4 -mt-1 text-sm text-muted leading-relaxed">
                 {t(`land.faq.a${q.slice(1)}`)}
               </p>
             </details>
@@ -274,8 +281,8 @@ function LandingInner() {
           <nav>
             <p className="text-[10px] uppercase tracking-[0.2em] text-faint font-semibold">{t('land.footer.product')}</p>
             <ul className="mt-2 space-y-1 text-xs text-muted">
-              <li><Link href="/app" className="hover:text-ink transition-colors">{t('land.nav.open')}</Link></li>
-              <li><Link href="/#tarifs" className="hover:text-ink transition-colors">{t('land.pricing.title')}</Link></li>
+              <li><Link href="/app" className="inline-block py-2 hover:text-ink transition-colors">{t('land.nav.open')}</Link></li>
+              <li><Link href="/#tarifs" className="inline-block py-2 hover:text-ink transition-colors">{t('land.pricing.title')}</Link></li>
             </ul>
           </nav>
 
@@ -284,7 +291,7 @@ function LandingInner() {
             <ul className="mt-2 space-y-1 text-xs text-muted">
               {LIENS_LEGAUX.map(l => (
                 <li key={l.href}>
-                  <Link href={l.href} className="hover:text-ink transition-colors">{l.label}</Link>
+                  <Link href={l.href} className="inline-block py-2 hover:text-ink transition-colors">{l.label}</Link>
                 </li>
               ))}
             </ul>

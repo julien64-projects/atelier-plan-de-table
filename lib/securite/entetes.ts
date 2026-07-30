@@ -24,6 +24,7 @@ const GOOGLE_FONTS = 'https://fonts.gstatic.com';
  * scripts, qui sont la surface d'attaque réelle.
  */
 export function politiqueCSP(): string {
+  const production = process.env.NODE_ENV === 'production';
   return [
     `default-src 'self'`,
     // 'unsafe-eval' est requis par le moteur de développement de Next ; en
@@ -35,10 +36,15 @@ export function politiqueCSP(): string {
     `img-src 'self' data: blob:`,
     `font-src 'self' ${GOOGLE_FONTS} data:`,
     `connect-src 'self' ${SUPABASE} wss://*.supabase.co ${STRIPE_API}`,
-    // Le paiement s'ouvre dans un cadre Stripe.
-    `frame-src ${STRIPE_JS} https://hooks.stripe.com`,
-    // Personne ne doit pouvoir encadrer nos pages : parade au détournement de clic.
-    `frame-ancestors 'none'`,
+    // Le paiement s'ouvre dans un cadre Stripe. En développement, 'self' est
+    // ajouté pour permettre l'audit du rendu mobile dans un cadre local.
+    production
+      ? `frame-src ${STRIPE_JS} https://hooks.stripe.com`
+      : `frame-src 'self' ${STRIPE_JS} https://hooks.stripe.com`,
+    // Personne ne doit pouvoir encadrer nos pages : parade au détournement de
+    // clic. Assoupli à 'self' en développement seulement, pour permettre les
+    // contrôles de rendu mobile dans un cadre local.
+    production ? `frame-ancestors 'none'` : `frame-ancestors 'self'`,
     `base-uri 'self'`,
     `form-action 'self'`,
     `object-src 'none'`,
@@ -58,7 +64,7 @@ export function entetesSecurite(): EnteteSecurite[] {
     { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
     { key: 'Content-Security-Policy', value: politiqueCSP() },
     { key: 'X-Content-Type-Options', value: 'nosniff' },
-    { key: 'X-Frame-Options', value: 'DENY' },
+    { key: 'X-Frame-Options', value: process.env.NODE_ENV === 'production' ? 'DENY' : 'SAMEORIGIN' },
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
     // Aucune fonctionnalité sensible n'est utilisée par le service.
     { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(self), interest-cohort=()' },
