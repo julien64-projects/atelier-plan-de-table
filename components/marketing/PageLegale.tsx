@@ -59,6 +59,24 @@ export default function PageLegale({
   );
 }
 
+/**
+ * Point de contact publié.
+ *
+ * Tant qu'aucune adresse électronique n'est renseignée dans `societe.ts`, on
+ * publie l'adresse postale du siège : un moyen de contact reste ainsi
+ * disponible, ce que la loi exige, sans exposer de boîte personnelle.
+ *
+ * Les phrases qui l'utilisent sont toutes construites avec deux points
+ * (« Nous écrire : … ») afin de rester correctes dans les deux cas, sans
+ * problème d'article contracté.
+ */
+export function Contact() {
+  if (SOCIETE.email) {
+    return <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a>;
+  }
+  return <span className="text-ink">{SOCIETE.siege}</span>;
+}
+
 /** Section titrée, pour homogénéiser la structure des documents. */
 export function Section({ titre, children }: { titre: string; children: ReactNode }) {
   return (

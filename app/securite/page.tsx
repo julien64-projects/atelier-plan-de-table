@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PageLegale, { Section } from '@/components/marketing/PageLegale';
+import PageLegale, { Section, Contact } from '@/components/marketing/PageLegale';
 import { SOCIETE } from '@/lib/legal/societe';
 
 export const metadata: Metadata = {
@@ -113,10 +113,10 @@ export default function Securite() {
 
       <Section titre="Signaler une vulnérabilité">
         <p>
-          Si vous pensez avoir découvert une faille de sécurité, écrivez à{' '}
-          <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a> en décrivant le problème
-          et les étapes permettant de le reproduire. Nous accusons réception sous
-          72 heures et vous tenons informé du traitement.
+          Si vous pensez avoir découvert une faille de sécurité, écrivez-nous :{' '}
+          <Contact />, en décrivant le problème et les étapes permettant de le
+          reproduire. Nous accusons réception sous 72 heures et vous tenons informé du
+          traitement.
         </p>
         <p>
           Merci de ne pas divulguer publiquement la faille avant qu’un correctif ne soit

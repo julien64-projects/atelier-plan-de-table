@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PageLegale, { Section } from '@/components/marketing/PageLegale';
+import PageLegale, { Section, Contact } from '@/components/marketing/PageLegale';
 import { SOCIETE, TARIF } from '@/lib/legal/societe';
 
 export const metadata: Metadata = {
@@ -248,8 +248,7 @@ export default function CGV() {
       <Section titre="13. Droit applicable et différends">
         <p>
           Les présentes conditions sont soumises au droit français. En cas de différend, une
-          solution amiable sera recherchée en priorité, en écrivant à{' '}
-          <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a>.
+          solution amiable sera recherchée en priorité. Nous écrire : <Contact />.
         </p>
         <p>
           À défaut d’accord dans un délai de trente (30) jours, <strong>compétence expresse

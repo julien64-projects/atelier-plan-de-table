@@ -73,7 +73,9 @@ function donneesStructurees() {
     name: SOCIETE.nom,
     legalName: `${SOCIETE.nom} SAS`,
     url: SOCIETE.siteUrl,
-    email: SOCIETE.email,
+    // Omise tant qu'aucune adresse n'est publiée : mieux vaut pas de champ
+    // qu'un champ vide, qu'un moteur pourrait reprendre tel quel.
+    ...(SOCIETE.email ? { email: SOCIETE.email } : {}),
     address: {
       '@type': 'PostalAddress',
       streetAddress: '47 rue Vivienne',

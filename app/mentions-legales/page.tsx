@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PageLegale, { Section } from '@/components/marketing/PageLegale';
+import PageLegale, { Section, Contact } from '@/components/marketing/PageLegale';
 import { SOCIETE, HEBERGEUR } from '@/lib/legal/societe';
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ export default function MentionsLegales() {
           <li>Identifiant européen unique (EUID) : {SOCIETE.euid}</li>
           {SOCIETE.tvaIntracom && <li>TVA intracommunautaire : {SOCIETE.tvaIntracom}</li>}
           <li>Date d’immatriculation : {SOCIETE.immatriculation}</li>
-          <li>Contact : <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a></li>
+          <li>Nous contacter : <Contact /></li>
         </ul>
         <p>
           <strong>{SOCIETE.marque}</strong> est une marque exploitée par {SOCIETE.nom}.
@@ -86,9 +86,8 @@ export default function MentionsLegales() {
 
       <Section titre="Signalement d’un contenu illicite">
         <p>
-          Tout contenu manifestement illicite peut être signalé à l’adresse{' '}
-          <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a>, en précisant l’URL
-          concernée et le motif du signalement.
+          Tout contenu manifestement illicite peut être signalé à : <Contact />, en
+          précisant l’URL concernée et le motif du signalement.
         </p>
       </Section>
     </PageLegale>

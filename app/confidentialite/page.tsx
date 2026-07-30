@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PageLegale, { Section } from '@/components/marketing/PageLegale';
+import PageLegale, { Section, Contact } from '@/components/marketing/PageLegale';
 import { SOCIETE, SOUS_TRAITANTS } from '@/lib/legal/societe';
 
 export const metadata: Metadata = {
@@ -22,8 +22,7 @@ export default function Confidentialite() {
           {SOCIETE.rcsVille} sous le numéro {SOCIETE.rcsNumero}.
         </p>
         <p>
-          Pour toute question relative à vos données :{' '}
-          <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a>.
+          Pour toute question relative à vos données : <Contact />.
         </p>
       </Section>
 
@@ -150,9 +149,9 @@ export default function Confidentialite() {
           relatives au sort de vos données après votre décès.
         </p>
         <p>
-          Pour les exercer, écrivez à <a href={`mailto:${SOCIETE.email}`}>{SOCIETE.email}</a>.
-          Une réponse vous sera apportée dans un délai d’un mois. Une preuve d’identité
-          pourra être demandée en cas de doute raisonnable.
+          Pour les exercer, écrivez-nous : <Contact />. Une réponse vous sera apportée
+          dans un délai d’un mois. Une preuve d’identité pourra être demandée en cas de
+          doute raisonnable.
         </p>
         <p>
           Si vous êtes un invité figurant sur un plan de table, adressez votre demande à la

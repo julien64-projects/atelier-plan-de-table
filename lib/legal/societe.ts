@@ -31,8 +31,21 @@ export const SOCIETE = {
    */
   tvaIntracom: '',
 
-  /** Adresse de contact publiée. Doit rester une boîte réellement relevée. */
-  email: 'julienpoincon@gmail.com',
+  /**
+   * ▶ ADRESSE DE CONTACT PUBLIÉE — À RENSEIGNER ICI, ET NULLE PART AILLEURS.
+   *
+   * Tant que cette chaîne est vide, toutes les pages légales basculent
+   * automatiquement sur l'adresse postale du siège social : aucun lien mort,
+   * aucune mention orpheline. Il suffit d'écrire l'adresse entre les
+   * apostrophes ci-dessous pour qu'elle apparaisse partout d'un coup —
+   * mentions légales, CGV, confidentialité, sécurité et données structurées.
+   *
+   * Exemple : email: 'contact@tickly.fr',
+   *
+   * Doit être une boîte réellement relevée : c'est par là que transiteront
+   * les demandes RGPD, auxquelles il faut répondre sous un mois.
+   */
+  email: '',
 
   marque: 'TablePlan',
   siteUrl: 'https://atelier-plan-de-table.vercel.app',
