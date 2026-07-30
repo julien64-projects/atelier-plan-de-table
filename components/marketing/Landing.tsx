@@ -222,6 +222,9 @@ function LandingInner() {
           </div>
         </div>
         <p className="mt-6 text-center text-xs text-faint">{t('land.pricing.note')}</p>
+        <p className="mt-1.5 text-center text-xs text-faint max-w-lg mx-auto leading-relaxed">
+          {t('land.pricing.pro')}
+        </p>
       </section>
 
       {/* ---------- FAQ ---------- */}

@@ -64,6 +64,22 @@ export async function POST(req: Request) {
       success_url: `${origine}/app?abo=ok`,
       cancel_url: `${origine}/app?abo=annule`,
       allow_promotion_codes: true,
+
+      // Vente entre professionnels : on collecte le numéro de TVA et l'adresse
+      // de facturation. Le numéro sert à la fois à confirmer la qualité de
+      // professionnel et à autoliquider la TVA pour un client établi dans un
+      // autre État membre. Sans `customer_update`, Stripe refuse de rattacher
+      // ces informations à un client existant.
+      tax_id_collection: { enabled: true },
+      billing_address_collection: 'required',
+      customer_update: { address: 'auto', name: 'auto' },
+
+      custom_text: {
+        submit: {
+          message:
+            'Abonnement réservé aux professionnels. En confirmant, vous déclarez souscrire pour les besoins de votre activité.',
+        },
+      },
     });
 
     return NextResponse.json({ url: session.url });

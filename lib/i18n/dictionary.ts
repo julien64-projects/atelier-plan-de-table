@@ -307,6 +307,7 @@ const fr: Dict = {
   'land.pricing.fb4': 'Sans carte bancaire',
   'land.pricing.freecta': 'Créer mon plan',
   'land.pricing.note': 'Prix hors taxes. Résiliable à tout moment, sans engagement de durée.',
+  'land.pricing.pro': 'Abonnement réservé aux professionnels. Les mariés invités par lien accèdent au plan gratuitement, sans compte.',
 
   // Appel à l'action final
   'land.cta.title': 'Votre prochain plan de table vous attend',
@@ -614,6 +615,7 @@ const en: Dict = {
   'land.pricing.fb4': 'No credit card',
   'land.pricing.freecta': 'Create my plan',
   'land.pricing.note': 'Prices exclude VAT. Cancel any time, no minimum term.',
+  'land.pricing.pro': 'The subscription is for business customers only. Couples invited by link access the plan free of charge, with no account.',
 
   // Final call to action
   'land.cta.title': 'Your next seating plan is waiting',
