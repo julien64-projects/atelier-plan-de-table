@@ -134,13 +134,26 @@ export default function TableInspector() {
         </label>
       )}
 
-      {/* Rotation (tables droites) */}
+      {/* Rotation (tables droites) — angle libre */}
       {!estRonde && (
         <div>
-          <label className="text-sm text-muted">Rotation</label>
+          <div className="flex items-center justify-between">
+            <label className="text-sm text-muted">Rotation</label>
+            <span className="text-sm text-muted tabular-nums">{Math.round(table.rot)}°</span>
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={359}
+            step={1}
+            value={Math.round(table.rot) % 360}
+            onChange={e => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: Number(e.target.value) } })}
+            className="w-full mt-1 accent-terracotta"
+            aria-label="Angle de rotation"
+          />
           <div className="mt-1 flex items-center gap-2">
             <button
-              onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: (table.rot + 90) % 360 } })}
+              onClick={() => dispatch({ type: 'UPDATE_TABLE', id: table.id, changes: { rot: (Math.round(table.rot) + 90) % 360 } })}
               className="px-3 py-1 text-sm border border-line rounded hover:bg-cream"
             >
               Pivoter 90°
@@ -153,7 +166,6 @@ export default function TableInspector() {
                 Réinitialiser
               </button>
             )}
-            <span className="text-sm text-muted ml-auto">{table.rot}°</span>
           </div>
         </div>
       )}
