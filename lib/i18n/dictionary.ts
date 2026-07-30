@@ -181,6 +181,20 @@ const fr: Dict = {
   'share.emailInvalid': 'Adresse email invalide.',
   'share.added': 'Invitation ajoutée ✓',
 
+  // Lien de partage privé (côté planner)
+  'link.desc': 'Créez un lien à envoyer aux mariés. Ils ouvrent le plan sans compte ni mot de passe, et vos modifications restent synchronisées en temps réel.',
+  'link.expires': 'Expire',
+  'link.never': 'jamais',
+  'link.days7': 'dans 7 jours',
+  'link.days30': 'dans 30 jours',
+  'link.days90': 'dans 90 jours',
+  'link.create': 'Créer un lien et le copier',
+  'link.copy': 'Copier',
+  'link.copied': 'Copié ✓',
+  'link.revoke': 'Révoquer ce lien',
+  'link.lost': 'Lien créé sur un autre appareil : il fonctionne toujours, mais ne peut pas être réaffiché ici. Créez-en un nouveau si vous l’avez perdu.',
+  'link.orEmail': 'Ou inviter par email',
+
   // Rejoindre par lien privé
   'join.checking': 'Vérification du lien…',
   'join.invalid': 'Ce lien n’est plus valide.',
@@ -412,6 +426,20 @@ const en: Dict = {
   'share.sharedMsg': 'This project was shared with you by the wedding planner. Your changes are visible to everyone in real time.',
   'share.emailInvalid': 'Invalid email address.',
   'share.added': 'Invitation added ✓',
+
+  // Private share link (planner side)
+  'link.desc': 'Create a link to send to the couple. They open the plan with no account and no password, and your changes stay in sync in real time.',
+  'link.expires': 'Expires',
+  'link.never': 'never',
+  'link.days7': 'in 7 days',
+  'link.days30': 'in 30 days',
+  'link.days90': 'in 90 days',
+  'link.create': 'Create a link and copy it',
+  'link.copy': 'Copy',
+  'link.copied': 'Copied ✓',
+  'link.revoke': 'Revoke this link',
+  'link.lost': 'Link created on another device: it still works, but cannot be shown again here. Create a new one if you lost it.',
+  'link.orEmail': 'Or invite by email',
 
   // Join via private link
   'join.checking': 'Checking the link…',
