@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/lib/supabase/AuthProvider';
+import { useProject } from '@/lib/supabase/ProjectContext';
 import { supabase } from '@/lib/supabase/client';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState, useGuestDispatch } from '@/lib/store/guestStore';
@@ -50,6 +51,7 @@ function readLocalPlan(): PlanSnapshot | null {
  */
 export default function ProjectSync() {
   const { user } = useAuth();
+  const { setProject } = useProject();
   const room = useRoomState();
   const roomDispatch = useRoomDispatch();
   const guest = useGuestState();
@@ -120,6 +122,7 @@ export default function ProjectSync() {
         lastSyncedRef.current = JSON.stringify(effectif);
         loadedRef.current = true;
         setProjectId(project.id);
+        setProject(project.id, project.planner_id === user.id);
       } catch (e) {
         const err = e as { message?: string; code?: string; details?: string; hint?: string };
         console.error('[ProjectSync] chargement échoué —',

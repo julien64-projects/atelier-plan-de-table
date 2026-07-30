@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
 import { RoomProvider, useRoomDispatch } from '@/lib/store/roomStore';
 import { GuestProvider } from '@/lib/store/guestStore';
+import { ProjectProvider } from '@/lib/supabase/ProjectContext';
 import Sidebar from '@/components/sidebar/Sidebar';
 import Persistence from '@/components/Persistence';
 import ProjectSync from '@/components/ProjectSync';
@@ -101,16 +102,18 @@ export default function Workspace({ maries = false }: { maries?: boolean }) {
   return (
     <RoomProvider>
       <GuestProvider>
-        {useSupabase ? (
-          <ProjectSync />
-        ) : (
-          <>
-            <Persistence planId={planId} />
-            <SetupSync maries={maries} />
-          </>
-        )}
-        {maries && <SetupLoader />}
-        <WorkspaceInner />
+        <ProjectProvider>
+          {useSupabase ? (
+            <ProjectSync />
+          ) : (
+            <>
+              <Persistence planId={planId} />
+              <SetupSync maries={maries} />
+            </>
+          )}
+          {maries && <SetupLoader />}
+          <WorkspaceInner />
+        </ProjectProvider>
       </GuestProvider>
     </RoomProvider>
   );

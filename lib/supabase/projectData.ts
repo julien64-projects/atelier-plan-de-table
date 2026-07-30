@@ -152,16 +152,70 @@ export async function getOrCreateProject(
     .from('project')
     .select('id, planner_id, couple_names, salle_w_cm, salle_h_cm, next_table_number')
     .order('updated_at', { ascending: false })
-    .order('id', { ascending: true })
-    .limit(1);
+    .order('id', { ascending: true });
   if (selErr) throw selErr;
-  if (existants && existants.length > 0) return existants[0] as ProjectRow;
+  if (existants && existants.length > 0) {
+    // RLS renvoie les projets possédés ET partagés. On privilégie un projet
+    // POSSÉDÉ (cas planner) ; à défaut, le plus récent partagé (cas mariés).
+    const { data: u } = await supabase.auth.getUser();
+    const uid = u?.user?.id;
+    const possede = existants.filter(p => p.planner_id === uid);
+    return (possede[0] ?? existants[0]) as ProjectRow;
+  }
 
   // Aucun projet encore : création via la fonction SECURITY DEFINER (l'INSERT
   // direct est bloqué par un WITH CHECK défaillant en contexte RLS d'écriture).
   const { data, error } = await supabase.rpc('get_or_create_my_project');
   if (error) throw error;
   return data as ProjectRow;
+}
+
+// --- Partage planner → mariés (project_share) -------------------------
+
+export interface ShareRow {
+  client_email: string;
+  role: 'lecture' | 'edition';
+}
+
+/** Liste les personnes avec qui le projet est partagé (réservé au planner). */
+export async function listShares(
+  supabase: SupabaseClient,
+  projectId: string,
+): Promise<ShareRow[]> {
+  const { data, error } = await supabase
+    .from('project_share')
+    .select('client_email, role')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as ShareRow[];
+}
+
+/** Invite (ou met à jour le rôle d') un email sur le projet. */
+export async function addShare(
+  supabase: SupabaseClient,
+  projectId: string,
+  email: string,
+  role: 'lecture' | 'edition',
+): Promise<void> {
+  const { error } = await supabase
+    .from('project_share')
+    .upsert({ project_id: projectId, client_email: email.trim().toLowerCase(), role });
+  if (error) throw error;
+}
+
+/** Retire un email du partage du projet. */
+export async function removeShare(
+  supabase: SupabaseClient,
+  projectId: string,
+  email: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from('project_share')
+    .delete()
+    .eq('project_id', projectId)
+    .eq('client_email', email);
+  if (error) throw error;
 }
 
 // --- Chargement complet du plan ---------------------------------------
