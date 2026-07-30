@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/supabase/AuthProvider';
+import { useT } from '@/lib/i18n/LangProvider';
 
 /**
  * Petit contrôle « définir / changer le mot de passe », affiché dans le pied
@@ -10,6 +11,7 @@ import { useAuth } from '@/lib/supabase/AuthProvider';
  */
 export default function PasswordSetter() {
   const { setPassword } = useAuth();
+  const t = useT();
   const [open, setOpen] = useState(false);
   const [pw, setPw] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export default function PasswordSetter() {
   const submit = async () => {
     if (pw.length < 6) {
       setOk(false);
-      setMsg('Au moins 6 caractères.');
+      setMsg(t('auth.setPassword.tooShort'));
       return;
     }
     setBusy(true);
@@ -31,7 +33,7 @@ export default function PasswordSetter() {
       setMsg(res.error);
     } else {
       setOk(true);
-      setMsg('Mot de passe enregistré ✓ Tu peux désormais te connecter avec ton email et ce mot de passe.');
+      setMsg(t('auth.setPassword.saved'));
       setPw('');
     }
   };
@@ -42,7 +44,7 @@ export default function PasswordSetter() {
         onClick={() => { setOpen(o => !o); setMsg(null); }}
         className="text-xs text-muted hover:text-ink transition-colors"
       >
-        {open ? 'Fermer' : 'Définir un mot de passe'}
+        {open ? t('auth.setPassword.close') : t('auth.setPassword')}
       </button>
 
       {open && (
@@ -52,7 +54,7 @@ export default function PasswordSetter() {
             value={pw}
             onChange={e => setPw(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && !busy && submit()}
-            placeholder="Nouveau mot de passe (min. 6)"
+            placeholder={t('auth.setPassword.placeholder')}
             autoComplete="new-password"
             className="w-full px-2 py-1 text-sm bg-cream border border-line rounded text-ink focus:outline-none focus:border-gold/60"
           />
@@ -61,7 +63,7 @@ export default function PasswordSetter() {
             disabled={busy}
             className="w-full px-3 py-1.5 text-xs rounded bg-gold/90 text-[#1a1114] font-medium hover:bg-gold transition-colors disabled:opacity-60"
           >
-            {busy ? '…' : 'Enregistrer le mot de passe'}
+            {busy ? '…' : t('auth.setPassword.save')}
           </button>
           {msg && (
             <p className={`text-xs ${ok ? 'text-gold' : 'text-terracotta'}`}>{msg}</p>

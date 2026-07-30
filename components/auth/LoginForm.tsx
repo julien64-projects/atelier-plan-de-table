@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/lib/supabase/AuthProvider';
+import { useT } from '@/lib/i18n/LangProvider';
 
 export default function LoginForm() {
   const { signIn, signUp } = useAuth();
+  const t = useT();
   const [mode, setMode] = useState<'connexion' | 'inscription'>('connexion');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,7 +25,7 @@ export default function LoginForm() {
     if (res.error) {
       setError(res.error);
     } else if (res.needsConfirmation) {
-      setInfo('Compte créé. Vérifie tes emails pour confirmer ton adresse, puis connecte-toi.');
+      setInfo(t('auth.needConfirm'));
       setMode('connexion');
     }
     // En cas de succès avec session, AuthGate bascule automatiquement sur l'app.
@@ -33,19 +35,19 @@ export default function LoginForm() {
     <div className="min-h-screen w-full flex items-center justify-center bg-[var(--background)] px-5">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">Mariage</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">{t('brand.eyebrow')}</p>
           <h1 className="text-[32px] leading-tight text-ink mt-1">TablePlan</h1>
           <div className="flex items-center justify-center gap-3 text-gold my-3">
             <span className="h-px w-8 bg-gold/50" />
             <span className="text-xs">&#10086;</span>
             <span className="h-px w-8 bg-gold/50" />
           </div>
-          <p className="text-xs text-muted italic">Espace wedding planner</p>
+          <p className="text-xs text-muted italic">{t('brand.tagline.login')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-surface border border-line rounded-2xl p-6 space-y-4">
           <div>
-            <label className="text-sm text-muted">Email</label>
+            <label className="text-sm text-muted">{t('auth.email')}</label>
             <input
               type="email"
               required
@@ -56,7 +58,7 @@ export default function LoginForm() {
             />
           </div>
           <div>
-            <label className="text-sm text-muted">Mot de passe</label>
+            <label className="text-sm text-muted">{t('auth.password')}</label>
             <input
               type="password"
               required
@@ -76,7 +78,7 @@ export default function LoginForm() {
             disabled={busy}
             className="w-full px-4 py-2.5 rounded-lg bg-gold/90 text-[#1a1114] font-medium hover:bg-gold transition-colors disabled:opacity-60"
           >
-            {busy ? '…' : mode === 'connexion' ? 'Se connecter' : 'Créer mon compte'}
+            {busy ? '…' : mode === 'connexion' ? t('auth.signin') : t('auth.signup')}
           </button>
 
           <button
@@ -84,9 +86,7 @@ export default function LoginForm() {
             onClick={() => { setMode(m => (m === 'connexion' ? 'inscription' : 'connexion')); setError(null); setInfo(null); }}
             className="w-full text-xs text-muted hover:text-ink transition-colors"
           >
-            {mode === 'connexion'
-              ? 'Pas encore de compte ? Créer un compte'
-              : 'Déjà un compte ? Se connecter'}
+            {mode === 'connexion' ? t('auth.toSignup') : t('auth.toSignin')}
           </button>
         </form>
       </div>

@@ -5,6 +5,7 @@ import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState } from '@/lib/store/guestStore';
 import { useAuth } from '@/lib/supabase/AuthProvider';
 import { useTheme } from '@/lib/theme/ThemeProvider';
+import { useT } from '@/lib/i18n/LangProvider';
 import Section from './Section';
 import RoomConfig from './RoomConfig';
 import TableCatalog from './TableCatalog';
@@ -23,6 +24,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { guests } = useGuestState();
   const { session, user, signOut } = useAuth();
   const { mode } = useTheme();
+  const t = useT();
 
   // Sections paramétrées par le planner : repliées par défaut.
   const [salleOpen, setSalleOpen] = useState(false);
@@ -67,22 +69,22 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             ✕
           </button>
         )}
-        <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">Mariage</p>
+        <p className="text-[10px] uppercase tracking-[0.3em] text-blush font-semibold">{t('brand.eyebrow')}</p>
         <h1 className="text-[27px] leading-tight text-ink mt-1">TablePlan</h1>
         <div className="flex items-center justify-center gap-3 text-gold my-2.5">
           <span className="h-px w-8 bg-gold/50" />
           <span className="text-xs">&#10086;</span>
           <span className="h-px w-8 bg-gold/50" />
         </div>
-        <p className="text-xs text-muted italic">Votre projet de mariage</p>
+        <p className="text-xs text-muted italic">{t('brand.tagline.sidebar')}</p>
       </div>
 
-      <Section title="Salle" open={salleOpen} onToggle={() => setSalleOpen(o => !o)}
+      <Section title={t('section.salle')} open={salleOpen} onToggle={() => setSalleOpen(o => !o)}
         hint={`${m(salleLargeurCm)} × ${m(salleHauteurCm)} m`} locked>
         <RoomConfig />
       </Section>
 
-      <Section title="Mobilier de la salle" open={mobilierOpen || !!selectedDecorId}
+      <Section title={t('section.mobilier')} open={mobilierOpen || !!selectedDecorId}
         onToggle={toggleMobilier} hint={`${decors.length} élément${decors.length > 1 ? 's' : ''}`} locked>
         <div className="space-y-5">
           <DecorCatalog />
@@ -94,11 +96,11 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
       </Section>
 
-      <Section title="Distances de service" open={alleesOpen} onToggle={() => setAlleesOpen(o => !o)}>
+      <Section title={t('section.distances')} open={alleesOpen} onToggle={() => setAlleesOpen(o => !o)}>
         <AlleeAlert />
       </Section>
 
-      <Section title="Tables" open={tablesOpen || !!selectedTableId}
+      <Section title={t('section.tables')} open={tablesOpen || !!selectedTableId}
         onToggle={toggleTables} hint={`${tables.length} table${tables.length > 1 ? 's' : ''}`}>
         <div className="space-y-5">
           <TableCatalog />
@@ -110,17 +112,17 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
       </Section>
 
-      <Section title="Invités" open={invitesOpen} onToggle={() => setInvitesOpen(o => !o)}
+      <Section title={t('section.invites')} open={invitesOpen} onToggle={() => setInvitesOpen(o => !o)}
         hint={`${guests.length} invité${guests.length > 1 ? 's' : ''}`}>
         <GuestList />
       </Section>
 
-      <Section title="Partager le projet" open={partageOpen} onToggle={() => setPartageOpen(o => !o)}>
+      <Section title={t('section.partage')} open={partageOpen} onToggle={() => setPartageOpen(o => !o)}>
         <SharePanel />
       </Section>
 
-      <Section title="Apparence" open={apparenceOpen} onToggle={() => setApparenceOpen(o => !o)}
-        hint={mode === 'clair' ? 'Clair' : 'Sombre'}>
+      <Section title={t('section.apparence')} open={apparenceOpen} onToggle={() => setApparenceOpen(o => !o)}
+        hint={mode === 'clair' ? t('common.clair') : t('common.sombre')}>
         <AppearancePanel />
       </Section>
 
@@ -132,7 +134,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               onClick={() => signOut()}
               className="shrink-0 text-xs text-muted hover:text-ink transition-colors"
             >
-              Déconnexion
+              {t('auth.signout')}
             </button>
           </div>
           <PasswordSetter />
