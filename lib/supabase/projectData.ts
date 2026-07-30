@@ -13,6 +13,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TableOnPlan, DecorOnPlan } from '@/lib/store/types';
 import type { GuestOnPlan, Assignment } from '@/lib/store/guestStore';
 import type { TableShape, NiveauConfort } from '@/lib/types';
+import { projetRejoint } from './joinLink';
 
 export interface ProjectRow {
   id: string;
@@ -154,14 +155,27 @@ export async function getOrCreateProject(
     .order('updated_at', { ascending: false })
     .order('id', { ascending: true });
   if (selErr) throw selErr;
+  const { data: u } = await supabase.auth.getUser();
+  const uid = u?.user?.id;
+  const anonyme = u?.user?.is_anonymous === true;
+
   if (existants && existants.length > 0) {
     // RLS renvoie les projets possédés ET partagés. On privilégie un projet
     // POSSÉDÉ (cas planner) ; à défaut, le plus récent partagé (cas mariés).
-    const { data: u } = await supabase.auth.getUser();
-    const uid = u?.user?.id;
     const possede = existants.filter(p => p.planner_id === uid);
-    return (possede[0] ?? existants[0]) as ProjectRow;
+    if (possede[0]) return possede[0] as ProjectRow;
+
+    // Invité : ouvrir le projet rejoint par lien plutôt qu'un projet au hasard
+    // (un même invité peut avoir plusieurs projets partagés).
+    const rejoint = projetRejoint();
+    const cible = rejoint ? existants.find(p => p.id === rejoint) : undefined;
+    return (cible ?? existants[0]) as ProjectRow;
   }
+
+  // Un invité anonyme n'est pas un planner : il n'a pas de profil dans
+  // `planner`, donc créer un projet violerait la clé étrangère. S'il ne voit
+  // rien, c'est que son lien a été révoqué ou a expiré.
+  if (anonyme) throw new Error('Accès révoqué ou expiré : demandez un nouveau lien.');
 
   // Aucun projet encore : création via la fonction SECURITY DEFINER (l'INSERT
   // direct est bloqué par un WITH CHECK défaillant en contexte RLS d'écriture).
