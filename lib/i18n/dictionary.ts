@@ -8,9 +8,14 @@
 
 export type Lang = 'fr' | 'en';
 
-export const LANGS: { key: Lang; label: string; flag: string }[] = [
-  { key: 'fr', label: 'Français', flag: '🇫🇷' },
-  { key: 'en', label: 'English', flag: '🇬🇧' },
+/**
+ * `court` plutôt qu'un drapeau emoji : Windows ne dispose pas des glyphes de
+ * drapeaux et affiche le code pays brut (« GB »), ce qui donnait un libellé
+ * différent selon le système. Un code écrit en clair est identique partout.
+ */
+export const LANGS: { key: Lang; label: string; court: string }[] = [
+  { key: 'fr', label: 'Français', court: 'FR' },
+  { key: 'en', label: 'English', court: 'ENG' },
 ];
 
 type Dict = Record<string, string>;
@@ -255,6 +260,33 @@ const fr: Dict = {
   'land.pricing.cta': 'Commencer',
   'land.hero.note': 'Gratuit pour un projet · Sans carte bancaire',
   'land.apercu.legende': 'L’éditeur TablePlan : liste d’invités à gauche, plan de salle à l’échelle à droite. Invités fictifs.',
+
+  // Libellés de l'aperçu de l'interface (SVG de la vitrine)
+  'apercu.projet': 'TablePlan — Mariage Camille & Théo · ',
+  'apercu.salle': 'Salle 25 × 15 m',
+  'apercu.largeur': '25,00 m',
+  'apercu.eyebrow': 'MARIAGE',
+  'apercu.invites': 'Invités (68)',
+  'apercu.maries': '2 mariés',
+  'apercu.recherche': 'Rechercher un invité…',
+  'apercu.tout': 'Tout',
+  'apercu.nonPlaces': 'Non placés',
+  'apercu.places': 'Placés',
+  'apercu.honneur': 'Table d’honneur',
+  'apercu.table1': 'Table 1',
+  'apercu.table2': 'Table 2',
+  'apercu.aPlacer': 'à placer',
+  'apercu.capacite': 'Capacité respectée',
+  'apercu.capaciteCourt': 'Capacité OK',
+  'apercu.placesLibres': '66 places · 2 libres',
+  'apercu.placesCourt': '66 places',
+  'apercu.lesMaries': 'Les mariés',
+  'apercu.piste': 'Piste de danse',
+  'apercu.allee': 'allée 145 cm',
+  'apercu.exporter': 'EXPORTER',
+  'apercu.planTechnique': 'PLAN TECHNIQUE',
+  'apercu.aria': 'Aperçu de l’interface TablePlan : liste d’invités à gauche, plan de salle à l’échelle à droite avec tables rondes et table d’honneur.',
+  'apercu.ariaCompact': 'Plan de salle TablePlan à l’échelle : table d’honneur, table ronde de six convives nommés, piste de danse et contrôle de capacité. Invités fictifs.',
 
   // Comment ça marche
   'land.how.title': 'Trois étapes, une soirée réussie',
@@ -563,6 +595,33 @@ const en: Dict = {
   'land.pricing.cta': 'Get started',
   'land.hero.note': 'Free for one project · No credit card',
   'land.apercu.legende': 'The TablePlan editor: guest list on the left, to-scale floor plan on the right. Guests shown are fictional.',
+
+  // Labels inside the interface preview (marketing SVG)
+  'apercu.projet': 'TablePlan — Camille & Théo’s wedding · ',
+  'apercu.salle': 'Room 25 × 15 m',
+  'apercu.largeur': '25.00 m',
+  'apercu.eyebrow': 'WEDDING',
+  'apercu.invites': 'Guests (68)',
+  'apercu.maries': '2 newlyweds',
+  'apercu.recherche': 'Search a guest…',
+  'apercu.tout': 'All',
+  'apercu.nonPlaces': 'Unseated',
+  'apercu.places': 'Seated',
+  'apercu.honneur': 'Head table',
+  'apercu.table1': 'Table 1',
+  'apercu.table2': 'Table 2',
+  'apercu.aPlacer': 'to seat',
+  'apercu.capacite': 'Capacity respected',
+  'apercu.capaciteCourt': 'Capacity OK',
+  'apercu.placesLibres': '66 seats · 2 free',
+  'apercu.placesCourt': '66 seats',
+  'apercu.lesMaries': 'The couple',
+  'apercu.piste': 'Dance floor',
+  'apercu.allee': '145 cm aisle',
+  'apercu.exporter': 'EXPORT',
+  'apercu.planTechnique': 'TECHNICAL PLAN',
+  'apercu.aria': 'Preview of the TablePlan interface: guest list on the left, to-scale floor plan on the right with round tables and a head table.',
+  'apercu.ariaCompact': 'TablePlan to-scale floor plan: head table, a round table with six named guests, dance floor and capacity check. Guests are fictional.',
 
   // How it works
   'land.how.title': 'Three steps to a smooth evening',

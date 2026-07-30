@@ -25,7 +25,7 @@ export default function AppearancePanel() {
                   : 'bg-cream text-muted border-line hover:bg-line'
               }`}
             >
-              {l.flag} {l.label}
+              {l.court} · {l.label}
             </button>
           ))}
         </div>

@@ -36,10 +36,12 @@ function LangToggle() {
           key={l.key}
           onClick={() => setLang(l.key)}
           aria-label={l.label}
-          // Zone tactile d'au moins 40 px : un drapeau de 24 px se rate au doigt.
-          className={`px-2.5 py-2 text-sm leading-none rounded transition-opacity ${lang === l.key ? 'opacity-100' : 'opacity-40 hover:opacity-80'}`}
+          // Zone tactile d'au moins 40 px : un libellé de 24 px se rate au doigt.
+          className={`px-2.5 py-2 text-xs font-medium tracking-wider leading-none rounded transition-colors ${
+            lang === l.key ? 'text-ink' : 'text-faint hover:text-muted'
+          }`}
         >
-          {l.flag}
+          {l.court}
         </button>
       ))}
     </div>
