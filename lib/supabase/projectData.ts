@@ -13,6 +13,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { TableOnPlan, DecorOnPlan } from '@/lib/store/types';
 import type { GuestOnPlan, Assignment } from '@/lib/store/guestStore';
 import type { TableShape, NiveauConfort } from '@/lib/types';
+import { projetRejoint } from './joinLink';
+import { genererToken, hashToken } from '@/lib/shareLink';
 
 export interface ProjectRow {
   id: string;
@@ -154,14 +156,27 @@ export async function getOrCreateProject(
     .order('updated_at', { ascending: false })
     .order('id', { ascending: true });
   if (selErr) throw selErr;
+  const { data: u } = await supabase.auth.getUser();
+  const uid = u?.user?.id;
+  const anonyme = u?.user?.is_anonymous === true;
+
   if (existants && existants.length > 0) {
     // RLS renvoie les projets possédés ET partagés. On privilégie un projet
     // POSSÉDÉ (cas planner) ; à défaut, le plus récent partagé (cas mariés).
-    const { data: u } = await supabase.auth.getUser();
-    const uid = u?.user?.id;
     const possede = existants.filter(p => p.planner_id === uid);
-    return (possede[0] ?? existants[0]) as ProjectRow;
+    if (possede[0]) return possede[0] as ProjectRow;
+
+    // Invité : ouvrir le projet rejoint par lien plutôt qu'un projet au hasard
+    // (un même invité peut avoir plusieurs projets partagés).
+    const rejoint = projetRejoint();
+    const cible = rejoint ? existants.find(p => p.id === rejoint) : undefined;
+    return (cible ?? existants[0]) as ProjectRow;
   }
+
+  // Un invité anonyme n'est pas un planner : il n'a pas de profil dans
+  // `planner`, donc créer un projet violerait la clé étrangère. S'il ne voit
+  // rien, c'est que son lien a été révoqué ou a expiré.
+  if (anonyme) throw new Error('Accès révoqué ou expiré : demandez un nouveau lien.');
 
   // Aucun projet encore : création via la fonction SECURITY DEFINER (l'INSERT
   // direct est bloqué par un WITH CHECK défaillant en contexte RLS d'écriture).
@@ -216,6 +231,91 @@ export async function removeShare(
     .eq('project_id', projectId)
     .eq('client_email', email);
   if (error) throw error;
+}
+
+// --- Partage par lien privé (project_link) ----------------------------
+
+export interface LinkRow {
+  id: string;
+  role: 'lecture' | 'edition';
+  label: string;
+  expires_at: string | null;
+  revoked: boolean;
+  created_at: string;
+}
+
+/** Liste les liens émis pour le projet (réservé au planner). */
+export async function listLinks(
+  supabase: SupabaseClient,
+  projectId: string,
+): Promise<LinkRow[]> {
+  const { data, error } = await supabase
+    .from('project_link')
+    .select('id, role, label, expires_at, revoked, created_at')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return (data ?? []) as LinkRow[];
+}
+
+/**
+ * Crée un lien et renvoie le token EN CLAIR, seule et unique occasion de
+ * l'afficher : la base n'en garde que le SHA-256.
+ */
+export async function createLink(
+  supabase: SupabaseClient,
+  projectId: string,
+  role: 'lecture' | 'edition',
+  expiresAt: string | null,
+  label: string,
+): Promise<{ token: string; lien: LinkRow }> {
+  const token = genererToken();
+  const { data, error } = await supabase
+    .from('project_link')
+    .insert({
+      project_id: projectId,
+      token_hash: await hashToken(token),
+      role,
+      expires_at: expiresAt,
+      label,
+    })
+    .select('id, role, label, expires_at, revoked, created_at')
+    .single();
+  if (error) throw error;
+  return { token, lien: data as LinkRow };
+}
+
+/**
+ * Supprime un lien. La cascade sur project_member.link_id coupe l'accès de
+ * tous ceux qui l'avaient utilisé.
+ */
+export async function revokeLink(
+  supabase: SupabaseClient,
+  linkId: string,
+): Promise<void> {
+  const { error } = await supabase.from('project_link').delete().eq('id', linkId);
+  if (error) throw error;
+}
+
+/** Invités ayant rejoint le projet par un lien. */
+export interface MemberRow {
+  user_id: string;
+  prenom: string;
+  role: 'lecture' | 'edition';
+  link_id: string | null;
+}
+
+export async function listMembers(
+  supabase: SupabaseClient,
+  projectId: string,
+): Promise<MemberRow[]> {
+  const { data, error } = await supabase
+    .from('project_member')
+    .select('user_id, prenom, role, link_id')
+    .eq('project_id', projectId)
+    .order('created_at', { ascending: true });
+  if (error) throw error;
+  return (data ?? []) as MemberRow[];
 }
 
 // --- Chargement complet du plan ---------------------------------------
