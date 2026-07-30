@@ -6,7 +6,7 @@ import { useProject } from '@/lib/supabase/ProjectContext';
 import { useT } from '@/lib/i18n/LangProvider';
 import {
   listShares, addShare, removeShare, type ShareRow,
-  listLinks, createLink, revokeLink, type LinkRow,
+  listLinks, createLink, revokeLink, listMembers, type LinkRow, type MemberRow,
 } from '@/lib/supabase/projectData';
 import {
   lienRejoindre, dateExpiration, lienActif, type Expiration,
@@ -44,6 +44,7 @@ export default function SharePanel() {
   const t = useT();
 
   const [liens, setLiens] = useState<LinkRow[]>([]);
+  const [membres, setMembres] = useState<MemberRow[]>([]);
   const [tokens, setTokens] = useState<Record<string, string>>({});
   const [role, setRole] = useState<'lecture' | 'edition'>('lecture');
   const [expiration, setExpiration] = useState<Expiration>('jamais');
@@ -65,6 +66,7 @@ export default function SharePanel() {
       .then(l => { setLiens(l); setTokens(lireTokens(projectId)); })
       .catch(() => {});
     listShares(supabase, projectId).then(setShares).catch(() => {});
+    listMembers(supabase, projectId).then(setMembres).catch(() => {});
   }, [projectId]);
 
   useEffect(() => { refresh(); }, [refresh]);
@@ -177,6 +179,7 @@ export default function SharePanel() {
             {liens.map(l => {
               const token = tokens[l.id];
               const actif = lienActif(l);
+              const arrivants = membres.filter(m => m.link_id === l.id);
               return (
                 <li key={l.id} className="px-2 py-1.5 text-xs bg-cream rounded space-y-1">
                   <div className="flex items-center justify-between gap-2">
@@ -207,6 +210,12 @@ export default function SharePanel() {
                       </button>
                     </span>
                   </div>
+                  {arrivants.length > 0 && (
+                    <p className="text-[10px] text-faint">
+                      {t('link.joined')} {arrivants.map(m => m.prenom).filter(Boolean).join(', ')
+                        || `${arrivants.length}`}
+                    </p>
+                  )}
                   {!token && actif && (
                     <p className="text-[10px] text-faint leading-snug">{t('link.lost')}</p>
                   )}

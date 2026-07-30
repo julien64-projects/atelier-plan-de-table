@@ -193,6 +193,7 @@ const fr: Dict = {
   'link.copied': 'Copié ✓',
   'link.revoke': 'Révoquer ce lien',
   'link.lost': 'Lien créé sur un autre appareil : il fonctionne toujours, mais ne peut pas être réaffiché ici. Créez-en un nouveau si vous l’avez perdu.',
+  'link.joined': 'A rejoint :',
   'link.orEmail': 'Ou inviter par email',
 
   // Rejoindre par lien privé
@@ -439,6 +440,7 @@ const en: Dict = {
   'link.copied': 'Copied ✓',
   'link.revoke': 'Revoke this link',
   'link.lost': 'Link created on another device: it still works, but cannot be shown again here. Create a new one if you lost it.',
+  'link.joined': 'Joined:',
   'link.orEmail': 'Or invite by email',
 
   // Join via private link
