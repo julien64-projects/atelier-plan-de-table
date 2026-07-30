@@ -1,21 +1,23 @@
 'use client';
 
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
+import { useT } from '@/lib/i18n/LangProvider';
 import NumberInput from '@/components/ui/NumberInput';
 
 export default function DecorInspector() {
   const { decors, selectedDecorId } = useRoomState();
   const dispatch = useRoomDispatch();
+  const t = useT();
   const decor = decors.find(d => d.id === selectedDecorId);
   if (!decor) return null;
 
   return (
     <div className="space-y-4">
-      <h2 className="text-base font-semibold text-ink">Décor sélectionné</h2>
+      <h2 className="text-base font-semibold text-ink">{t('decor.title')}</h2>
 
       {/* Libellé */}
       <div>
-        <label className="text-sm text-muted">Libellé</label>
+        <label className="text-sm text-muted">{t('decor.label')}</label>
         <input
           type="text"
           value={decor.label}
@@ -27,7 +29,7 @@ export default function DecorInspector() {
       {/* Dimensions */}
       <div className="flex gap-2">
         <div className="flex-1">
-          <label className="text-sm text-muted">Largeur (cm)</label>
+          <label className="text-sm text-muted">{t('tables.width')} (cm)</label>
           <NumberInput
             min={20}
             step={10}
@@ -37,7 +39,7 @@ export default function DecorInspector() {
           />
         </div>
         <div className="flex-1">
-          <label className="text-sm text-muted">Hauteur (cm)</label>
+          <label className="text-sm text-muted">{t('room.height')} (cm)</label>
           <NumberInput
             min={20}
             step={10}
@@ -50,13 +52,13 @@ export default function DecorInspector() {
 
       {/* Rotation */}
       <div>
-        <label className="text-sm text-muted">Rotation</label>
+        <label className="text-sm text-muted">{t('insp.rotation')}</label>
         <div className="mt-1 flex items-center gap-2">
           <button
             onClick={() => dispatch({ type: 'UPDATE_DECOR', id: decor.id, changes: { rot: (decor.rot + 90) % 360 } })}
             className="px-3 py-1 text-sm border border-line rounded hover:bg-cream"
           >
-            Pivoter 90°
+            {t('insp.rotate90')}
           </button>
           <span className="text-sm text-muted">{decor.rot}°</span>
         </div>
@@ -71,15 +73,15 @@ export default function DecorInspector() {
             : 'bg-cream text-muted border-line hover:text-ink'
         }`}
       >
-        {decor.verrou ? '🔒 Emplacement verrouillé' : '🔓 Verrouiller l’emplacement'}
+        {decor.verrou ? t('insp.lockOn') : t('insp.lockOff')}
       </button>
 
       {/* Supprimer */}
       <button
         onClick={() => dispatch({ type: 'REMOVE_DECOR', id: decor.id })}
-        className="w-full mt-2 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/100/10 transition-colors"
+        className="w-full mt-2 px-3 py-2 text-sm text-red-400 border border-red-500/30 rounded-lg hover:bg-red-500/10 transition-colors"
       >
-        Supprimer ce décor
+        {t('decor.deleteItem')}
       </button>
     </div>
   );

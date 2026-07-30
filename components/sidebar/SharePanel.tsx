@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useProject } from '@/lib/supabase/ProjectContext';
+import { useT } from '@/lib/i18n/LangProvider';
 import { listShares, addShare, removeShare, type ShareRow } from '@/lib/supabase/projectData';
 
 /**
@@ -12,6 +13,7 @@ import { listShares, addShare, removeShare, type ShareRow } from '@/lib/supabase
  */
 export default function SharePanel() {
   const { projectId, isOwner } = useProject();
+  const t = useT();
   const [shares, setShares] = useState<ShareRow[]>([]);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<'edition' | 'lecture'>('edition');
@@ -26,32 +28,27 @@ export default function SharePanel() {
   useEffect(() => { refresh(); }, [refresh]);
 
   if (!supabase) {
-    return <p className="text-xs text-muted">Partage indisponible (connexion requise).</p>;
+    return <p className="text-xs text-muted">{t('share.unavailable')}</p>;
   }
   if (!projectId) {
-    return <p className="text-xs text-faint">Chargement du projet…</p>;
+    return <p className="text-xs text-faint">{t('share.loading')}</p>;
   }
   if (!isOwner) {
-    return (
-      <p className="text-xs text-muted leading-snug">
-        Ce projet vous a été partagé par le wedding planner. Vos modifications sont
-        visibles par tout le monde <b>en temps réel</b>.
-      </p>
-    );
+    return <p className="text-xs text-muted leading-snug">{t('share.sharedMsg')}</p>;
   }
 
   const inviter = async () => {
     const e = email.trim().toLowerCase();
-    if (!e || !e.includes('@')) { setMsg('Adresse email invalide.'); return; }
+    if (!e || !e.includes('@')) { setMsg(t('share.emailInvalid')); return; }
     setBusy(true);
     setMsg(null);
     try {
       await addShare(supabase!, projectId, e, role);
       setEmail('');
-      setMsg('Invitation ajoutée ✓');
+      setMsg(t('share.added'));
       refresh();
     } catch (err) {
-      setMsg('Échec : ' + (err as Error).message);
+      setMsg(t('share.fail') + (err as Error).message);
     }
     setBusy(false);
   };
@@ -64,17 +61,14 @@ export default function SharePanel() {
 
   return (
     <div className="space-y-3">
-      <p className="text-xs text-muted leading-snug">
-        Invitez les mariés par email. Ils créent un compte avec <b>ce même email</b> sur le
-        site, puis modifient le plan avec vous <b>en temps réel</b>.
-      </p>
+      <p className="text-xs text-muted leading-snug">{t('share.desc')}</p>
 
       <input
         type="email"
         value={email}
         onChange={e => setEmail(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && !busy && inviter()}
-        placeholder="email des mariés"
+        placeholder={t('share.emailPlaceholder')}
         className="w-full px-2 py-1 text-sm border border-line rounded"
       />
 
@@ -85,7 +79,7 @@ export default function SharePanel() {
             role === 'edition' ? 'bg-terracotta text-white border-terracotta' : 'bg-cream text-muted border-line hover:bg-line'
           }`}
         >
-          Peut modifier
+          {t('share.canEdit')}
         </button>
         <button
           onClick={() => setRole('lecture')}
@@ -93,7 +87,7 @@ export default function SharePanel() {
             role === 'lecture' ? 'bg-terracotta text-white border-terracotta' : 'bg-cream text-muted border-line hover:bg-line'
           }`}
         >
-          Lecture seule
+          {t('share.readOnly')}
         </button>
       </div>
 
@@ -102,20 +96,20 @@ export default function SharePanel() {
         disabled={busy}
         className="w-full px-3 py-2 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors disabled:opacity-60"
       >
-        {busy ? '…' : 'Inviter'}
+        {busy ? '…' : t('share.invite')}
       </button>
 
       {msg && <p className="text-xs text-gold">{msg}</p>}
 
       {shares.length > 0 && (
         <div>
-          <p className="text-[10px] uppercase tracking-wide text-faint mb-1">Personnes invitées</p>
+          <p className="text-[10px] uppercase tracking-wide text-faint mb-1">{t('share.invited')}</p>
           <ul className="space-y-1">
             {shares.map(s => (
               <li key={s.client_email} className="flex items-center justify-between gap-2 px-2 py-1 text-xs bg-cream rounded">
                 <span className="truncate">{s.client_email}</span>
                 <span className="flex items-center gap-2 shrink-0">
-                  <span className="text-faint">{s.role === 'edition' ? 'modifie' : 'lecture'}</span>
+                  <span className="text-faint">{s.role === 'edition' ? t('share.roleEdit') : t('share.roleRead')}</span>
                   <button
                     onClick={() => retirer(s.client_email)}
                     className="text-faint hover:text-red-400"

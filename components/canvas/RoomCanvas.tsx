@@ -6,6 +6,7 @@ import type Konva from 'konva';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestDispatch } from '@/lib/store/guestStore';
 import { useTheme } from '@/lib/theme/ThemeProvider';
+import { useT } from '@/lib/i18n/LangProvider';
 import { siegeLePlusProche } from '@/lib/geometry/seatPicking';
 import Grid from './Grid';
 import RoomBorder from './RoomBorder';
@@ -24,6 +25,7 @@ export default function RoomCanvas() {
   const dispatch = useRoomDispatch();
   const guestDispatch = useGuestDispatch();
   const { canvas } = useTheme();
+  const t = useT();
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<Konva.Stage>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -158,7 +160,7 @@ export default function RoomCanvas() {
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-full border text-[11px] uppercase tracking-[0.18em] bg-surface/90 text-muted border-line hover:text-ink transition-colors disabled:opacity-60"
             title="Télécharger le plan (image ou PDF)"
           >
-            {exporting ? 'Export…' : 'Exporter'}
+            {exporting ? t('canvas.exporting') : t('canvas.export')}
           </button>
           {exportOpen && !exporting && (
             <div className="absolute top-full right-0 mt-1.5 w-40 rounded-lg border border-line bg-surface shadow-xl overflow-hidden">
@@ -166,13 +168,13 @@ export default function RoomCanvas() {
                 onClick={() => exporter('pdf')}
                 className="w-full px-3.5 py-2 text-left text-xs text-muted hover:bg-cream hover:text-ink transition-colors"
               >
-                PDF (impression)
+                {t('canvas.pdf')}
               </button>
               <button
                 onClick={() => exporter('png')}
                 className="w-full px-3.5 py-2 text-left text-xs text-muted hover:bg-cream hover:text-ink transition-colors border-t border-line"
               >
-                Image PNG
+                {t('canvas.png')}
               </button>
             </div>
           )}
@@ -188,7 +190,7 @@ export default function RoomCanvas() {
           title="Afficher la grille et les distances"
         >
           <span className={`w-1.5 h-1.5 rounded-full ${showTechnique ? 'bg-white' : 'bg-faint'}`} />
-          Plan technique
+          {t('canvas.technical')}
         </button>
       </div>
       <Stage

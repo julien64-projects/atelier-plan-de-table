@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { TABLES_STANDARD, dimensionnerPour } from '@/lib/geometry/tableGeometry';
 import { capaciteRonde, capaciteDroite } from '@/lib/geometry/tableGeometry';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
+import { useT } from '@/lib/i18n/LangProvider';
 import NumberInput from '@/components/ui/NumberInput';
 import type { TableOnPlan } from '@/lib/store/types';
 import type { TableShape } from '@/lib/types';
@@ -11,6 +12,7 @@ import type { TableShape } from '@/lib/types';
 export default function TableCatalog() {
   const { nextTableNumber, salleLargeurCm, salleHauteurCm } = useRoomState();
   const dispatch = useRoomDispatch();
+  const tr = useT();
   const [nbConvives, setNbConvives] = useState(8);
   const [formeAuto, setFormeAuto] = useState<'ronde' | 'rect'>('ronde');
   const [persoShape, setPersoShape] = useState<'ronde' | 'rect'>('ronde');
@@ -54,7 +56,7 @@ export default function TableCatalog() {
     <div className="space-y-4">
       {/* Auto-dimensionnement */}
       <div className="p-3 bg-cream rounded-lg space-y-2">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">Pour N convives</h3>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">{tr('tables.forN')}</h3>
         <div className="flex items-center gap-2">
           <NumberInput
             min={1}
@@ -74,7 +76,7 @@ export default function TableCatalog() {
                     : 'bg-cream text-muted border-line hover:bg-cream'
                 }`}
               >
-                {s === 'ronde' ? 'Ronde' : 'Droite'}
+                {s === 'ronde' ? tr('tables.round') : tr('tables.straight')}
               </button>
             ))}
           </div>
@@ -82,26 +84,26 @@ export default function TableCatalog() {
         {formeAuto === 'rect' && (
           <label className="flex items-center gap-2 text-xs text-muted">
             <input type="checkbox" checked={boutsAuto} onChange={e => setBoutsAuto(e.target.checked)} />
-            Chaises en bout de table
+            {tr('tables.endChairs')}
           </label>
         )}
         <p className="text-xs text-faint">
           {apercu.shape === 'ronde'
             ? `Ø${apercu.diametreCm} cm`
             : `${apercu.longueurCm} × ${apercu.largeurCm} cm`}
-          {' — '}{apercu.capacite} places
+          {' — '}{apercu.capacite} {tr('unit.seats')}
         </p>
         <button
           onClick={() => addTablePour(nbConvives, formeAuto, formeAuto === 'rect' ? boutsAuto : undefined)}
           className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
-          Créer la table
+          {tr('tables.create')}
         </button>
       </div>
 
       {/* Taille personnalisée */}
       <div className="p-3 bg-cream rounded-lg space-y-2">
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">Personnalisée</h3>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide">{tr('tables.custom')}</h3>
         <div className="flex gap-1">
           {(['ronde', 'rect'] as const).map(s => (
             <button
@@ -119,7 +121,7 @@ export default function TableCatalog() {
         </div>
         {persoShape === 'ronde' ? (
           <label className="block text-xs text-muted">
-            Diamètre (cm)
+            {tr('tables.diameter')}
             <NumberInput
               min={60} max={400} step={5} value={persoDiam}
               onChange={setPersoDiam}
@@ -129,7 +131,7 @@ export default function TableCatalog() {
         ) : (
           <div className="flex gap-2">
             <label className="flex-1 text-xs text-muted">
-              Longueur
+              {tr('tables.length')}
               <NumberInput
                 min={60} max={800} step={5} value={persoLong}
                 onChange={setPersoLong}
@@ -137,7 +139,7 @@ export default function TableCatalog() {
               />
             </label>
             <label className="flex-1 text-xs text-muted">
-              Largeur
+              {tr('tables.width')}
               <NumberInput
                 min={60} max={300} step={5} value={persoLarg}
                 onChange={setPersoLarg}
@@ -149,13 +151,13 @@ export default function TableCatalog() {
         {persoShape === 'rect' && (
           <label className="flex items-center gap-2 text-xs text-muted">
             <input type="checkbox" checked={boutsPerso} onChange={e => setBoutsPerso(e.target.checked)} />
-            Chaises en bout de table
+            {tr('tables.endChairs')}
           </label>
         )}
         <p className="text-xs text-faint">
           {persoShape === 'ronde'
-            ? `${capaciteRonde(persoDiam)} places`
-            : `${capaciteDroite(persoLong, { bouts: boutsPerso, largeurCm: persoLarg })} places`}
+            ? `${capaciteRonde(persoDiam)} ${tr('unit.seats')}`
+            : `${capaciteDroite(persoLong, { bouts: boutsPerso, largeurCm: persoLarg })} ${tr('unit.seats')}`}
         </p>
         <button
           onClick={() => persoShape === 'ronde'
@@ -163,12 +165,12 @@ export default function TableCatalog() {
             : addTable({ shape: 'rect', longueurCm: persoLong, largeurCm: persoLarg, bouts: boutsPerso })}
           className="w-full px-3 py-1.5 text-sm bg-terracotta text-white rounded hover:bg-terracotta-dark transition-colors"
         >
-          Créer la table
+          {tr('tables.create')}
         </button>
       </div>
 
       <div>
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-2">Rondes</h3>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-2">{tr('tables.roundPlural')}</h3>
         <div className="space-y-1">
           {TABLES_STANDARD.ronde.map(t => (
             <button
@@ -177,13 +179,13 @@ export default function TableCatalog() {
               className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-cream transition-colors"
             >
               <span>{t.label}</span>
-              <span className="text-faint">{capaciteRonde(t.diametreCm)} places</span>
+              <span className="text-faint">{capaciteRonde(t.diametreCm)} {tr('unit.seats')}</span>
             </button>
           ))}
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-2">Rectangulaires</h3>
+        <h3 className="text-sm font-semibold text-muted uppercase tracking-wide mb-2">{tr('tables.rectPlural')}</h3>
         <div className="space-y-1">
           {TABLES_STANDARD.droite.map(t => (
             <button
@@ -192,7 +194,7 @@ export default function TableCatalog() {
               className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-cream transition-colors"
             >
               <span>{t.label}</span>
-              <span className="text-faint">{capaciteDroite(t.longueurCm)} places</span>
+              <span className="text-faint">{capaciteDroite(t.longueurCm)} {tr('unit.seats')}</span>
             </button>
           ))}
         </div>

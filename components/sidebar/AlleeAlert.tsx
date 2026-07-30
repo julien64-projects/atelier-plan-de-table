@@ -2,8 +2,9 @@
 
 import { useMemo } from 'react';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
-import { alleesInsuffisantes, tablesTropPresMur, libelleMur } from '@/lib/geometry/distanceGeometry';
+import { alleesInsuffisantes, tablesTropPresMur } from '@/lib/geometry/distanceGeometry';
 import { ALLEE_SERVICE } from '@/lib/geometry/tableGeometry';
+import { useT } from '@/lib/i18n/LangProvider';
 
 const seuilM = (ALLEE_SERVICE / 100).toFixed(1).replace('.', ',');
 const enM = (cm: number) => (cm / 100).toFixed(2).replace('.', ',');
@@ -11,6 +12,7 @@ const enM = (cm: number) => (cm / 100).toFixed(2).replace('.', ',');
 export default function AlleeAlert() {
   const { tables, salleLargeurCm, salleHauteurCm } = useRoomState();
   const dispatch = useRoomDispatch();
+  const t = useT();
 
   const violations = useMemo(() => alleesInsuffisantes(tables), [tables]);
   const murs = useMemo(
@@ -25,20 +27,20 @@ export default function AlleeAlert() {
   const total = violations.length + murs.length;
 
   if (total === 0) {
-    return <p className="text-xs text-sage">✓ Allées de service ≥ {seuilM} m</p>;
+    return <p className="text-xs text-sage">✓ {t('allee.serviceAisles')} ≥ {seuilM} m</p>;
   }
 
   return (
     <div className="space-y-1.5">
       <p className="text-sm font-semibold text-red-400">
-        ⚠ {total} allée{total > 1 ? 's' : ''} de service &lt; {seuilM} m
+        ⚠ {total} · {t('allee.serviceAisles')} &lt; {seuilM} m
       </p>
       <ul className="space-y-0.5">
         {violations.map(({ a, b, result }) => (
           <li key={`${a}-${b}`}>
             <button
               onClick={() => dispatch({ type: 'SELECT_TABLE', id: a })}
-              className="w-full flex items-center justify-between px-2 py-1 text-xs rounded bg-red-500/10 hover:bg-red-500/100/100/20 text-red-300"
+              className="w-full flex items-center justify-between px-2 py-1 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-300"
             >
               <span className="truncate">{nomsById[a]} ↔ {nomsById[b]}</span>
               <span className="font-medium whitespace-nowrap ml-2">{enM(result.distanceCm)} m</span>
@@ -49,11 +51,11 @@ export default function AlleeAlert() {
           <li key={`${tableId}-${mur}`}>
             <button
               onClick={() => dispatch({ type: 'SELECT_TABLE', id: tableId })}
-              className="w-full flex items-center justify-between px-2 py-1 text-xs rounded bg-red-500/10 hover:bg-red-500/100/100/20 text-red-300"
+              className="w-full flex items-center justify-between px-2 py-1 text-xs rounded bg-red-500/10 hover:bg-red-500/20 text-red-300"
             >
-              <span className="truncate">{tableNom} ↔ {libelleMur(mur)}</span>
+              <span className="truncate">{tableNom} ↔ {t('wall.' + mur)}</span>
               <span className="font-medium whitespace-nowrap ml-2">
-                {distanceCm < 0 ? 'hors salle' : `${enM(distanceCm)} m`}
+                {distanceCm < 0 ? t('allee.outside') : `${enM(distanceCm)} m`}
               </span>
             </button>
           </li>

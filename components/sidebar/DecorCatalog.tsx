@@ -3,10 +3,12 @@
 import { useCallback } from 'react';
 import { DECORS_CATALOG } from '@/lib/decor';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
+import { useT } from '@/lib/i18n/LangProvider';
 
 export default function DecorCatalog() {
   const { salleLargeurCm, salleHauteurCm } = useRoomState();
   const dispatch = useRoomDispatch();
+  const t = useT();
 
   const addDecor = useCallback((type: string, label: string, wCm: number, hCm: number) => {
     dispatch({
@@ -29,12 +31,12 @@ export default function DecorCatalog() {
       {DECORS_CATALOG.map(d => (
         <button
           key={d.type}
-          onClick={() => addDecor(d.type, d.label, d.wCm, d.hCm)}
+          onClick={() => addDecor(d.type, t('decor.' + d.type), d.wCm, d.hCm)}
           className="w-full flex items-center justify-between px-3 py-2 text-sm rounded-lg hover:bg-cream transition-colors"
         >
           <span className="flex items-center gap-2">
             <span className="inline-block w-3 h-3 rounded-sm border border-line" style={{ backgroundColor: d.couleur }} />
-            {d.label}
+            {t('decor.' + d.type)}
           </span>
           <span className="text-faint">{d.wCm / 100} × {d.hCm / 100} m</span>
         </button>
