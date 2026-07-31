@@ -95,15 +95,27 @@ async function appliquer(sub: Stripe.Subscription, plannerId: string | null) {
   const champs = champsAbonnement(sub);
   const customerId = typeof sub.customer === 'string' ? sub.customer : sub.customer.id;
 
-  const requete = admin.from('planner').update({ ...champs, stripe_customer_id: customerId });
-  const { data, error } = plannerId
-    ? await requete.eq('id', plannerId).select('id')
-    : await requete.eq('stripe_customer_id', customerId).select('id');
+  const valeurs = { ...champs, stripe_customer_id: customerId };
 
-  if (error) throw error;
-  if (!data || data.length === 0) {
-    throw new Error(
-      `Aucun planner pour l'abonnement ${sub.id} (planner_id=${plannerId ?? 'absent'}, customer=${customerId})`,
-    );
+  // On tente d'abord la métadonnée, puis le client Stripe. Le repli est
+  // essentiel : une métadonnée absente OU périmée (abonnement recréé,
+  // identifiant erroné) faisait échouer la mise à jour indéfiniment, Stripe
+  // réessayant sans fin un événement qui ne pouvait pas aboutir.
+  const cibles: Array<[string, string]> = plannerId
+    ? [['id', plannerId], ['stripe_customer_id', customerId]]
+    : [['stripe_customer_id', customerId]];
+
+  for (const [colonne, valeur] of cibles) {
+    const { data, error } = await admin
+      .from('planner')
+      .update(valeurs)
+      .eq(colonne, valeur)
+      .select('id');
+    if (error) throw error;
+    if (data && data.length > 0) return;
   }
+
+  throw new Error(
+    `Aucun planner pour l'abonnement ${sub.id} (planner_id=${plannerId ?? 'absent'}, customer=${customerId})`,
+  );
 }
