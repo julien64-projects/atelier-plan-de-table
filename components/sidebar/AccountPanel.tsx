@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/lib/supabase/AuthProvider';
+import { useProject } from '@/lib/supabase/ProjectContext';
 import { useT } from '@/lib/i18n/LangProvider';
 
 const LONGUEUR_MIN = 8;
@@ -18,6 +19,7 @@ type Volet = null | 'email' | 'motDePasse' | 'suppression';
  */
 export default function AccountPanel() {
   const { user, changerEmail, changerMotDePasse, signOut } = useAuth();
+  const { isOwner } = useProject();
   const t = useT();
 
   const [volet, setVolet] = useState<Volet>(null);
@@ -43,7 +45,10 @@ export default function AccountPanel() {
 
   useEffect(() => { synchroniser().catch(() => {}); }, [synchroniser]);
 
-  if (!supabase || !user) return null;
+  // Réservé au titulaire du compte. Un invité arrivé par lien de partage n'a
+  // pas de compte à gérer : lui montrer « Supprimer mon compte » est au mieux
+  // déroutant, au pire inquiétant.
+  if (!supabase || !user || !isOwner) return null;
 
   const ouvrir = (v: Volet) => {
     setVolet(volet === v ? null : v);

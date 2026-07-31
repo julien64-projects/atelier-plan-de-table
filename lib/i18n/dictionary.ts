@@ -211,6 +211,7 @@ const fr: Dict = {
   // Mon compte
   'section.compte': 'Mon compte',
   'compte.adresse': 'Adresse de connexion',
+  'compte.invite': 'Accès par lien partagé',
   'compte.changerEmail': 'Changer d’adresse email',
   'compte.nouvelEmail': 'nouvelle adresse',
   'compte.email.note': 'Un lien de confirmation sera envoyé à la nouvelle adresse. L’ancienne reste valable tant qu’il n’est pas cliqué.',
@@ -605,6 +606,7 @@ const en: Dict = {
   // My account
   'section.compte': 'My account',
   'compte.adresse': 'Sign-in address',
+  'compte.invite': 'Shared-link access',
   'compte.changerEmail': 'Change email address',
   'compte.nouvelEmail': 'new address',
   'compte.email.note': 'A confirmation link will be sent to the new address. The old one stays valid until it is clicked.',

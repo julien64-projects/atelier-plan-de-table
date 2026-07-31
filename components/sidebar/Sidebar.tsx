@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRoomState, useRoomDispatch } from '@/lib/store/roomStore';
 import { useGuestState } from '@/lib/store/guestStore';
 import { useAuth } from '@/lib/supabase/AuthProvider';
+import { useProject } from '@/lib/supabase/ProjectContext';
 import { useTheme } from '@/lib/theme/ThemeProvider';
 import { useT } from '@/lib/i18n/LangProvider';
 import Section from './Section';
@@ -26,6 +27,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const dispatch = useRoomDispatch();
   const { guests } = useGuestState();
   const { session, user, signOut } = useAuth();
+  const { isOwner } = useProject();
   const { mode } = useTheme();
   const t = useT();
 
@@ -131,13 +133,20 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         <SharePanel />
       </Section>
 
-      <Section title={t('section.abonnement')} open={aboOpen} onToggle={() => setAboOpen(o => !o)}>
-        <SubscriptionPanel />
-      </Section>
+      {/* Réservées au planner. Le composant Section affiche son en-tête même
+          quand son contenu est null : il faut donc masquer la Section entière,
+          sinon un invité voit des rubriques qui n'ouvrent sur rien. */}
+      {isOwner && (
+        <>
+          <Section title={t('section.abonnement')} open={aboOpen} onToggle={() => setAboOpen(o => !o)}>
+            <SubscriptionPanel />
+          </Section>
 
-      <Section title={t('section.compte')} open={compteOpen} onToggle={() => setCompteOpen(o => !o)}>
-        <AccountPanel />
-      </Section>
+          <Section title={t('section.compte')} open={compteOpen} onToggle={() => setCompteOpen(o => !o)}>
+            <AccountPanel />
+          </Section>
+        </>
+      )}
 
       <Section title={t('section.apparence')} open={apparenceOpen} onToggle={() => setApparenceOpen(o => !o)}
         hint={mode === 'clair' ? t('common.clair') : t('common.sombre')}>
@@ -147,7 +156,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       {session && (
         <div className="mt-auto px-5 py-4 border-t border-line">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs text-faint truncate" title={user?.email ?? ''}>{user?.email}</span>
+            <span className="text-xs text-faint truncate" title={user?.email ?? ''}>
+              {user?.email || t('compte.invite')}
+            </span>
             <button
               onClick={() => signOut()}
               className="shrink-0 text-xs text-muted hover:text-ink transition-colors"
