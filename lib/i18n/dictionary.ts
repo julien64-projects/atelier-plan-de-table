@@ -201,6 +201,26 @@ const fr: Dict = {
   'link.joined': 'A rejoint :',
   'link.orEmail': 'Ou inviter par email',
 
+  // Abonnement
+  'section.abonnement': 'Abonnement',
+  'abo.etat': 'Votre formule',
+  'abo.statut.gratuit': 'Offre gratuite — 1 projet',
+  'abo.statut.essai': 'Période d’essai',
+  'abo.statut.actif': 'Abonné — projets illimités',
+  'abo.statut.resiliation_programmee': 'Abonné, résiliation programmée',
+  'abo.statut.paiement_en_retard': 'Paiement en attente',
+  'abo.statut.expire': 'Abonnement expiré',
+  'abo.renouvelleLe': 'Se renouvelle le {date}',
+  'abo.finLe': 'Prend fin le {date}',
+  'abo.argumentaire': 'Passez à l’abonnement pour gérer autant de mariages que vous voulez. 4,90 € HT par mois, sans engagement, résiliable en un clic.',
+  'abo.souscrire': 'S’abonner — 4,90 € HT/mois',
+  'abo.gerer': 'Gérer mon abonnement',
+  'abo.mentionPro': 'Réservé aux professionnels. Paiement sécurisé par Stripe.',
+  'abo.retourOk': 'Abonnement confirmé. Merci !',
+  'abo.retourAttente': 'Paiement reçu, activation en cours…',
+  'abo.retourAnnule': 'Paiement abandonné. Votre formule n’a pas changé.',
+  'projets.sabonner': 'S’abonner',
+
   // Sélecteur de projets
   'projets.titre': 'Projet',
   'projets.sansNom': 'Mariage sans nom',
@@ -548,6 +568,26 @@ const en: Dict = {
   'link.lost': 'Link created on another device: it still works, but cannot be shown again here. Create a new one if you lost it.',
   'link.joined': 'Joined:',
   'link.orEmail': 'Or invite by email',
+
+  // Subscription
+  'section.abonnement': 'Subscription',
+  'abo.etat': 'Your plan',
+  'abo.statut.gratuit': 'Free plan — 1 project',
+  'abo.statut.essai': 'Trial period',
+  'abo.statut.actif': 'Subscribed — unlimited projects',
+  'abo.statut.resiliation_programmee': 'Subscribed, cancellation scheduled',
+  'abo.statut.paiement_en_retard': 'Payment pending',
+  'abo.statut.expire': 'Subscription expired',
+  'abo.renouvelleLe': 'Renews on {date}',
+  'abo.finLe': 'Ends on {date}',
+  'abo.argumentaire': 'Subscribe to manage as many weddings as you like. €4.90 excl. VAT per month, no commitment, cancel in one click.',
+  'abo.souscrire': 'Subscribe — €4.90 excl. VAT/month',
+  'abo.gerer': 'Manage my subscription',
+  'abo.mentionPro': 'Business customers only. Payments secured by Stripe.',
+  'abo.retourOk': 'Subscription confirmed. Thank you!',
+  'abo.retourAttente': 'Payment received, activating…',
+  'abo.retourAnnule': 'Payment cancelled. Your plan is unchanged.',
+  'projets.sabonner': 'Subscribe',
 
   // Project switcher
   'projets.titre': 'Project',

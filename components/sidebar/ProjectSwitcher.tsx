@@ -10,6 +10,7 @@ import {
   definirProjetActif, nomProjet, ERREUR_QUOTA, type ProjetResume,
 } from '@/lib/supabase/projects';
 import { abonnementActif, peutCreerProjet, auDessusDuQuota, type EtatAbonnement } from '@/lib/stripe/abonnement';
+import { ouvrirPaiement } from '@/lib/stripe/checkout';
 
 /**
  * Sélecteur de projet : un projet = un mariage.
@@ -169,7 +170,19 @@ export default function ProjectSwitcher() {
             {busy ? '…' : `+ ${t('projets.nouveau')}`}
           </button>
 
-          {!peutCreer && <p className="text-[10px] text-faint leading-snug">{t('projets.quota')}</p>}
+          {/* Buter sur le quota doit mener au paiement, pas seulement
+              l'expliquer : c'est le moment où l'abonnement a le plus de sens. */}
+          {!peutCreer && (
+            <div className="pt-1 space-y-1.5">
+              <p className="text-[10px] text-faint leading-snug">{t('projets.quota')}</p>
+              <button
+                onClick={() => ouvrirPaiement(supabase!).catch(e => setMsg((e as Error).message))}
+                className="w-full px-2 py-1.5 text-xs rounded bg-terracotta text-white hover:bg-terracotta-dark transition-colors"
+              >
+                {t('projets.sabonner')}
+              </button>
+            </div>
+          )}
           {auDessus && <p className="text-[10px] text-gold leading-snug">{t('projets.auDessus')}</p>}
           {msg && <p className="text-[10px] text-terracotta leading-snug">{msg}</p>}
         </div>

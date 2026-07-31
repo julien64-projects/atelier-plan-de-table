@@ -16,6 +16,7 @@ import GuestList from './GuestList';
 import AlleeAlert from './AlleeAlert';
 import SharePanel from './SharePanel';
 import ProjectSwitcher from './ProjectSwitcher';
+import SubscriptionPanel from './SubscriptionPanel';
 import AppearancePanel from './AppearancePanel';
 import PasswordSetter from '../auth/PasswordSetter';
 
@@ -36,6 +37,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [invitesOpen, setInvitesOpen] = useState(true);
   const [partageOpen, setPartageOpen] = useState(false);
   const [apparenceOpen, setApparenceOpen] = useState(false);
+  const [aboOpen, setAboOpen] = useState(false);
 
   // Une sélection ouvre sa section ; replier depuis l'en-tête désélectionne
   // pour ne pas rester bloqué ouvert.
@@ -123,6 +125,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
       <Section title={t('section.partage')} open={partageOpen} onToggle={() => setPartageOpen(o => !o)}>
         <SharePanel />
+      </Section>
+
+      <Section title={t('section.abonnement')} open={aboOpen} onToggle={() => setAboOpen(o => !o)}>
+        <SubscriptionPanel />
       </Section>
 
       <Section title={t('section.apparence')} open={apparenceOpen} onToggle={() => setApparenceOpen(o => !o)}
