@@ -5,9 +5,9 @@ import { useAuth } from '@/lib/supabase/AuthProvider';
 import { useT } from '@/lib/i18n/LangProvider';
 
 export default function LoginForm() {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, demanderReinitialisation } = useAuth();
   const t = useT();
-  const [mode, setMode] = useState<'connexion' | 'inscription'>('connexion');
+  const [mode, setMode] = useState<'connexion' | 'inscription' | 'oubli'>('connexion');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +19,16 @@ export default function LoginForm() {
     setError(null);
     setInfo(null);
     setBusy(true);
+    if (mode === 'oubli') {
+      const res = await demanderReinitialisation(email);
+      setBusy(false);
+      // On confirme l'envoi SANS révéler si l'adresse existe : sinon le
+      // formulaire devient un moyen de tester quelles adresses sont inscrites.
+      if (res.error) setError(res.error);
+      else { setInfo(t('auth.reset.envoye')); setMode('connexion'); }
+      return;
+    }
+
     const action = mode === 'connexion' ? signIn : signUp;
     const res = await action(email.trim(), password);
     setBusy(false);
@@ -57,6 +67,7 @@ export default function LoginForm() {
               className="mt-1 w-full px-3 py-2 text-sm bg-cream border border-line rounded-lg text-ink focus:outline-none focus:border-gold/60"
             />
           </div>
+          {mode !== 'oubli' && (
           <div>
             <label className="text-sm text-muted">{t('auth.password')}</label>
             <input
@@ -69,6 +80,7 @@ export default function LoginForm() {
               className="mt-1 w-full px-3 py-2 text-sm bg-cream border border-line rounded-lg text-ink focus:outline-none focus:border-gold/60"
             />
           </div>
+          )}
 
           {error && <p className="text-sm text-terracotta">{error}</p>}
           {info && <p className="text-sm text-gold">{info}</p>}
@@ -78,15 +90,23 @@ export default function LoginForm() {
             disabled={busy}
             className="w-full px-4 py-2.5 rounded-lg bg-gold/90 text-[#1a1114] font-medium hover:bg-gold transition-colors disabled:opacity-60"
           >
-            {busy ? '…' : mode === 'connexion' ? t('auth.signin') : t('auth.signup')}
+            {busy ? '…' : mode === 'oubli' ? t('auth.reset.envoyer') : mode === 'connexion' ? t('auth.signin') : t('auth.signup')}
           </button>
 
           <button
             type="button"
-            onClick={() => { setMode(m => (m === 'connexion' ? 'inscription' : 'connexion')); setError(null); setInfo(null); }}
-            className="w-full text-xs text-muted hover:text-ink transition-colors"
+            onClick={() => { setMode(m => (m === 'inscription' ? 'connexion' : 'inscription')); setError(null); setInfo(null); }}
+            className="w-full text-xs text-muted hover:text-ink transition-colors py-1"
           >
-            {mode === 'connexion' ? t('auth.toSignup') : t('auth.toSignin')}
+            {mode === 'inscription' ? t('auth.toSignin') : t('auth.toSignup')}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setMode(m => (m === 'oubli' ? 'connexion' : 'oubli')); setError(null); setInfo(null); }}
+            className="w-full text-xs text-faint hover:text-muted transition-colors py-1"
+          >
+            {mode === 'oubli' ? t('auth.reset.retour') : t('auth.reset.oubli')}
           </button>
         </form>
       </div>

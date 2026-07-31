@@ -17,6 +17,7 @@ import AlleeAlert from './AlleeAlert';
 import SharePanel from './SharePanel';
 import ProjectSwitcher from './ProjectSwitcher';
 import SubscriptionPanel from './SubscriptionPanel';
+import AccountPanel from './AccountPanel';
 import AppearancePanel from './AppearancePanel';
 import LangToggle from '../ui/LangToggle';
 
@@ -38,6 +39,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const [partageOpen, setPartageOpen] = useState(false);
   const [apparenceOpen, setApparenceOpen] = useState(false);
   const [aboOpen, setAboOpen] = useState(false);
+  const [compteOpen, setCompteOpen] = useState(false);
 
   // Une sélection ouvre sa section ; replier depuis l'en-tête désélectionne
   // pour ne pas rester bloqué ouvert.
@@ -131,6 +133,10 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
 
       <Section title={t('section.abonnement')} open={aboOpen} onToggle={() => setAboOpen(o => !o)}>
         <SubscriptionPanel />
+      </Section>
+
+      <Section title={t('section.compte')} open={compteOpen} onToggle={() => setCompteOpen(o => !o)}>
+        <AccountPanel />
       </Section>
 
       <Section title={t('section.apparence')} open={apparenceOpen} onToggle={() => setApparenceOpen(o => !o)}

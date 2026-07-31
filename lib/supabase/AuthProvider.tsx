@@ -31,6 +31,12 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
+  /** Envoie un lien de réinitialisation à l'adresse indiquée. */
+  demanderReinitialisation: (email: string) => Promise<AuthResult>;
+  /** Change le mot de passe de la session en cours. */
+  changerMotDePasse: (motDePasse: string) => Promise<AuthResult>;
+  /** Change l'adresse : Supabase envoie une confirmation à la NOUVELLE adresse. */
+  changerEmail: (email: string) => Promise<AuthResult>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -41,6 +47,9 @@ const AuthContext = createContext<AuthContextValue>({
   signIn: async () => ({ error: 'Auth non configurée' }),
   signUp: async () => ({ error: 'Auth non configurée' }),
   signOut: async () => {},
+  demanderReinitialisation: async () => ({ error: 'Auth non configurée' }),
+  changerMotDePasse: async () => ({ error: 'Auth non configurée' }),
+  changerEmail: async () => ({ error: 'Auth non configurée' }),
 });
 
 /** Traduit les messages d'erreur Supabase courants en français. */
@@ -85,6 +94,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return {};
   }, []);
 
+  const demanderReinitialisation = useCallback(async (email: string): Promise<AuthResult> => {
+    if (!supabase) return { error: 'Auth non configurée' };
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/reinitialiser`,
+    });
+    return error ? { error: messageErreur(error.message) } : {};
+  }, []);
+
+  const changerMotDePasse = useCallback(async (motDePasse: string): Promise<AuthResult> => {
+    if (!supabase) return { error: 'Auth non configurée' };
+    const { error } = await supabase.auth.updateUser({ password: motDePasse });
+    return error ? { error: messageErreur(error.message) } : {};
+  }, []);
+
+  const changerEmail = useCallback(async (email: string): Promise<AuthResult> => {
+    if (!supabase) return { error: 'Auth non configurée' };
+    const { error } = await supabase.auth.updateUser({ email: email.trim() });
+    // L'adresse ne change RÉELLEMENT qu'après clic sur le lien de confirmation
+    // envoyé à la nouvelle boîte : d'ici là, l'ancienne reste valable.
+    return error ? { error: messageErreur(error.message) } : { needsConfirmation: true };
+  }, []);
+
   const signOut = useCallback(async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -100,6 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
+        demanderReinitialisation,
+        changerMotDePasse,
+        changerEmail,
       }}
     >
       {children}
