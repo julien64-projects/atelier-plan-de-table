@@ -67,6 +67,8 @@ node test/geometry.test.mjs   # tests du moteur géométrie
 
 ## Garde-fous
 
+- Dépôt : **github.com/Tickly-SAS/tableplan** (transféré le 2026-07-31 depuis le compte
+  personnel `julien64-projects`, et passé en privé à cette occasion — il était public).
 - Repo **privé**. Ne JAMAIS commiter de secret : clés Supabase/Stripe dans `.env.local`
   (déjà ignoré par Next.js). Utiliser `NEXT_PUBLIC_` seulement pour les clés publiques.
 - Travailler sur une **branche de feature**, commits fréquents, diffs relus.
