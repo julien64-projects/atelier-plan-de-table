@@ -39,19 +39,25 @@ export async function ouvrirPortail(supabase: SupabaseClient): Promise<void> {
 }
 
 /**
- * Lit le résultat du retour de Stripe dans l'URL, puis nettoie celle-ci.
- *
- * Le paramètre est retiré de la barre d'adresse : sans cela, un rechargement
- * ou un partage du lien réafficherait indéfiniment « paiement confirmé ».
+ * Lit le résultat du retour de Stripe dans l'URL. Lecture PURE : elle ne
+ * modifie rien, ce qui permet de l'appeler pendant le rendu initial.
  */
 export function lireRetourPaiement(): 'ok' | 'annule' | null {
   if (typeof window === 'undefined') return null;
-  const params = new URLSearchParams(window.location.search);
-  const abo = params.get('abo');
-  if (abo !== 'ok' && abo !== 'annule') return null;
+  const abo = new URLSearchParams(window.location.search).get('abo');
+  return abo === 'ok' || abo === 'annule' ? abo : null;
+}
 
+/**
+ * Retire `?abo=` de la barre d'adresse. Séparé de la lecture parce que c'est
+ * un effet de bord : sans ce nettoyage, un rechargement ou un lien partagé
+ * réafficherait indéfiniment « paiement confirmé ».
+ */
+export function nettoyerRetourPaiement(): void {
+  if (typeof window === 'undefined') return;
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('abo')) return;
   params.delete('abo');
   const reste = params.toString();
   window.history.replaceState({}, '', window.location.pathname + (reste ? `?${reste}` : ''));
-  return abo;
 }

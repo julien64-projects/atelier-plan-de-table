@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
 import { useProject } from '@/lib/supabase/ProjectContext';
 import { useT } from '@/lib/i18n/LangProvider';
-import { ouvrirPaiement, ouvrirPortail, lireRetourPaiement } from '@/lib/stripe/checkout';
+import { ouvrirPaiement, ouvrirPortail, lireRetourPaiement, nettoyerRetourPaiement } from '@/lib/stripe/checkout';
 import { abonnementActif, libelleAbonnement, type EtatAbonnement } from '@/lib/stripe/abonnement';
 
 /** Délais d'attente du webhook après retour de Stripe (ms). */
@@ -24,17 +24,24 @@ export default function SubscriptionPanel() {
 
   const [etat, setEtat] = useState<EtatAbonnement>({ statut: null, finPeriode: null });
   const [annuleALaFin, setAnnuleALaFin] = useState(false);
-  const [retour, setRetour] = useState<'ok' | 'annule' | null>(null);
-  const [attente, setAttente] = useState(false);
+  // Lecture PURE de l'URL, faite une fois à l'initialisation : le nettoyage de
+  // la barre d'adresse, lui, est un effet de bord et vit dans un effet.
+  const [retour] = useState<'ok' | 'annule' | null>(() => lireRetourPaiement());
+  const [attente, setAttente] = useState(retour === 'ok');
   const [busy, setBusy] = useState(false);
   const [erreur, setErreur] = useState<string | null>(null);
 
-  const lire = useCallback(async (): Promise<boolean> => {
-    if (!supabase) return false;
+  /** Interroge la base. Ne touche pas à l'état : l'appelant s'en charge. */
+  const charger = useCallback(async () => {
+    if (!supabase) return null;
     const { data } = await supabase
       .from('mon_abonnement')
       .select('abo_statut, abo_fin, abo_annule_a_la_fin')
       .maybeSingle();
+    return data ?? null;
+  }, []);
+
+  const appliquer = useCallback((data: Awaited<ReturnType<typeof charger>>) => {
     const e: EtatAbonnement = {
       statut: (data?.abo_statut as EtatAbonnement['statut']) ?? null,
       finPeriode: (data?.abo_fin as string | null) ?? null,
@@ -44,27 +51,32 @@ export default function SubscriptionPanel() {
     return abonnementActif(e);
   }, []);
 
-  useEffect(() => { lire(); }, [lire]);
+  useEffect(() => { nettoyerRetourPaiement(); }, []);
 
-  // Retour de Stripe : on attend que le webhook ait fait son travail.
   useEffect(() => {
-    const r = lireRetourPaiement();
-    if (!r) return;
-    setRetour(r);
-    if (r !== 'ok') return;
-
     let annule = false;
-    setAttente(true);
+    // Toutes les mises à jour d'état passent par un rappel de promesse : jamais
+    // pendant le corps de l'effet, pour éviter les rendus en cascade.
+    charger().then(d => { if (!annule) appliquer(d); }).catch(() => {});
+    return () => { annule = true; };
+  }, [charger, appliquer]);
+
+  // Retour de Stripe : l'abonnement est inscrit par le webhook, avec quelques
+  // secondes de décalage. On relance la lecture plutôt que d'afficher
+  // « offre gratuite » à quelqu'un qui vient de payer.
+  useEffect(() => {
+    if (retour !== 'ok') return;
+    let annule = false;
     (async () => {
       for (const delai of RELANCES) {
         if (annule) return;
-        if (await lire()) break;
+        if (appliquer(await charger())) break;
         await new Promise(res => setTimeout(res, delai));
       }
       if (!annule) setAttente(false);
     })();
     return () => { annule = true; };
-  }, [lire]);
+  }, [retour, charger, appliquer]);
 
   if (!supabase || !isOwner) return null;
 
