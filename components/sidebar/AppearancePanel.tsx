@@ -2,35 +2,16 @@
 
 import { useTheme } from '@/lib/theme/ThemeProvider';
 import { useLang } from '@/lib/i18n/LangProvider';
-import { LANGS } from '@/lib/i18n/dictionary';
 
-/** Réglages d'apparence : langue + thème clair/sombre + personnalisation. */
+/** Réglages d'apparence : thème clair/sombre + personnalisation.
+ *  La langue vit dans l'en-tête de la barre latérale : ce n'est pas un
+ *  réglage d'apparence, et elle doit rester visible sans déplier de section. */
 export default function AppearancePanel() {
   const { mode, setMode, accent, gold, setAccent, setGold, reinitialiser, personnalise } = useTheme();
-  const { lang, setLang, t } = useLang();
+  const { t } = useLang();
 
   return (
     <div className="space-y-4">
-      {/* Langue */}
-      <div>
-        <p className="text-[10px] uppercase tracking-wide text-faint mb-1">{t('appearance.langue')}</p>
-        <div className="flex gap-1">
-          {LANGS.map(l => (
-            <button
-              key={l.key}
-              onClick={() => setLang(l.key)}
-              className={`flex-1 px-2 py-1.5 text-xs rounded border transition-colors ${
-                lang === l.key
-                  ? 'bg-terracotta text-white border-terracotta'
-                  : 'bg-cream text-muted border-line hover:bg-line'
-              }`}
-            >
-              {l.court} · {l.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Ambiance */}
       <div>
         <p className="text-[10px] uppercase tracking-wide text-faint mb-1">{t('appearance.ambiance')}</p>

@@ -18,7 +18,7 @@ import SharePanel from './SharePanel';
 import ProjectSwitcher from './ProjectSwitcher';
 import SubscriptionPanel from './SubscriptionPanel';
 import AppearancePanel from './AppearancePanel';
-import PasswordSetter from '../auth/PasswordSetter';
+import LangToggle from '../ui/LangToggle';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const { selectedTableId, selectedDecorId, salleLargeurCm, salleHauteurCm, tables, decors } = useRoomState();
@@ -63,6 +63,8 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
   return (
     <aside className="w-80 max-w-[85vw] h-full shrink-0 border-r border-line bg-surface flex flex-col overflow-y-auto">
       <div className="px-5 py-6 border-b border-line text-center relative">
+        {/* Toujours visible : la langue ne doit pas se chercher. */}
+        <LangToggle className="absolute top-3 left-2" />
         {onClose && (
           <button
             onClick={onClose}
@@ -137,7 +139,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </Section>
 
       {session && (
-        <div className="mt-auto px-5 py-4 border-t border-line space-y-2">
+        <div className="mt-auto px-5 py-4 border-t border-line">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs text-faint truncate" title={user?.email ?? ''}>{user?.email}</span>
             <button
@@ -147,7 +149,6 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               {t('auth.signout')}
             </button>
           </div>
-          <PasswordSetter />
         </div>
       )}
     </aside>

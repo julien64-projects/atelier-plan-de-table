@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { LangProvider, useLang } from '@/lib/i18n/LangProvider';
 import { ThemeProvider } from '@/lib/theme/ThemeProvider';
-import { LANGS } from '@/lib/i18n/dictionary';
 import { SOCIETE } from '@/lib/legal/societe';
 import { FAQ } from '@/lib/marketing/faq';
 import ApercuInterface from './ApercuInterface';
+import LangToggle from '../ui/LangToggle';
 
 const FEATURES = [
   { icon: '✋', t: 'land.f1.t', d: 'land.f1.d' },
@@ -26,27 +26,6 @@ const LIENS_LEGAUX = [
   { href: '/cookies', label: 'Cookies' },
   { href: '/securite', label: 'Sécurité des paiements' },
 ] as const;
-
-function LangToggle() {
-  const { lang, setLang } = useLang();
-  return (
-    <div className="flex items-center gap-1">
-      {LANGS.map(l => (
-        <button
-          key={l.key}
-          onClick={() => setLang(l.key)}
-          aria-label={l.label}
-          // Zone tactile d'au moins 40 px : un libellé de 24 px se rate au doigt.
-          className={`px-2.5 py-2 text-xs font-medium tracking-wider leading-none rounded transition-colors ${
-            lang === l.key ? 'text-ink' : 'text-faint hover:text-muted'
-          }`}
-        >
-          {l.court}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function Ornement() {
   return (

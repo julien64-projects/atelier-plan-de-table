@@ -35,12 +35,6 @@ const fr: Dict = {
   'auth.toSignin': 'Déjà un compte ? Se connecter',
   'auth.needConfirm': 'Compte créé. Vérifie tes emails pour confirmer ton adresse, puis connecte-toi.',
   'auth.signout': 'Déconnexion',
-  'auth.setPassword': 'Définir un mot de passe',
-  'auth.setPassword.close': 'Fermer',
-  'auth.setPassword.placeholder': 'Nouveau mot de passe (min. 6)',
-  'auth.setPassword.save': 'Enregistrer le mot de passe',
-  'auth.setPassword.saved': 'Mot de passe enregistré ✓ Tu peux désormais te connecter avec ton email et ce mot de passe.',
-  'auth.setPassword.tooShort': 'Au moins 6 caractères.',
 
   // Sections du menu
   'section.salle': 'Salle',
@@ -413,12 +407,6 @@ const en: Dict = {
   'auth.toSignin': 'Already have an account? Sign in',
   'auth.needConfirm': 'Account created. Check your inbox to confirm your address, then sign in.',
   'auth.signout': 'Sign out',
-  'auth.setPassword': 'Set a password',
-  'auth.setPassword.close': 'Close',
-  'auth.setPassword.placeholder': 'New password (min. 6)',
-  'auth.setPassword.save': 'Save password',
-  'auth.setPassword.saved': 'Password saved ✓ You can now sign in with your email and this password.',
-  'auth.setPassword.tooShort': 'At least 6 characters.',
 
   'section.salle': 'Room',
   'section.mobilier': 'Room furniture',
