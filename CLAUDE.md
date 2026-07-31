@@ -67,10 +67,16 @@ node test/geometry.test.mjs   # tests du moteur géométrie
 
 ## Garde-fous
 
-- Dépôt : **github.com/Tickly-SAS/tableplan** (transféré le 2026-07-31 depuis le compte
-  personnel `julien64-projects`, et passé en privé à cette occasion — il était public).
-- Repo **privé**. Ne JAMAIS commiter de secret : clés Supabase/Stripe dans `.env.local`
-  (déjà ignoré par Next.js). Utiliser `NEXT_PUBLIC_` seulement pour les clés publiques.
+- Dépôt : **github.com/Tickly-SAS/tableplan**, transféré le 2026-07-31 depuis le compte
+  personnel `julien64-projects`.
+- Le dépôt est **PUBLIC**, et c'est un choix contraint : le plan Hobby de Vercel refuse
+  les dépôts privés appartenant à une organisation, ce qui supprimerait le déploiement
+  automatique. À repasser en privé le jour où Vercel passe en Pro.
+- Conséquence directe : **ne JAMAIS commiter de secret**, la moindre clé poussée ici est
+  publique et indexable dans la seconde. Clés Supabase/Stripe dans `.env.local` (couvert
+  par `.gitignore`, seul `.env.example` est versionné). `NEXT_PUBLIC_` uniquement pour ce
+  qui est réellement public. En cas de doute avant un commit :
+  `git grep -IE "sk_live_|rk_live_|sb_secret_|whsec_"`.
 - Travailler sur une **branche de feature**, commits fréquents, diffs relus.
 - **Tests non-négociables** sur toute la logique métier. Les faire tourner et les
   corriger dans chaque tâche, pas après coup.
