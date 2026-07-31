@@ -201,6 +201,17 @@ const fr: Dict = {
   'link.joined': 'A rejoint :',
   'link.orEmail': 'Ou inviter par email',
 
+  // Sélecteur de projets
+  'projets.titre': 'Projet',
+  'projets.sansNom': 'Mariage sans nom',
+  'projets.nouveau': 'Nouveau mariage',
+  'projets.renommer': 'Renommer',
+  'projets.supprimer': 'Supprimer ce projet',
+  'projets.dernier': 'Impossible de supprimer votre dernier projet.',
+  'projets.confirmSuppr': 'Supprimer « {nom} » ainsi que ses invités, tables et liens de partage ? Cette action est définitive.',
+  'projets.quota': 'L’offre gratuite comprend un projet. Abonnez-vous pour en gérer autant que vous voulez.',
+  'projets.auDessus': 'Vous avez plus de projets que l’offre gratuite n’en comprend. Ils restent accessibles ; seule la création d’un nouveau projet est bloquée.',
+
   // Rejoindre par lien privé
   'join.checking': 'Vérification du lien…',
   'join.invalid': 'Ce lien n’est plus valide.',
@@ -537,6 +548,17 @@ const en: Dict = {
   'link.lost': 'Link created on another device: it still works, but cannot be shown again here. Create a new one if you lost it.',
   'link.joined': 'Joined:',
   'link.orEmail': 'Or invite by email',
+
+  // Project switcher
+  'projets.titre': 'Project',
+  'projets.sansNom': 'Untitled wedding',
+  'projets.nouveau': 'New wedding',
+  'projets.renommer': 'Rename',
+  'projets.supprimer': 'Delete this project',
+  'projets.dernier': 'You cannot delete your last project.',
+  'projets.confirmSuppr': 'Delete “{nom}” along with its guests, tables and share links? This cannot be undone.',
+  'projets.quota': 'The free plan includes one project. Subscribe to manage as many as you like.',
+  'projets.auDessus': 'You have more projects than the free plan includes. They remain accessible; only creating a new one is blocked.',
 
   // Join via private link
   'join.checking': 'Checking the link…',

@@ -14,6 +14,7 @@ import type { TableOnPlan, DecorOnPlan } from '@/lib/store/types';
 import type { GuestOnPlan, Assignment } from '@/lib/store/guestStore';
 import type { TableShape, NiveauConfort } from '@/lib/types';
 import { projetRejoint } from './joinLink';
+import { projetActif } from './projects';
 import { genererToken, hashToken } from '@/lib/shareLink';
 
 export interface ProjectRow {
@@ -163,8 +164,15 @@ export async function getOrCreateProject(
   if (existants && existants.length > 0) {
     // RLS renvoie les projets possédés ET partagés. On privilégie un projet
     // POSSÉDÉ (cas planner) ; à défaut, le plus récent partagé (cas mariés).
+    // Planner : on rouvre le projet sur lequel il travaillait, sinon le plus
+    // récemment modifié. Sans cela, changer de projet n'aurait aucun effet au
+    // rechargement.
     const possede = existants.filter(p => p.planner_id === uid);
-    if (possede[0]) return possede[0] as ProjectRow;
+    if (possede.length > 0) {
+      const actif = projetActif();
+      const cible = actif ? possede.find(p => p.id === actif) : undefined;
+      return (cible ?? possede[0]) as ProjectRow;
+    }
 
     // Invité : ouvrir le projet rejoint par lien plutôt qu'un projet au hasard
     // (un même invité peut avoir plusieurs projets partagés).

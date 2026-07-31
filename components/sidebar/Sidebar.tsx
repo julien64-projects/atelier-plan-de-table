@@ -15,6 +15,7 @@ import DecorInspector from './DecorInspector';
 import GuestList from './GuestList';
 import AlleeAlert from './AlleeAlert';
 import SharePanel from './SharePanel';
+import ProjectSwitcher from './ProjectSwitcher';
 import AppearancePanel from './AppearancePanel';
 import PasswordSetter from '../auth/PasswordSetter';
 
@@ -78,6 +79,9 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
         </div>
         <p className="text-xs text-muted italic">{t('brand.tagline.sidebar')}</p>
       </div>
+
+      {/* Juste sous la marque : c'est le contexte de tout ce qui suit. */}
+      <ProjectSwitcher />
 
       <Section title={t('section.salle')} open={salleOpen} onToggle={() => setSalleOpen(o => !o)}
         hint={`${m(salleLargeurCm)} × ${m(salleHauteurCm)} m`} locked>
