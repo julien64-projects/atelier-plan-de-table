@@ -21,6 +21,8 @@ import { supabase } from './client';
 interface AuthResult {
   error?: string;
   needsConfirmation?: boolean;
+  /** L'adresse a déjà un compte : aucun email ne partira. */
+  dejaInscrit?: boolean;
 }
 
 interface AuthContextValue {
@@ -89,8 +91,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!supabase) return { error: 'Auth non configurée' };
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) return { error: messageErreur(error.message) };
+
+    // Adresse DÉJÀ inscrite : Supabase renvoie un succès de façade, sans
+    // identité ni session, et n'envoie aucun email — c'est volontaire, pour
+    // qu'on ne puisse pas deviner quelles adresses ont un compte. Sans ce
+    // test, on annonçait « vérifie tes emails » pour un message qui ne
+    // partirait jamais.
+    const dejaInscrit = !!data.user && (data.user.identities?.length ?? 0) === 0;
+
     // Pas de session renvoyée => confirmation par email requise.
-    if (!data.session) return { needsConfirmation: true };
+    if (!data.session) return { needsConfirmation: true, dejaInscrit };
     return {};
   }, []);
 

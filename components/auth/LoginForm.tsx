@@ -35,7 +35,10 @@ export default function LoginForm() {
     if (res.error) {
       setError(res.error);
     } else if (res.needsConfirmation) {
-      setInfo(t('auth.needConfirm'));
+      // Formulation volontairement neutre : elle vaut aussi bien pour une
+      // inscription réelle que pour une adresse déjà connue, sans indiquer
+      // laquelle des deux — sinon le formulaire permet de tester des adresses.
+      setInfo(res.dejaInscrit ? t('auth.dejaInscrit') : t('auth.needConfirm'));
       setMode('connexion');
     }
     // En cas de succès avec session, AuthGate bascule automatiquement sur l'app.

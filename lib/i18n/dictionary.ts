@@ -33,7 +33,8 @@ const fr: Dict = {
   'auth.signup': 'Créer mon compte',
   'auth.toSignup': 'Pas encore de compte ? Créer un compte',
   'auth.toSignin': 'Déjà un compte ? Se connecter',
-  'auth.needConfirm': 'Compte créé. Vérifie tes emails pour confirmer ton adresse, puis connecte-toi.',
+  'auth.needConfirm': 'Compte créé. Vérifiez vos emails pour confirmer votre adresse, puis connectez-vous. Pensez à regarder dans les indésirables.',
+  'auth.dejaInscrit': 'Cette adresse a déjà un compte. Connectez-vous, ou utilisez « Mot de passe oublié ? » si vous ne vous en souvenez plus.',
   'auth.signout': 'Déconnexion',
 
   // Sections du menu
