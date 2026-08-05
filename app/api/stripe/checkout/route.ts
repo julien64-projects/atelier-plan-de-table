@@ -57,6 +57,14 @@ export async function POST(req: Request) {
       mode: 'subscription',
       customer: customerId,
       line_items: [{ price, quantity: 1 }],
+
+      // Carte demandée explicitement. Par défaut Stripe choisit les moyens de
+      // paiement selon la configuration du compte ; sur le compte live celle-ci
+      // est vide, et la création de session échoue avec « No valid payment
+      // method types ». `card` couvre aussi Apple Pay et Google Pay.
+      // Retirable le jour où les moyens de paiement dynamiques seront réglés
+      // dans le dashboard.
+      payment_method_types: ['card'],
       // Le planner_id voyage jusqu'au webhook : c'est lui qui fait le lien
       // entre le paiement et le compte, sans dépendre de l'email.
       subscription_data: { metadata: { planner_id: planner.id } },
